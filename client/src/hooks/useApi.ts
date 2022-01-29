@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
+import { ApiKeyContext } from '../providers/ApiKeyProvider';
 
-//const API_HOSTNAME = "https://6f4b-2a01-cb00-573-7500-b5cc-6709-410c-a2fe.ngrok.io";
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 
 export interface IPhone {
@@ -28,9 +28,27 @@ export interface IConversation {
 
 function useApi() {
 
+  const {apiKey} = useContext(ApiKeyContext);
+
+  const fetchWithAuth = useCallback((input: RequestInfo, init?: RequestInit | undefined) => {
+    if (init) {
+
+      const newInit = {
+        ...init,
+        ...{
+          'headers': {...init.headers, ...{'X-API-KEY': apiKey}}
+        }
+      }
+      return fetch(input, newInit);
+    } else {
+      return fetch(input, { headers: { 'X-API-KEY': apiKey } })
+    }
+
+  }, [apiKey])
+
   const sendMessage = useCallback(async ({ from, to, body }) => {
 
-    const result = await fetch(`${API_HOSTNAME}/api/v1/message`,
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message`,
       {
         method: "POST",
         headers: {
@@ -52,12 +70,12 @@ function useApi() {
       created_on: new Date(data.created_on)
     };
 
-  }, []);
+  }, [fetchWithAuth]);
 
 
   const getAllPhone = useCallback(async () => {
 
-    const result = await fetch(`${API_HOSTNAME}/api/v1/phone`);
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`);
     const data = await result.json();
 
     return data.map((item: any) => {
@@ -67,12 +85,12 @@ function useApi() {
       }
     }) as IPhone[];
 
-  }, []);
+  }, [fetchWithAuth]);
 
 
-  const getMessageByConversation = useCallback(async ({phone_id, contact_number}) => {
+  const getMessageByConversation = useCallback(async ({ phone_id, contact_number }) => {
 
-    const result = await fetch(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation/${contact_number}`);
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation/${contact_number}`);
     const data = await result.json();
 
     return data.map((item: any) => {
@@ -82,12 +100,12 @@ function useApi() {
       }
     }) as IMessage[];
 
-  }, []);
+  }, [fetchWithAuth]);
 
 
   const getConversationListByPhoneId = useCallback(async (phone_id: number) => {
 
-    const result = await fetch(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation`);
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation`);
     const data = await result.json();
 
     return data.map((item: any) => {
@@ -97,7 +115,7 @@ function useApi() {
       }
     }) as IConversation[];
 
-  }, []);
+  }, [fetchWithAuth]);
 
 
   return {

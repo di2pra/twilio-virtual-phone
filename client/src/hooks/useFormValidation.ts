@@ -37,7 +37,7 @@ const useFormValidation = (
   stateSchema: FormSchema,
   validationSchema: ValidationSchema = {},
   callback: (state: FormSchema) => void,
-  resetForm: boolean
+  resetForm?: boolean
 ) => {
 
   const [state, setState] = useState<FormSchema>(stateSchema);

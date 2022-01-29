@@ -63,9 +63,15 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
       (data) => {
         if (isMounted.current) {
-          setConversationMessageList(data);
-          setIsLoading(false);
-          scrollToBottom('auto');
+          
+          if(data.length === 0) {
+            close()
+          } else {
+            setConversationMessageList(data);
+            setIsLoading(false);
+            scrollToBottom('auto');
+          }
+
         }
       },
       (error) => {
@@ -75,7 +81,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
       }
     )
 
-  }, [selectedPhone.phone_id, contact_number, isMounted, getMessageByConversation]);
+  }, [selectedPhone.phone_id, contact_number, isMounted, getMessageByConversation, close]);
 
   const refreshMessageListener = useCallback(() => {
 

@@ -5,7 +5,9 @@ const path = require("path")
 
 const api = require('./routes/api');
 const webhooks = require('./routes/webhook');
+const middleware = require('./middleware');
 const twilio = require('twilio');
+const { handleError } = require('./helpers/error');
 
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {
@@ -34,10 +36,10 @@ app.use(express.urlencoded({
 io.on('connection', (socket) => {
 });
 
+app.use('/api/', middleware.validateApiKey);
 app.post('/api/v1/message', api.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', api.getConversationListByPhone);
 app.get('/api/v1/message/phone/:id/conversation/:number', api.getConversationMessageList);
-
 app.get('/api/v1/phone', api.getPhone);
 
 app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
@@ -55,6 +57,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use((err, req, res, next) => {
+  handleError(err, res);
 });
 
 server.listen(PORT);

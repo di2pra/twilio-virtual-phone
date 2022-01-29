@@ -22,7 +22,7 @@ function ConversationList() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
-  const [conversationList, setConversationList] = useState<IConversation[] | null>(null);
+  const [conversationList, setConversationList] = useState<IConversation[]>([]);
 
   useEffect(() => {
 
@@ -32,8 +32,16 @@ function ConversationList() {
       getConversationListByPhoneId(selectedPhone.phone_id).then(
         (data) => {
           if (isMounted.current) {
+            
             setConversationList(data);
             setIsLoading(false);
+
+            if(data.length === 0) {
+              setAlertMessage({
+                type: AlertMessageType.WARNING,
+                message: 'No conversation'
+              });
+            }
           }
         },
         (error) => {
@@ -99,9 +107,9 @@ function ConversationList() {
   return (
     <Row>
       <Col>
-        <ListGroup className="mt-3" as="ol">
+        <ListGroup as="ol">
           {
-            conversationList?.map((item, index) => {
+            conversationList.map((item, index) => {
               return (
                 <ConversationItem key={index} conversation={item} selectedPhone={selectedPhone} />
               )

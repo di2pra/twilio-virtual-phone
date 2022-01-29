@@ -8,34 +8,45 @@ import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
 import { useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
+import { useIsMounted } from '../../hooks/useIsMounted';
 
+
+const stateSchema: FormSchema = {
+  to: { value: '', errorMessage: '', isInvalid: false },
+  body: { value: '', errorMessage: '', isInvalid: false }
+};
+
+const validationStateSchema = {
+  to: {
+    required: true
+  },
+  body: {
+    required: true,
+    resetAfterSubmit: true
+  }
+};
 
 function NewConversation() {
 
-
   const { selectedPhone } = useContext(PhoneContext);
   let navigate = useNavigate();
+  const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
+  const { sendMessage } = useApi();
+  const { isMounted } = useIsMounted();
 
   const [isSending, setIsSending] = useState<boolean>(false);
 
-  const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
-  const { sendMessage } = useApi();
-  const [resetForm, setResetForm] = useState<boolean>(false);
-
-  const stateSchema: FormSchema = {
-    to: { value: '', errorMessage: '', isInvalid: false },
-    body: { value: '', errorMessage: '', isInvalid: false }
-  };
-
-  const validationStateSchema = {
-    to: {
-      required: true
-    },
-    body: {
-      required: true,
-      resetAfterSubmit: true
+  const goToConversation = useCallback((number:string) => {
+    if (selectedPhone) {
+      navigate(`/${selectedPhone.phone_id}/message/${number}`, { replace: true });
     }
-  };
+  }, [navigate, selectedPhone]);
+
+  const goBackToConversationList = useCallback(() => {
+    if (selectedPhone) {
+      navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
+    }
+  }, [navigate, selectedPhone]);
 
   const processSendMessage = useCallback((state) => {
 
@@ -49,29 +60,30 @@ function NewConversation() {
       })
         .then(
           () => {
-            setIsSending(false);
-            setResetForm(prevState => !prevState)
+            if(isMounted) {
+              setIsSending(false);
+              goToConversation(state.to.value);
+            }
           },
           (error) => {
-            setIsSending(false);
-            setAlertMessage({
-              type: AlertMessageType.ERROR,
-              message: error.message
-            });
+            if(isMounted) {
+              setIsSending(false);
+              setAlertMessage({
+                type: AlertMessageType.ERROR,
+                message: error.message
+              });
+            }
           }
         )
     }
 
-  }, [selectedPhone, sendMessage, setAlertMessage]);
+  }, [selectedPhone, sendMessage, setAlertMessage, goToConversation, isMounted]);
 
+  const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processSendMessage);
 
-  const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processSendMessage, resetForm);
-
-  const goBackToConversationList = useCallback(() => {
-    if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
-    }
-  }, [navigate, selectedPhone]);
+  if(!selectedPhone) {
+    return null
+  }
 
   return (
     <Row className="justify-content-md-center">
@@ -80,9 +92,13 @@ function NewConversation() {
           <Card.Body>
             {alertDom}
             <Form onSubmit={handleOnSubmit}>
-              <Form.Group className="mb-3" controlId="toNumber">
+              <Form.Group className="mb-3" controlId="fromNumber">
+                <Form.Label>From :</Form.Label>
+                <Form.Control disabled value={selectedPhone.number} name='fromNumber' type="tel" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="to">
                 <Form.Label>To :</Form.Label>
-                <Form.Control value={state.to.value} name='to' isInvalid={state.to.isInvalid} onChange={handleOnChange} type="tel" placeholder="Enter Number : Example +34569604939" />
+                <Form.Control value={state.to.value} name='to' isInvalid={state.to.isInvalid} onChange={handleOnChange} type="tel" placeholder="Enter the Number in E.164 format : Example +33609474040" />
                 <div className="invalid-feedback">{state.to.errorMessage}</div>
               </Form.Group>
               <Form.Group className="mb-3" controlId="body">

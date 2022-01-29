@@ -1,4 +1,5 @@
 const Pool = require('pg').Pool
+const { ErrorHandler } = require('./../helpers/error')
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -18,7 +19,7 @@ const getById = async (id) => {
       return null;
     }
   } catch (error) {
-    throw error;
+    throw new ErrorHandler(500, 'Internal DB Error')
   }
 
 }
@@ -29,7 +30,7 @@ const getAll = async () => {
     const results = await pool.query('SELECT * FROM phone');
     return results.rows;
   } catch (error) {
-    throw error;
+    throw new ErrorHandler(500, 'Internal DB Error')
   }
 
 }
@@ -40,7 +41,7 @@ const create = async ({ alias, number }) => {
     const result = await pool.query('INSERT INTO phone("alias", number, created_on) VALUES ($1, $2, $3) RETURNING phone_id', [alias, number, new Date()]);
     return result.rows[0].phone_id;
   } catch (error) {
-    throw error;
+    throw new ErrorHandler(500, 'Internal DB Error')
   }
 
 }

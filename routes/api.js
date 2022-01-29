@@ -1,3 +1,4 @@
+const { ErrorHandler } = require('../helpers/error');
 const messsage = require('./../models/Message');
 const phone = require('./../models/Phone');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -17,41 +18,65 @@ const getConversationListByPhone = async (request, response) => {
 
 }
 
-const getConversationMessageList = async (request, response) => {
+const getConversationMessageList = async (request, response, next) => {
 
-  let data;
+  try {
 
-  if(request.params.id && request.params.number) {
-    data = await messsage.getMessageByConversation(request.params.id, request.params.number);
+    let data;
+
+    if(request.params.id && request.params.number) {
+      data = await messsage.getMessageByConversation(request.params.id, request.params.number);
+      response.status(200).json(data);
+    } else {
+      throw new ErrorHandler(400, 'Bad Requdest')
+    }
+    
+  } catch (error) {
+    next(error)
   }
-
-  response.status(200).json(data);
 
 }
 
-const getPhone = async (request, response) => {
+const getPhone = async (request, response, next) => {
 
-  let data;
+  try {
 
-  if(request.params.id) {
-    data = await phone.getById(request.params.id);
-  } else {
-    data = await phone.getAll();
+    let data;
+
+    if(request.params.id) {
+      data = await phone.getById(request.params.id);
+    } else {
+      data = await phone.getAll();
+    }
+  
+    response.status(200).json(data);
+    
+  } catch (error) {
+    next(error)
   }
-
-  response.status(200).json(data);
 
 }
 
-const sendMessage = async (request, response) => {
+const sendMessage = async (request, response, next) => {
 
-  const data = request.body;
+  try {
 
-  const id = await messsage.create({from_number: data.from, to_number: data.to, body: data.body});
-  const message = await messsage.getById(id);
-  client.messages.create(data);
+    const data = request.body;
 
-  response.status(201).json(message);
+    if(!data.from || !data.to || !data.body) {
+      throw new ErrorHandler(400, 'Bad Requdest')
+    }
+
+    const id = await messsage.create({from_number: data.from, to_number: data.to, body: data.body});
+    const message = await messsage.getById(id);
+  
+    response.status(201).json(message);
+
+    client.messages.create(data);
+
+  } catch (error) {
+    next(error)
+  }
 
 }
 
