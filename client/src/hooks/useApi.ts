@@ -2,6 +2,7 @@ import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
+const API_KEY_HEADER = 'X-API-KEY';
 
 export interface IPhone {
   phone_id: number;
@@ -28,7 +29,7 @@ export interface IConversation {
 
 function useApi() {
 
-  const {apiKey} = useContext(ApiKeyContext);
+  const { apiKey } = useContext(ApiKeyContext);
 
   const fetchWithAuth = useCallback((input: RequestInfo, init?: RequestInit | undefined) => {
     if (init) {
@@ -36,12 +37,12 @@ function useApi() {
       const newInit = {
         ...init,
         ...{
-          'headers': {...init.headers, ...{'X-API-KEY': apiKey}}
+          'headers': { ...init.headers, ...{ [API_KEY_HEADER]: apiKey } }
         }
       }
       return fetch(input, newInit);
     } else {
-      return fetch(input, { headers: { 'X-API-KEY': apiKey } })
+      return fetch(input, { headers: { [API_KEY_HEADER]: apiKey } })
     }
 
   }, [apiKey])
@@ -65,12 +66,57 @@ function useApi() {
 
     const data = await result.json();
 
-    return {
-      ...data,
-      created_on: new Date(data.created_on)
-    };
+    if(result.ok) {
+      return {
+        ...data,
+        created_on: new Date(data.created_on)
+      };
+    } else {
+      throw new Error(data.message);
+    }
 
   }, [fetchWithAuth]);
+
+  const createPhone = useCallback(async ({ alias, number }) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`,
+      {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          alias: alias,
+          number: number
+        })
+      }
+    );
+
+    const data = await result.json();
+
+    if(result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+
+  const checkApiKey = useCallback(async (apiKey) => {
+
+    const result = await fetch(`${API_HOSTNAME}/api/v1`, {headers: {[API_KEY_HEADER]: apiKey}});
+    const data = await result.json();
+
+    if (result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, []);
+
 
 
   const getAllPhone = useCallback(async () => {
@@ -78,12 +124,18 @@ function useApi() {
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`);
     const data = await result.json();
 
-    return data.map((item: any) => {
-      return {
-        ...item,
-        created_on: new Date(item.created_on)
-      }
-    }) as IPhone[];
+    if (result.ok) {
+
+      return data.map((item: any) => {
+        return {
+          ...item,
+          created_on: new Date(item.created_on)
+        }
+      }) as IPhone[];
+
+    } else {
+      throw new Error(data.message);
+    }
 
   }, [fetchWithAuth]);
 
@@ -93,12 +145,16 @@ function useApi() {
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation/${contact_number}`);
     const data = await result.json();
 
-    return data.map((item: any) => {
-      return {
-        ...item,
-        created_on: new Date(item.created_on)
-      }
-    }) as IMessage[];
+    if (result.ok) {
+      return data.map((item: any) => {
+        return {
+          ...item,
+          created_on: new Date(item.created_on)
+        }
+      }) as IMessage[];
+    } else {
+      throw new Error(data.message);
+    }
 
   }, [fetchWithAuth]);
 
@@ -108,12 +164,16 @@ function useApi() {
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation`);
     const data = await result.json();
 
-    return data.map((item: any) => {
-      return {
-        ...item,
-        created_on: new Date(item.created_on)
-      }
-    }) as IConversation[];
+    if (result.ok) {
+      return data.map((item: any) => {
+        return {
+          ...item,
+          created_on: new Date(item.created_on)
+        }
+      }) as IConversation[];
+    } else {
+      throw new Error(data.message);
+    }
 
   }, [fetchWithAuth]);
 
@@ -122,7 +182,9 @@ function useApi() {
     sendMessage,
     getAllPhone,
     getMessageByConversation,
-    getConversationListByPhoneId
+    getConversationListByPhoneId,
+    checkApiKey,
+    createPhone
   };
 }
 

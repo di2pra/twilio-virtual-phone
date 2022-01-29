@@ -1,4 +1,4 @@
-import { createContext, FC, useEffect, useState } from "react";
+import { createContext, FC, useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
@@ -7,7 +7,8 @@ import useApi, { IPhone } from "../hooks/useApi";
 export const PhoneContext = createContext<{
   phoneList: IPhone[];
   selectedPhone: IPhone | null;
-  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhone | null>> | null
+  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhone | null>> | null,
+  setPhoneList?: React.Dispatch<React.SetStateAction<IPhone[]>>
 }>({
   phoneList: [],
   selectedPhone: null,
@@ -24,7 +25,7 @@ const PhoneProvider: FC = ({ children }) => {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
-  useEffect(() => {
+  const loadPhoneList = useCallback(() => {
 
     setIsLoading(true);
 
@@ -43,7 +44,12 @@ const PhoneProvider: FC = ({ children }) => {
         setIsLoading(false);
       }
     )
+
   }, [getAllPhone, setAlertMessage]);
+
+  useEffect(() => {
+    loadPhoneList();
+  }, [loadPhoneList]);
 
   if (isLoading) {
     return <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
@@ -60,7 +66,8 @@ const PhoneProvider: FC = ({ children }) => {
   return (<PhoneContext.Provider value={{
     phoneList: phoneList,
     selectedPhone: selectedPhone,
-    setSelectedPhone: setSelectedPhone
+    setSelectedPhone: setSelectedPhone,
+    setPhoneList: setPhoneList
   }}>
     {children}
   </PhoneContext.Provider>);

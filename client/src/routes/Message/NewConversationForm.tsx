@@ -21,12 +21,11 @@ const validationStateSchema = {
     required: true
   },
   body: {
-    required: true,
-    resetAfterSubmit: true
+    required: true
   }
 };
 
-function NewConversation() {
+function NewConversationForm() {
 
   const { selectedPhone } = useContext(PhoneContext);
   let navigate = useNavigate();
@@ -38,13 +37,13 @@ function NewConversation() {
 
   const goToConversation = useCallback((number:string) => {
     if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message/${number}`, { replace: true });
+      navigate(`/${selectedPhone.phone_id}/message/${number}`, { replace: false });
     }
   }, [navigate, selectedPhone]);
 
   const goBackToConversationList = useCallback(() => {
     if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
+      navigate(`/${selectedPhone.phone_id}/message`, { replace: false });
     }
   }, [navigate, selectedPhone]);
 
@@ -116,4 +115,4 @@ function NewConversation() {
   )
 }
 
-export default NewConversation;
+export default NewConversationForm;

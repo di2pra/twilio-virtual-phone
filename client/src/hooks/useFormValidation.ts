@@ -65,7 +65,7 @@ const useFormValidation = (
           ...newState,
           [key]: {
             value: stateValue,
-            errorMessage: 'Ce champs est obligatoire.',
+            errorMessage: 'This field is mandatory.',
             isInvalid: true
           }
         } as FormSchema

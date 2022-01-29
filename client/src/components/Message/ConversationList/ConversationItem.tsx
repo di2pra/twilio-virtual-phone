@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useNavigate } from "react-router-dom";
 import { IConversation, IPhone } from "../../../hooks/useApi";
-
+import { IoIosArrowForward } from 'react-icons/io';
 
 type Props = {
   conversation: IConversation
@@ -14,12 +14,12 @@ function ConversationItem({ conversation, selectedPhone }: Props) {
   let navigate = useNavigate();
 
   const navigateToConversation = useCallback(() => {
-    navigate(`/${selectedPhone.phone_id}/message/${conversation.contact_number}`, { replace: true });
+    navigate(`/${selectedPhone.phone_id}/message/${conversation.contact_number}`, { replace: false });
   }, [navigate, selectedPhone.phone_id, conversation.contact_number]);
 
   return (
     <ListGroup.Item
-      className="d-flex justify-content-between align-items-start"
+      className="d-flex justify-content-between align-items-center"
       action onClick={() => { navigateToConversation() }}
     >
       <div className="ms-2 me-auto">
@@ -27,6 +27,7 @@ function ConversationItem({ conversation, selectedPhone }: Props) {
         <p className="my-1">{conversation.body}</p>
         <p className="m-0 fw-light text-muted" style={{fontSize: '0.8rem'}}>{conversation.created_on.toLocaleDateString()} à {conversation.created_on.toLocaleTimeString()}</p>
       </div>
+      <IoIosArrowForward />
     </ListGroup.Item>
   )
 }

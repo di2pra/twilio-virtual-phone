@@ -7,7 +7,7 @@ const validateApiKey = (request, response, next) => {
   if(requestApiKey === process.env.API_KEY) {
     next();
   } else {
-    throw new ErrorHandler(401, 'Unauthorized !!')
+    throw new ErrorHandler(401, 'Unauthorized !')
   }
 
 }

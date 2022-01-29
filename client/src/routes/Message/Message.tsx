@@ -13,7 +13,7 @@ function Message() {
 
   const goToNewConversation = useCallback(() => {
     if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message/new`, { replace: true });
+      navigate(`/${selectedPhone.phone_id}/message/new`, { replace: false });
     }
   }, [navigate, selectedPhone]);
 

@@ -15,7 +15,7 @@ function Chat() {
 
   const goToConversationList = useCallback(() => {
     if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
+      navigate(`/${selectedPhone.phone_id}/message`, { replace: false });
     }
   }, [selectedPhone, navigate]);
 

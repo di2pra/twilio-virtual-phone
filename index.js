@@ -32,15 +32,18 @@ app.use(express.urlencoded({
   extended: false
 }));
 
-// établissement de la connexion
 io.on('connection', (socket) => {
 });
 
 app.use('/api/', middleware.validateApiKey);
+app.get('/api/v1', (req, res) => {
+  res.status(200).json({message: `Twilio Virtual Phonoe API`});
+});
 app.post('/api/v1/message', api.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', api.getConversationListByPhone);
 app.get('/api/v1/message/phone/:id/conversation/:number', api.getConversationMessageList);
 app.get('/api/v1/phone', api.getPhone);
+app.post('/api/v1/phone', api.createPhone);
 
 app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
 app.post('/webhook/v1/message', webhooks.createMessage, (req, res) => {

@@ -6,15 +6,21 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 
-const getConversationListByPhone = async (request, response) => {
+const getConversationListByPhone = async (request, response, next) => {
 
-  let data;
+  try {
 
-  if(request.params.id) {
-    data = await messsage.getConversationListByPhoneId(request.params.id);
+    let data;
+
+    if (request.params.id) {
+      data = await messsage.getConversationListByPhoneId(request.params.id);
+    }
+
+    response.status(200).json(data);
+
+  } catch (error) {
+    next(error)
   }
-
-  response.status(200).json(data);
 
 }
 
@@ -24,13 +30,13 @@ const getConversationMessageList = async (request, response, next) => {
 
     let data;
 
-    if(request.params.id && request.params.number) {
+    if (request.params.id && request.params.number) {
       data = await messsage.getMessageByConversation(request.params.id, request.params.number);
       response.status(200).json(data);
     } else {
-      throw new ErrorHandler(400, 'Bad Requdest')
+      throw new ErrorHandler(400, 'Bad Request')
     }
-    
+
   } catch (error) {
     next(error)
   }
@@ -43,14 +49,14 @@ const getPhone = async (request, response, next) => {
 
     let data;
 
-    if(request.params.id) {
+    if (request.params.id) {
       data = await phone.getById(request.params.id);
     } else {
       data = await phone.getAll();
     }
-  
+
     response.status(200).json(data);
-    
+
   } catch (error) {
     next(error)
   }
@@ -60,19 +66,38 @@ const getPhone = async (request, response, next) => {
 const sendMessage = async (request, response, next) => {
 
   try {
-
+    
     const data = request.body;
 
-    if(!data.from || !data.to || !data.body) {
-      throw new ErrorHandler(400, 'Bad Requdest')
+    if (!data.from || !data.to || !data.body) {
+      throw new ErrorHandler(400, 'Bad Request')
     }
 
-    const id = await messsage.create({from_number: data.from, to_number: data.to, body: data.body});
+    await client.messages.create(data);
+    const id = await messsage.create({ from_number: data.from, to_number: data.to, body: data.body });
     const message = await messsage.getById(id);
-  
     response.status(201).json(message);
 
-    client.messages.create(data);
+  } catch (error) {
+    next(error);
+  }
+
+}
+
+const createPhone = async (request, response, next) => {
+
+  try {
+    
+    const data = request.body;
+
+    if (!data.alias || !data.number) {
+      throw new ErrorHandler(400, 'Bad Request')
+    }
+
+    const id = await phone.create({ alias: data.alias, number: data.number });
+    const result = await phone.getAll();
+
+    response.status(201).json(result);
 
   } catch (error) {
     next(error)
@@ -84,6 +109,7 @@ const sendMessage = async (request, response, next) => {
 module.exports = {
   getPhone,
   sendMessage,
+  createPhone,
   getConversationListByPhone,
   getConversationMessageList
 }

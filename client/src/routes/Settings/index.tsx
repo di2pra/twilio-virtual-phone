@@ -1,17 +1,23 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
-import { PhoneContext } from "../providers/PhoneProvider";
+import { useNavigate } from "react-router-dom";
+import { PhoneContext } from "../../providers/PhoneProvider";
 
 function Settings() {
 
   const { phoneList } = useContext(PhoneContext);
+  let navigate = useNavigate();
+
+  const goToAddNewPhone = useCallback(() => {
+    navigate(`/settings/phone/new`, { replace: false });
+  }, [navigate]);
 
   return (
     <Row className="justify-content-md-center">
       <Col md={10}>
         <Row>
           <Col>
-            <Button className="mb-3" type='button' variant='info'>Add New Phone</Button>
+            <Button className="mb-3" type='button' variant='info' onClick={() => {goToAddNewPhone()}}>Add New Phone</Button>
           </Col>
         </Row>
         <Row>
@@ -25,7 +31,8 @@ function Settings() {
                     <p className="fw-bold m-0">{item.alias}</p>
                     <p className="my-1">{item.number}</p>
                   </div>
-                  <Button type='button' variant='warning'>Edit</Button>
+                  <Button className="mx-2" type='button' variant='warning'>Edit</Button>
+                  <Button className="mx-2" type='button' variant='danger'>Delete</Button>
                 </ListGroup.Item>)
               })}
             </ListGroup>
@@ -36,7 +43,7 @@ function Settings() {
             <Alert variant="info">
               <Alert.Heading>Webhook</Alert.Heading>
               <p>
-                Set this url as the callback url for the added phone numbers in the Twilio Console.<br />
+                Set the url below as the callback url for the added phone numbers in the Twilio Console.<br />
                 <code>{`${window.location.origin}/webhook/v1/message`}</code>
               </p>
             </Alert>

@@ -10,7 +10,7 @@ CREATE TABLE message (
 CREATE TABLE phone (
 	phone_id serial PRIMARY KEY,
 	alias VARCHAR ( 255 ) NOT NULL,
-	number VARCHAR ( 50 ) NOT NULL,
+	number VARCHAR ( 50 ) NOT NULL UNIQUE,
 	created_on TIMESTAMP NOT NULL
 );
 

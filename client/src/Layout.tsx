@@ -15,7 +15,7 @@ function Layout() {
 
   useEffect(() => {
 
-    if (setSelectedPhone) {
+    if (setSelectedPhone && phoneList.length > 0) {
 
       const localStoragePhoneId = parseInt(localStorage.getItem(LOCAL_STORE_SELECTED_PHONE_ID_KEY) || '');
       const localStoragePhone = phoneList.filter((item) => item.phone_id === localStoragePhoneId)[0];
@@ -29,7 +29,7 @@ function Layout() {
 
         if (prevState === null) {
           if (!paramPhone) {
-            if(localStoragePhone) {
+            if (localStoragePhone) {
               newValue = localStoragePhone
             } else {
               newValue = phoneList[0]

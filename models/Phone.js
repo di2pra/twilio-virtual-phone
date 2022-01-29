@@ -41,6 +41,7 @@ const create = async ({ alias, number }) => {
     const result = await pool.query('INSERT INTO phone("alias", number, created_on) VALUES ($1, $2, $3) RETURNING phone_id', [alias, number, new Date()]);
     return result.rows[0].phone_id;
   } catch (error) {
+    console.log(error);
     throw new ErrorHandler(500, 'Internal DB Error')
   }
 

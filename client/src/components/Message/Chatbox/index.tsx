@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import CloseButton from 'react-bootstrap/CloseButton';
 import Card from 'react-bootstrap/Card';
 import useApi, { IPhone, IMessage } from '../../../hooks/useApi';
-import Message from './Message';
+import MessageItem from './MessageItem';
 import Form from 'react-bootstrap/Form';
 import useFormValidation, { FormSchema } from '../../../hooks/useFormValidation';
 import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
@@ -24,8 +24,7 @@ const stateSchema: FormSchema = {
 
 const validationStateSchema = {
   body: {
-    required: true,
-    resetAfterSubmit: true
+    required: true
   }
 };
 
@@ -113,6 +112,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
   const processSendMessage = useCallback((state) => {
 
     setIsSending(true);
+    setAlertMessage(null);
 
     sendMessage({
       from: selectedPhone.number,
@@ -147,7 +147,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
       <div className='chat-box' ref={chatBoxRef}>
         {
           conversationMessageList?.map((item, index) => {
-            return <Message key={index} selectedPhone={selectedPhone} message={item} />
+            return <MessageItem key={index} selectedPhone={selectedPhone} message={item} />
           })
         }
       </div>

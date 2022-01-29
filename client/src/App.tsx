@@ -5,8 +5,9 @@ import Layout from "./Layout";
 import NotFound from "./routes/NotFound";
 import Voice from "./routes/Voice";
 import Message from "./routes/Message/Message";
-import NewConversation from "./routes/Message/NewConversation";
+import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
+import NewPhoneForm from "./routes/Settings/NewPhoneForm";
 
 function App() {
 
@@ -16,11 +17,16 @@ function App() {
         <Route index element={<Home />} />
         <Route path=":phone_id">
           <Route path="message" element={<Message />} />
-          <Route path="message/new" element={<NewConversation />} />
+          <Route path="message/new" element={<NewConversationForm />} />
           <Route path="message/:contact_number" element={<Chat />} />
           <Route path="voice" element={<Voice />} />
         </Route>
-        <Route path="settings" element={<Settings />} />
+        <Route path="settings">
+          <Route index element={<Settings />} />
+          <Route path="phone">
+            <Route path="new" element={<NewPhoneForm />} />
+          </Route>
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

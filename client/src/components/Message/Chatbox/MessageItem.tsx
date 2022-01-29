@@ -5,7 +5,7 @@ type Props = {
   message: IMessage
 }
 
-function Message({selectedPhone, message}: Props) {
+function MessageItem({selectedPhone, message}: Props) {
 
   return (
     <div className={'chat-msg-container' + (selectedPhone.phone_id === message.to_phone_id ? '' : ' right')}>
@@ -17,4 +17,4 @@ function Message({selectedPhone, message}: Props) {
   )
 }
 
-export default Message;
+export default MessageItem;
