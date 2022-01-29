@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Chatbox from "../../components/Message/Chatbox";
 import { PhoneContext } from "../../providers/PhoneProvider";
 
-function ChatRoute() {
+function Chat() {
 
   const { selectedPhone } = useContext(PhoneContext);
 
@@ -42,4 +42,4 @@ function ChatRoute() {
 
 }
 
-export default ChatRoute;
+export default Chat;

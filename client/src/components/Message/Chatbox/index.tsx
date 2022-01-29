@@ -18,18 +18,18 @@ type Props = {
   close: () => void
 }
 
-function Chatbox({ selectedPhone, contact_number, close }: Props) {
+const stateSchema: FormSchema = {
+  body: { value: '', errorMessage: '', isInvalid: false }
+};
 
-  const stateSchema: FormSchema = {
-    body: { value: '', errorMessage: '', isInvalid: false }
-  };
-  
-  const validationStateSchema = {
-    body: {
-      required: true,
-      resetAfterSubmit: true
-    }
-  };
+const validationStateSchema = {
+  body: {
+    required: true,
+    resetAfterSubmit: true
+  }
+};
+
+function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const { isMounted } = useIsMounted();
@@ -77,10 +77,6 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   }, [selectedPhone.phone_id, contact_number, isMounted, getMessageByConversation]);
 
-  
-
-  
-
   const refreshMessageListener = useCallback(() => {
 
     getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
@@ -122,7 +118,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
           setIsSending(false);
           setConversationMessageList(prevState => [...prevState as IMessage[], data]);
           scrollToBottom('smooth');
-          setResetForm(prevState => !prevState);
+          setResetForm(prev => !prev);
         },
         (error) => {
           setIsSending(false);
@@ -131,9 +127,10 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
             message: error.message
           });
         }
-      )
+      );
+      
 
-  }, [setAlertMessage, sendMessage, selectedPhone, contact_number, setResetForm]);
+  }, [setAlertMessage, sendMessage, selectedPhone, contact_number]);
 
   const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processSendMessage, resetForm);
 

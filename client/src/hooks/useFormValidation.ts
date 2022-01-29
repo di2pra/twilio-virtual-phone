@@ -44,7 +44,7 @@ const useFormValidation = (
 
   useEffect(() => {
     setState(stateSchema);
-  }, [resetForm])
+  }, [resetForm, stateSchema]);
 
   // Used to disable submit button if there's an error in state
   // or the required field in state has no value.

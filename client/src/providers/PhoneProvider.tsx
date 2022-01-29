@@ -1,7 +1,6 @@
 import { createContext, FC, useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
-import { useParams } from "react-router-dom";
-import Loading from "../components/Loading";
+import Container from "react-bootstrap/Container";
+import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi, { IPhone } from "../hooks/useApi";
 
@@ -23,7 +22,7 @@ const PhoneProvider: FC = ({ children }) => {
   const [phoneList, setPhoneList] = useState<IPhone[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<IPhone | null>(null);
 
-  const { setAlertMessage, alertDom } = useAlertCard({dismissible: false});
+  const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
   useEffect(() => {
 
@@ -47,7 +46,9 @@ const PhoneProvider: FC = ({ children }) => {
   }, [getAllPhone, setAlertMessage]);
 
   if (isLoading) {
-    return <Loading />
+    return <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+      <Spinner animation="border" variant="danger" />
+    </div>
   }
 
   if (alertDom) {
