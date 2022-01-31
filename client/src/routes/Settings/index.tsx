@@ -37,7 +37,7 @@ function Settings() {
                     <p className="my-1">{item.number}</p>
                   </div>
                   <Button className="mx-2" type='button' variant='warning' onClick={() => {goToEditPhone(item)}}>Edit</Button>
-                  <Button className="mx-2" type='button' variant='danger'>Delete</Button>
+                  <Button className="mx-2" type='button' variant='danger' disabled>Delete</Button>
                 </ListGroup.Item>)
               })}
             </ListGroup>

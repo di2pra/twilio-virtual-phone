@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
 
 app.use('/api/', middleware.validateApiKey);
 app.get('/api/v1', (req, res) => {
-  res.status(200).json({message: `Twilio Virtual Phonoe API`});
+  res.status(200).json({message: `Twilio Virtual Phone API`});
 });
 app.post('/api/v1/message', api.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', api.getConversationListByPhone);
