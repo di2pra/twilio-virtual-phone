@@ -42,8 +42,9 @@ app.get('/api/v1', (req, res) => {
 app.post('/api/v1/message', api.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', api.getConversationListByPhone);
 app.get('/api/v1/message/phone/:id/conversation/:number', api.getConversationMessageList);
-app.get('/api/v1/phone', api.getPhone);
+app.get('/api/v1/phone/:id?', api.getPhone);
 app.post('/api/v1/phone', api.createPhone);
+app.put('/api/v1/phone/:id', api.updatePhone);
 
 app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
 app.post('/webhook/v1/message', webhooks.createMessage, (req, res) => {

@@ -5,7 +5,6 @@ import Spinner from "react-bootstrap/Spinner";
 import ListGroup from "react-bootstrap/ListGroup";
 import useAlertCard, { AlertMessageType } from "../../../hooks/useAlertCard";
 import useApi, { IConversation } from "../../../hooks/useApi";
-import { useIsMounted } from "../../../hooks/useIsMounted";
 import { PhoneContext } from "../../../providers/PhoneProvider";
 import { SocketContext } from "../../../providers/SocketProvider";
 import ConversationItem from "./ConversationItem";
@@ -16,8 +15,6 @@ function ConversationList() {
   const { selectedPhone } = useContext(PhoneContext);
   const { socket } = useContext(SocketContext);
 
-  const { isMounted } = useIsMounted();
-
   const { getConversationListByPhoneId } = useApi();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -26,17 +23,19 @@ function ConversationList() {
 
   useEffect(() => {
 
+    let isComponentMounted = true;
+
     if (selectedPhone) {
       setIsLoading(true);
 
       getConversationListByPhoneId(selectedPhone.phone_id).then(
         (data) => {
-          if (isMounted.current) {
-            
+          if (isComponentMounted) {
+
             setConversationList(data);
             setIsLoading(false);
 
-            if(data.length === 0) {
+            if (data.length === 0) {
               setAlertMessage({
                 type: AlertMessageType.WARNING,
                 message: 'No conversation'
@@ -45,7 +44,7 @@ function ConversationList() {
           }
         },
         (error) => {
-          if (isMounted.current) {
+          if (isComponentMounted) {
             setAlertMessage({
               type: AlertMessageType.ERROR,
               message: error.message
@@ -56,21 +55,23 @@ function ConversationList() {
       )
     }
 
-  }, [selectedPhone, getConversationListByPhoneId, setAlertMessage, isMounted]);
+    return () => {
+      isComponentMounted = false;
+    }
+
+  }, [selectedPhone, getConversationListByPhoneId, setAlertMessage]);
 
   const refreshMessageListener = useCallback(() => {
     if (selectedPhone) {
       getConversationListByPhoneId(selectedPhone.phone_id).then(
         (data) => {
-          if (isMounted.current) {
-            setConversationList(data);
-            var audio = new Audio('/notification.mp3');
-            audio.play();
-          }
+          setConversationList(data);
+          var audio = new Audio('/notification.mp3');
+          audio.play();
         }
       )
     }
-  }, [selectedPhone, getConversationListByPhoneId, isMounted])
+  }, [selectedPhone, getConversationListByPhoneId])
 
   useEffect(() => {
     if (socket) {

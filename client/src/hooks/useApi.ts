@@ -104,6 +104,32 @@ function useApi() {
   }, [fetchWithAuth]);
 
 
+  const updatePhone = useCallback(async ({ id, alias }) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          alias: alias
+        })
+      }
+    );
+
+    const data = await result.json();
+
+    if(result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+
   const checkApiKey = useCallback(async (apiKey) => {
 
     const result = await fetch(`${API_HOSTNAME}/api/v1`, {headers: {[API_KEY_HEADER]: apiKey}});
@@ -132,6 +158,21 @@ function useApi() {
           created_on: new Date(item.created_on)
         }
       }) as IPhone[];
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const getPhoneById = useCallback(async (phone_id : number) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${phone_id}`);
+    const data = await result.json();
+
+    if (result.ok) {
+
+      return data as IPhone;
 
     } else {
       throw new Error(data.message);
@@ -184,7 +225,9 @@ function useApi() {
     getMessageByConversation,
     getConversationListByPhoneId,
     checkApiKey,
-    createPhone
+    createPhone,
+    updatePhone,
+    getPhoneById
   };
 }
 

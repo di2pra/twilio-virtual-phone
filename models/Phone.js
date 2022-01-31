@@ -27,7 +27,7 @@ const getById = async (id) => {
 const getAll = async () => {
 
   try {
-    const results = await pool.query('SELECT * FROM phone');
+    const results = await pool.query('SELECT * FROM phone ORDER BY phone_id DESC');
     return results.rows;
   } catch (error) {
     throw new ErrorHandler(500, 'Internal DB Error')
@@ -41,14 +41,25 @@ const create = async ({ alias, number }) => {
     const result = await pool.query('INSERT INTO phone("alias", number, created_on) VALUES ($1, $2, $3) RETURNING phone_id', [alias, number, new Date()]);
     return result.rows[0].phone_id;
   } catch (error) {
-    console.log(error);
     throw new ErrorHandler(500, 'Internal DB Error')
   }
 
 }
 
+const updateById = async ({ id, alias }) => {
+
+  try {
+    const result = await pool.query('UPDATE phone SET "alias" = $1 WHERE phone_id = $2 RETURNING phone_id', [alias, id]);
+    return result.rows[0].phone_id;
+  } catch (error) {
+    throw new ErrorHandler(500, 'Internal DB Error')
+  }
+  
+}
+
 module.exports = {
   create,
   getById,
-  getAll
+  getAll,
+  updateById
 }
