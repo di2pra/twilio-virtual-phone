@@ -10,7 +10,6 @@ import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
 import Button from 'react-bootstrap/Button';
 import { Spinner } from 'react-bootstrap';
 import { SocketContext } from '../../../providers/SocketProvider';
-import { useIsMounted } from '../../../hooks/useIsMounted';
 
 type Props = {
   selectedPhone: IPhone,
@@ -31,7 +30,6 @@ const validationStateSchema = {
 function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
-  const { isMounted } = useIsMounted();
 
   const { socket } = useContext(SocketContext);
 
@@ -56,12 +54,14 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   useEffect(() => {
 
+    let isComponentMounted = true;
+
     setIsLoading(true);
     setConversationMessageList([]);
 
     getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
       (data) => {
-        if (isMounted.current) {
+        if (isComponentMounted) {
           
           if(data.length === 0) {
             close()
@@ -74,26 +74,28 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
         }
       },
       (error) => {
-        if (isMounted.current) {
+        if (isComponentMounted) {
           setIsLoading(false);
         }
       }
     )
 
-  }, [selectedPhone.phone_id, contact_number, isMounted, getMessageByConversation, close]);
+    return () => {
+      isComponentMounted = false;
+    }
+
+  }, [selectedPhone.phone_id, contact_number, getMessageByConversation, close]);
 
   const refreshMessageListener = useCallback(() => {
 
     getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
       (data) => {
-        if(isMounted.current) {
-          setConversationMessageList(data);
-          scrollToBottom('smooth');
-        }
+        setConversationMessageList(data);
+        scrollToBottom('smooth');
       }
     )
 
-  }, [getMessageByConversation, isMounted, selectedPhone.phone_id, contact_number]);
+  }, [getMessageByConversation, selectedPhone.phone_id, contact_number]);
 
   useEffect(() => {
 
@@ -111,6 +113,8 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   const processSendMessage = useCallback((state) => {
 
+    let isComponentMounted = true;
+
     setIsSending(true);
     setAlertMessage(null);
 
@@ -121,20 +125,27 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     })
       .then(
         (data) => {
-          setIsSending(false);
-          setConversationMessageList(prevState => [...prevState as IMessage[], data]);
-          scrollToBottom('smooth');
-          setResetForm(prev => !prev);
+          if(isComponentMounted) {
+            setIsSending(false);
+            setConversationMessageList(prevState => [...prevState as IMessage[], data]);
+            scrollToBottom('smooth');
+            setResetForm(prev => !prev);
+          }
         },
         (error) => {
-          setIsSending(false);
-          setAlertMessage({
-            type: AlertMessageType.ERROR,
-            message: error.message
-          });
+          if(isComponentMounted) {
+            setIsSending(false);
+            setAlertMessage({
+              type: AlertMessageType.ERROR,
+              message: error.message
+            });
+          }
         }
       );
       
+    return () => {
+      isComponentMounted = false;
+    }
 
   }, [setAlertMessage, sendMessage, selectedPhone, contact_number]);
 

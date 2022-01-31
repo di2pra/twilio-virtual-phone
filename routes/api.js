@@ -105,11 +105,33 @@ const createPhone = async (request, response, next) => {
 
 }
 
+const updatePhone = async (request, response, next) => {
+
+  try {
+    
+    const data = request.body;
+
+    if (!data.alias || !request.params.id) {
+      throw new ErrorHandler(400, 'Bad Request')
+    }
+
+    const id = await phone.updateById({ alias: data.alias, id: request.params.id });
+    const result = await phone.getAll();
+
+    response.status(201).json(result);
+
+  } catch (error) {
+    next(error)
+  }
+
+}
+
 
 module.exports = {
   getPhone,
   sendMessage,
   createPhone,
   getConversationListByPhone,
-  getConversationMessageList
+  getConversationMessageList,
+  updatePhone
 }

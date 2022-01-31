@@ -8,6 +8,7 @@ import Message from "./routes/Message/Message";
 import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
 import NewPhoneForm from "./routes/Settings/NewPhoneForm";
+import EditPhoneForm from "./routes/Settings/EditPhoneForm";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route index element={<Settings />} />
           <Route path="phone">
             <Route path="new" element={<NewPhoneForm />} />
+            <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

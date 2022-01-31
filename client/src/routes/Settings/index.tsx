@@ -1,6 +1,7 @@
 import { useCallback, useContext } from "react";
 import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { IPhone } from "../../hooks/useApi";
 import { PhoneContext } from "../../providers/PhoneProvider";
 
 function Settings() {
@@ -10,6 +11,10 @@ function Settings() {
 
   const goToAddNewPhone = useCallback(() => {
     navigate(`/settings/phone/new`, { replace: false });
+  }, [navigate]);
+
+  const goToEditPhone = useCallback((phone: IPhone) => {
+    navigate(`/settings/phone/${phone.phone_id}/edit`, { replace: false, state: {selectedPhone: phone} });
   }, [navigate]);
 
   return (
@@ -31,7 +36,7 @@ function Settings() {
                     <p className="fw-bold m-0">{item.alias}</p>
                     <p className="my-1">{item.number}</p>
                   </div>
-                  <Button className="mx-2" type='button' variant='warning'>Edit</Button>
+                  <Button className="mx-2" type='button' variant='warning' onClick={() => {goToEditPhone(item)}}>Edit</Button>
                   <Button className="mx-2" type='button' variant='danger'>Delete</Button>
                 </ListGroup.Item>)
               })}
