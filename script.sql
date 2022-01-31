@@ -26,8 +26,3 @@ CREATE VIEW message_phone AS
     FROM "message" as msg
 	LEFT JOIN phone as from_phone ON (msg.from_number = from_phone.number)
 	LEFT JOIN phone as to_phone ON (msg.to_number = to_phone.number);
-
-
-/*INSERT INTO public.phone("alias", number, created_on) VALUES ('My French Number', '+33644645117', now());*/
-
-/*INSERT INTO public.phone("alias", number, created_on) VALUES ('My 2nd French Number', '+33644648641', now());*/
