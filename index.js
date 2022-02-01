@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express();
-const cors = require('cors');
 const path = require("path")
 
 const api = require('./routes/api');
@@ -19,12 +18,15 @@ const io = require('socket.io')(server, {
 
 const PORT = process.env.PORT || 80
 
-var corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200
+if(process.env.NODE_ENV === 'dev') {
+  const cors = require('cors');
+  var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200
+  }
+  
+  app.use(cors(corsOptions));
 }
-
-app.use(cors(corsOptions));
 
 app.use(express.json());
 
