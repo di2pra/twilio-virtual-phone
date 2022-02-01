@@ -1,2 +1,2 @@
-heroku pg:psql < scripts/db_init.sql
-echo "Execute migration script here"
+psql --dbname $DATABASE_URL < scripts/db_init.sql
+echo "Migration script executed"
