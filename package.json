@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon -r dotenv/config ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "cd client && npm install && npm run build && mv build/ ../public"
+    "heroku-postbuild": "cd client && npm install && npm run build && mv build/ ../public && cd ../ && rm -rf client"
   },
   "author": "",
   "license": "ISC",

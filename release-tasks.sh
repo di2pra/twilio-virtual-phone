@@ -1,2 +1,1 @@
-rm -rf client
-echo "Front End Source Code is removed"
+echo "Execute migration script here"
