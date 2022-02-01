@@ -4,7 +4,7 @@
 
 ## How to use ?
 
-Rerequisite :
+Prerequisite :
 1. SQL Database (ex. PostgreSQL)
 2. Cloud Hosting Service (ex. Heroku)
 
