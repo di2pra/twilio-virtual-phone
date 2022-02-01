@@ -1,1 +1,2 @@
-echo "Execute Migration Script here"
+rm -R ./client
+echo "Front End Source Code is removed"
