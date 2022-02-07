@@ -6,7 +6,7 @@ const api = require('./routes/api');
 const webhooks = require('./routes/webhook');
 const middleware = require('./middleware');
 const twilio = require('twilio');
-const { handleError } = require('./helpers/error');
+const { handleError } = require('./helpers');
 
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {
@@ -47,6 +47,8 @@ app.get('/api/v1/message/phone/:id/conversation/:number', api.getConversationMes
 app.get('/api/v1/phone/:id?', api.getPhone);
 app.post('/api/v1/phone', api.createPhone);
 app.put('/api/v1/phone/:id', api.updatePhone);
+app.get('/api/v1/voice/generateToken', api.tokenGenerator);
+app.post('/voice', api.voiceResponse);
 
 app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
 app.post('/webhook/v1/message', webhooks.createMessage, (req, res) => {

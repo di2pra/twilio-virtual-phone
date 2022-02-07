@@ -1,4 +1,4 @@
-const { ErrorHandler } = require("./helpers/error");
+const { ErrorHandler } = require("./helpers");
 
 const validateApiKey = (request, response, next) => {
 

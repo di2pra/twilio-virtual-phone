@@ -1,5 +1,5 @@
 const Pool = require('pg').Pool
-const { ErrorHandler } = require('./../helpers/error')
+const { ErrorHandler } = require('./../helpers')
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

@@ -22,7 +22,7 @@ function Message() {
       <Col md={10}>
         <Row>
           <Col>
-            <Button className="mb-3" type='button' variant='info' onClick={() => { goToNewConversation() }}>Start new conversation</Button>
+            <Button className="mb-3" type='button' variant='primary' onClick={() => { goToNewConversation() }}>Start new conversation</Button>
           </Col>
         </Row>
         <ConversationList />

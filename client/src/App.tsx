@@ -9,6 +9,7 @@ import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
 import NewPhoneForm from "./routes/Settings/NewPhoneForm";
 import EditPhoneForm from "./routes/Settings/EditPhoneForm";
+import "./App.scss";
 
 function App() {
 

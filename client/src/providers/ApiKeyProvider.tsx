@@ -23,19 +23,9 @@ const validationStateSchema = {
 const ApiKeyProvider: FC = ({ children }) => {
 
   const {checkApiKey} = useApi();
-  const [apiKey, setApiKey] = useState<string>('');
+  const [apiKey, setApiKey] = useState<string>(sessionStorage.getItem('apiKey') || '');
   const [isChecking, setIsChecking] = useState<boolean>(false);
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: true });
-
-  useEffect(() => {
-
-    const data = sessionStorage.getItem('apiKey');
-
-    if (data) {
-      setApiKey(data);
-    }
-
-  }, []);
 
   const updateApiKey = useCallback((state: FormSchema) => {
 
