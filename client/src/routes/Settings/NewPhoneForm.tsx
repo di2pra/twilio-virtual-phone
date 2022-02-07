@@ -1,5 +1,4 @@
 import { useCallback, useContext, useState } from 'react';
-import useFormValidation, { FormSchema } from '../../hooks/useFormValidation';
 import useApi from '../../hooks/useApi';
 import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
 import Form from 'react-bootstrap/Form';
@@ -9,6 +8,7 @@ import { PhoneContext } from '../../providers/PhoneProvider';
 import { useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
 import { useIsMounted } from '../../hooks/useIsMounted';
+import useForm, { FormSchema } from '../../hooks/useForm';
 
 
 const stateSchema: FormSchema = {
@@ -31,15 +31,18 @@ function NewPhoneForm() {
   let navigate = useNavigate();
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: true });
   const { createPhone } = useApi();
-  const { isMounted } = useIsMounted();
 
   const [isAdding, setIsAdding] = useState<boolean>(false);
+
+  const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
   const goBackToSettings = useCallback(() => {
     navigate(`/settings`, { replace: false });
   }, [navigate]);
 
   const processCreatePhone = useCallback((state) => {
+
+    let isMounted = true;
 
     setIsAdding(true);
     setAlertMessage(null);
@@ -69,9 +72,13 @@ function NewPhoneForm() {
         }
       )
 
-  }, [createPhone, setAlertMessage, isMounted]);
+      return () => {
+        isMounted = false;
+      }
 
-  const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processCreatePhone);
+  }, [createPhone, setAlertMessage, goBackToSettings, setPhoneList]);
+
+  
 
   return (
     <Row className="justify-content-md-center">
@@ -79,7 +86,7 @@ function NewPhoneForm() {
         <Card>
           <Card.Body>
             {alertDom}
-            <Form onSubmit={handleOnSubmit}>
+            <Form onSubmit={(e) => { handleOnSubmit(e, processCreatePhone) }}>
               <Form.Group className="mb-3" controlId="alias">
                 <Form.Label>Alias :</Form.Label>
                 <Form.Control value={state.alias.value} name='alias' isInvalid={state.alias.isInvalid} onChange={handleOnChange} placeholder="Alias / Friendly name of the Number" />

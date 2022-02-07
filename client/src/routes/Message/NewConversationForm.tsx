@@ -1,5 +1,4 @@
 import { useCallback, useContext, useState } from 'react';
-import useFormValidation, { FormSchema } from '../../hooks/useFormValidation';
 import useApi from '../../hooks/useApi';
 import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
 import Form from 'react-bootstrap/Form';
@@ -9,6 +8,7 @@ import { PhoneContext } from '../../providers/PhoneProvider';
 import { useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
 import { useIsMounted } from '../../hooks/useIsMounted';
+import useForm, { FormSchema } from '../../hooks/useForm';
 
 
 const stateSchema: FormSchema = {
@@ -32,6 +32,7 @@ function NewConversationForm() {
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
   const { sendMessage } = useApi();
   const { isMounted } = useIsMounted();
+  const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
   const [isSending, setIsSending] = useState<boolean>(false);
 
@@ -78,7 +79,7 @@ function NewConversationForm() {
 
   }, [selectedPhone, sendMessage, setAlertMessage, goToConversation, isMounted]);
 
-  const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processSendMessage);
+  
 
   if(!selectedPhone) {
     return null
@@ -90,7 +91,7 @@ function NewConversationForm() {
         <Card>
           <Card.Body>
             {alertDom}
-            <Form onSubmit={handleOnSubmit}>
+            <Form onSubmit={(e) => { handleOnSubmit(e, processSendMessage) }}>
               <Form.Group className="mb-3" controlId="fromNumber">
                 <Form.Label>From :</Form.Label>
                 <Form.Control disabled value={selectedPhone.number} name='fromNumber' type="tel" />

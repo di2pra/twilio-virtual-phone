@@ -5,17 +5,11 @@ import Card from 'react-bootstrap/Card';
 import useApi, { IPhone, IMessage } from '../../../hooks/useApi';
 import MessageItem from './MessageItem';
 import Form from 'react-bootstrap/Form';
-import useFormValidation, { FormSchema } from '../../../hooks/useFormValidation';
 import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
 import Button from 'react-bootstrap/Button';
 import { Spinner } from 'react-bootstrap';
 import { SocketContext } from '../../../providers/SocketProvider';
-
-type Props = {
-  selectedPhone: IPhone,
-  contact_number: string
-  close: () => void
-}
+import useForm, { FormSchema } from '../../../hooks/useForm';
 
 const stateSchema: FormSchema = {
   body: { value: '', errorMessage: '', isInvalid: false }
@@ -26,6 +20,12 @@ const validationStateSchema = {
     required: true
   }
 };
+
+type Props = {
+  selectedPhone: IPhone,
+  contact_number: string
+  close: () => void
+}
 
 function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
@@ -38,8 +38,8 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
-  const [resetForm, setResetForm] = useState<boolean>(false);
   const [conversationMessageList, setConversationMessageList] = useState<IMessage[] | null>(null);
+  const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
   const scrollToBottom = (behavior: ScrollBehavior) => {
 
@@ -129,7 +129,6 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
             setIsSending(false);
             setConversationMessageList(prevState => [...prevState as IMessage[], data]);
             scrollToBottom('smooth');
-            setResetForm(prev => !prev);
           }
         },
         (error) => {
@@ -149,7 +148,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   }, [setAlertMessage, sendMessage, selectedPhone, contact_number]);
 
-  const { state, handleOnChange, handleOnSubmit } = useFormValidation(stateSchema, validationStateSchema, processSendMessage, resetForm);
+  
 
   let chatboxBody = <Card.Body><div className='chat-box d-flex flex-column justify-content-center align-items-center' ><Spinner animation="border" variant="danger" /></div></Card.Body>;
 
@@ -174,7 +173,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
       {chatboxBody}
       <Card.Footer>
         {alertDom}
-        <Form onSubmit={handleOnSubmit}>
+        <Form onSubmit={(e) => { handleOnSubmit(e, processSendMessage) }}>
           <Form.Group className="mb-3" controlId="body">
             <Form.Control disabled={isSending} value={state.body.value} name='body' isInvalid={state.body.isInvalid} onChange={handleOnChange} as="textarea" rows={3} placeholder='Write your message here...' />
             <div className="invalid-feedback">{state.body.errorMessage}</div>
