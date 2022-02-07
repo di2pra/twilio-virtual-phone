@@ -1,6 +1,6 @@
 import { Call } from "@twilio/voice-sdk"
 import { Button, Card, Col, Row } from "react-bootstrap"
-import { MdCall, MdCallEnd } from "react-icons/md"
+import { MdCallEnd } from "react-icons/md"
 import { CallMetadata } from "../../Types"
 
 type Props = {

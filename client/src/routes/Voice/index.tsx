@@ -11,9 +11,9 @@ function Voice() {
   const { getVoiceAccessToken } = useApi();
 
   const [voiceAccessToken, setVoiceAccessToken] = useState<string | null>(null);
-  const [deviceName, setDeviceName] = useState<string | null>(null);
+  const [, setDeviceName] = useState<string | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
-  const [isPhoneConnecting, setIsPhoneConnecting] = useState<boolean>(false);
+  const [, setIsPhoneConnecting] = useState<boolean>(false);
 
   const connectToPhone = useCallback(() => {
 
@@ -36,7 +36,7 @@ function Voice() {
       isMounted = false;
     }
 
-  }, []);
+  }, [getVoiceAccessToken]);
 
   const disconnectPhone = useCallback(() => {
 

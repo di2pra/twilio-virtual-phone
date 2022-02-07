@@ -49,7 +49,7 @@ function NewCallForm({device, setCurrentCall, setCallData} : Props) {
 
     
 
-  }, [setCurrentCall]);
+  }, [setCurrentCall, device, setCallData]);
 
 
   return (

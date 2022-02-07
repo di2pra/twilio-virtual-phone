@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { IPhone } from "../../hooks/useApi";
 import { PhoneContext } from "../../providers/PhoneProvider";

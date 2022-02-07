@@ -40,7 +40,7 @@ function VoiceDevice({ device }: Props) {
 
     }
 
-  }, [device]);
+  }, [device, handleIncomingCall]);
 
   const acceptCall = useCallback(() => {
 
