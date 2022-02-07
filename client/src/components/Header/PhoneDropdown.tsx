@@ -1,13 +1,13 @@
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { IPhone } from "../../hooks/useApi";
+import { IPhone } from "../../Types";
 
-type IPhoneDropdownProps = {
+type Props = {
   phoneList: IPhone[],
   selectedPhone: IPhone | null
   updateSelectedPhone: (item: IPhone) => void
 }
 
-function PhoneDropdown({ phoneList , selectedPhone, updateSelectedPhone } : IPhoneDropdownProps) {
+function PhoneDropdown({ phoneList , selectedPhone, updateSelectedPhone } : Props) {
 
   if(!selectedPhone) {
     return null

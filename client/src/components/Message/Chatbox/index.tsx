@@ -2,7 +2,7 @@ import './index.scss';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import CloseButton from 'react-bootstrap/CloseButton';
 import Card from 'react-bootstrap/Card';
-import useApi, { IPhone, IMessage } from '../../../hooks/useApi';
+import useApi from '../../../hooks/useApi';
 import MessageItem from './MessageItem';
 import Form from 'react-bootstrap/Form';
 import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import { Spinner } from 'react-bootstrap';
 import { SocketContext } from '../../../providers/SocketProvider';
 import useForm, { FormSchema } from '../../../hooks/useForm';
+import { IMessage, IPhone } from '../../../Types';
 
 const stateSchema: FormSchema = {
   body: { value: '', errorMessage: '', isInvalid: false }

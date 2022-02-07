@@ -1,6 +1,7 @@
 const { ErrorHandler, isAValidPhoneNumber } = require('../helpers');
 const messsage = require('./../models/Message');
 const phone = require('./../models/Phone');
+const call = require('./../models/Call');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const apiKey = process.env.TWILIO_API_KEY;
@@ -21,6 +22,24 @@ const getConversationListByPhone = async (request, response, next) => {
 
     if (request.params.id) {
       data = await messsage.getConversationListByPhoneId(request.params.id);
+    }
+
+    response.status(200).json(data);
+
+  } catch (error) {
+    next(error)
+  }
+
+}
+
+const getCallListByPhone = async (request, response, next) => {
+
+  try {
+
+    let data;
+
+    if (request.params.id) {
+      data = await call.getByPhoneId(request.params.id);
     }
 
     response.status(200).json(data);
@@ -84,6 +103,26 @@ const sendMessage = async (request, response, next) => {
     const id = await messsage.create({ from_number: data.from, to_number: data.to, body: data.body });
     const message = await messsage.getById(id);
     response.status(201).json(message);
+
+  } catch (error) {
+    next(error);
+  }
+
+}
+
+const createCall = async (request, response, next) => {
+
+  try {
+    
+    const data = request.body;
+
+    if (!data.from || !data.to) {
+      throw new ErrorHandler(400, 'Bad Request')
+    }
+
+    const id = await call.create({ from_number: data.from, to_number: data.to });
+    const callData = await call.getById(id);
+    response.status(201).json(callData);
 
   } catch (error) {
     next(error);
@@ -200,5 +239,7 @@ module.exports = {
   getConversationMessageList,
   updatePhone,
   voiceResponse,
-  tokenGenerator
+  tokenGenerator,
+  createCall,
+  getCallListByPhone
 }

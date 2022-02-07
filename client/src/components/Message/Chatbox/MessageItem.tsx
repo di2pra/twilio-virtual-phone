@@ -1,4 +1,4 @@
-import { IPhone, IMessage } from "../../../hooks/useApi";
+import { IMessage, IPhone } from "../../../Types";
 
 type Props = {
   selectedPhone: IPhone,

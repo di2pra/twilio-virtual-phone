@@ -44,6 +44,8 @@ app.get('/api/v1', (req, res) => {
 app.post('/api/v1/message', api.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', api.getConversationListByPhone);
 app.get('/api/v1/message/phone/:id/conversation/:number', api.getConversationMessageList);
+app.post('/api/v1/call', api.createCall);
+app.get('/api/v1/call/phone/:id', api.getCallListByPhone);
 app.get('/api/v1/phone/:id?', api.getPhone);
 app.post('/api/v1/phone', api.createPhone);
 app.put('/api/v1/phone/:id', api.updatePhone);

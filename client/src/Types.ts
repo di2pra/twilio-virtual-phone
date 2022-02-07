@@ -6,3 +6,26 @@ export type CallMetadata = {
   to: string;
   status: string;
 }
+
+export interface IPhone {
+  phone_id: number;
+  alias: string;
+  number: string;
+  created_on: Date;
+}
+
+export interface IMessage {
+  message_id: number;
+  from_number: string;
+  from_phone_id: number | null;
+  to_number: string;
+  to_phone_id: number | null;
+  body: string;
+  created_on: Date;
+}
+
+export interface IConversation {
+  contact_number: string;
+  body: string;
+  created_on: Date;
+}

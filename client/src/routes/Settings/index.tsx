@@ -1,8 +1,8 @@
 import { useCallback, useContext } from "react";
 import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { IPhone } from "../../hooks/useApi";
 import { PhoneContext } from "../../providers/PhoneProvider";
+import { IPhone } from "../../Types";
 
 function Settings() {
 

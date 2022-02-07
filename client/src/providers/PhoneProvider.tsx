@@ -2,7 +2,8 @@ import { createContext, FC, useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
-import useApi, { IPhone } from "../hooks/useApi";
+import useApi from "../hooks/useApi";
+import { IPhone } from "../Types";
 
 export const PhoneContext = createContext<{
   phoneList: IPhone[];

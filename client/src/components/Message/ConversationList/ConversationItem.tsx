@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useNavigate } from "react-router-dom";
-import { IConversation, IPhone } from "../../../hooks/useApi";
 import { IoIosArrowForward } from 'react-icons/io';
+import { IConversation, IPhone } from "../../../Types";
 
 type Props = {
   conversation: IConversation

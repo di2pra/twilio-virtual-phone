@@ -4,10 +4,11 @@ import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import ListGroup from "react-bootstrap/ListGroup";
 import useAlertCard, { AlertMessageType } from "../../../hooks/useAlertCard";
-import useApi, { IConversation } from "../../../hooks/useApi";
+import useApi from "../../../hooks/useApi";
 import { PhoneContext } from "../../../providers/PhoneProvider";
 import { SocketContext } from "../../../providers/SocketProvider";
 import ConversationItem from "./ConversationItem";
+import { IConversation } from "../../../Types";
 
 
 function ConversationList() {

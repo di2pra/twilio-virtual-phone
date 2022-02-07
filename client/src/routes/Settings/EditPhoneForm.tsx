@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import useForm, { FormSchema } from '../../hooks/useForm';
-import useApi, { IPhone } from '../../hooks/useApi';
+import useApi from '../../hooks/useApi';
 import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +9,7 @@ import { PhoneContext } from '../../providers/PhoneProvider';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
 import { useIsMounted } from '../../hooks/useIsMounted';
+import { IPhone } from '../../Types';
 
 
 const stateSchema: FormSchema = {

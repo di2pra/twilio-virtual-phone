@@ -1,31 +1,9 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
+import { IConversation, IMessage, IPhone } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
-
-export interface IPhone {
-  phone_id: number;
-  alias: string;
-  number: string;
-  created_on: Date;
-}
-
-export interface IMessage {
-  message_id: number;
-  from_number: string;
-  from_phone_id: number | null;
-  to_number: string;
-  to_phone_id: number | null;
-  body: string;
-  created_on: Date;
-}
-
-export interface IConversation {
-  contact_number: string;
-  body: string;
-  created_on: Date;
-}
 
 function useApi() {
 
