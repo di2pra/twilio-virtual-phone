@@ -6,6 +6,12 @@ class ErrorHandler extends Error {
   }
 }
 
+
+/**
+ * Express JS Error Handler Middleware
+ * @param {Error} err
+ * @return {Boolean}
+ */
 const handleError = (err, res) => {
   
   if(err instanceof ErrorHandler) {
@@ -25,8 +31,18 @@ const handleError = (err, res) => {
   
 };
 
+/**
+ * Checks if the given value is valid as phone number
+ * @param {Number|String} number
+ * @return {Boolean}
+ */
+ function isAValidPhoneNumber(number) {
+  return /^[\d\+\-\(\) ]+$/.test(number);
+}
+
 
 module.exports = {
   ErrorHandler,
-  handleError
+  handleError,
+  isAValidPhoneNumber
 }

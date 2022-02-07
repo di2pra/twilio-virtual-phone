@@ -3,6 +3,7 @@ import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { IPhone } from "../../hooks/useApi";
 import { PhoneContext } from "../../providers/PhoneProvider";
+import { TwilioLogo } from "../Icons";
 import NavbarItem from "./NavbarItem";
 import PhoneDropdown from "./PhoneDropdown";
 
@@ -30,9 +31,15 @@ function Header() {
 
 
   return (
-    <Navbar bg="primary" variant="dark" expand="md">
+    <Navbar bg="white" expand="md">
       <Container fluid>
-        <Navbar.Brand><Link className="navbar-brand" to='/'>Twilio Virtual Phone</Link></Navbar.Brand>
+        <Navbar.Brand>
+          <div
+        className="navbar-logo d-inline-block align-top">
+            <TwilioLogo />
+          </div>
+          <Link className="navbar-brand" to='/'>Twilio Virtual Phone</Link>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav

@@ -22,7 +22,7 @@ function Settings() {
       <Col md={10}>
         <Row>
           <Col>
-            <Button className="mb-3" type='button' variant='info' onClick={() => {goToAddNewPhone()}}>Add New Phone</Button>
+            <Button className="mb-3" type='button' variant='primary' onClick={() => {goToAddNewPhone()}}>Add New Phone</Button>
           </Col>
         </Row>
         <Row>

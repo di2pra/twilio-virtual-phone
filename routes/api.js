@@ -1,10 +1,17 @@
-const { ErrorHandler } = require('../helpers/error');
+const { ErrorHandler, isAValidPhoneNumber } = require('../helpers');
 const messsage = require('./../models/Message');
 const phone = require('./../models/Phone');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const apiKey = process.env.TWILIO_API_KEY;
+const apiSecret = process.env.TWILIO_API_SECRET;
+const twimlAppSid = process.env.TWILIO_TWIML_APP_SID;
 const client = require('twilio')(accountSid, authToken);
 
+const VoiceResponse = require("twilio").twiml.VoiceResponse;
+const AccessToken = require("twilio").jwt.AccessToken;
+const VoiceGrant = AccessToken.VoiceGrant;
+const phoneIdentity = "TwilioVirtualPhone";
 
 const getConversationListByPhone = async (request, response, next) => {
 
@@ -84,6 +91,64 @@ const sendMessage = async (request, response, next) => {
 
 }
 
+const tokenGenerator = (request, response) => {
+
+  const accessToken = new AccessToken(
+    accountSid,
+    apiKey,
+    apiSecret
+  );
+
+  accessToken.identity = phoneIdentity;
+
+  const grant = new VoiceGrant({
+    outgoingApplicationSid: twimlAppSid,
+    incomingAllow: true,
+  });
+
+  accessToken.addGrant(grant);
+
+  // Include identity and token in a JSON response
+  response.status(201).json({
+    identity: phoneIdentity,
+    token: accessToken.toJwt(),
+  });
+
+};
+
+const voiceResponse = (request, response) => {
+  const toNumberOrClientName = request.body.To;
+  const callerId = '+33644648641';
+  let twiml = new VoiceResponse();
+
+  // If the request to the /voice endpoint is TO your Twilio Number, 
+  // then it is an incoming call towards your Twilio.Device.
+  if (toNumberOrClientName == callerId) {
+    let dial = twiml.dial();
+
+    // This will connect the caller with your Twilio.Device/client 
+    dial.client(phoneIdentity);
+
+  } else if (request.body.To) {
+    // This is an outgoing call
+
+    // set the callerId
+    let dial = twiml.dial({ callerId });
+
+    // Check if the 'To' parameter is a Phone Number or Client Name
+    // in order to use the appropriate TwiML noun 
+    const attr = isAValidPhoneNumber(toNumberOrClientName)
+      ? "number"
+      : "client";
+    dial[attr]({}, toNumberOrClientName);
+  } else {
+    twiml.say("Thanks for calling!");
+  }
+
+  response.set("Content-Type", "text/xml").send(twiml.toString());
+
+};
+
 const createPhone = async (request, response, next) => {
 
   try {
@@ -133,5 +198,7 @@ module.exports = {
   createPhone,
   getConversationListByPhone,
   getConversationMessageList,
-  updatePhone
+  updatePhone,
+  voiceResponse,
+  tokenGenerator
 }

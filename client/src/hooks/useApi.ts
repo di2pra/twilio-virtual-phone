@@ -218,8 +218,22 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const getVoiceAccessToken = useCallback(async () => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/voice/generateToken`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
 
   return {
+    getVoiceAccessToken,
     sendMessage,
     getAllPhone,
     getMessageByConversation,
