@@ -3,7 +3,7 @@ import { useCallback, useContext } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { MdCall } from "react-icons/md";
 import useApi from "../../hooks/useApi";
-import useForm, { FormSchema } from "../../hooks/useForm";
+import useForm, { FormSchema, ValidationSchema } from "../../hooks/useForm";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { CallMetadata } from "../../Types";
 
@@ -12,12 +12,16 @@ const stateSchema: FormSchema = {
   to: { value: '', errorMessage: '', isInvalid: false }
 };
 
-const validationStateSchema = {
+const validationStateSchema : ValidationSchema = {
   from: {
     required: true
   },
   to: {
-    required: true
+    required: true,
+    validator: {
+      regEx: /^\+[1-9]\d{1,14}$/,
+      errorMessage: "Invalid E.164 Number format"
+    }
   }
 };
 

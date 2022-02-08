@@ -7,7 +7,7 @@ import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
 import { useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
-import useForm, { FormSchema } from '../../hooks/useForm';
+import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
 
 
 const stateSchema: FormSchema = {
@@ -15,12 +15,16 @@ const stateSchema: FormSchema = {
   number: { value: '', errorMessage: '', isInvalid: false }
 };
 
-const validationStateSchema = {
+const validationStateSchema : ValidationSchema = {
   alias: {
     required: true
   },
   number: {
-    required: true
+    required: true,
+    validator: {
+      regEx: /^\+[1-9]\d{1,14}$/,
+      errorMessage: "Invalid E.164 Number format"
+    }
   }
 };
 
