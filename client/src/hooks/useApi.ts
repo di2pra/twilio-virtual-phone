@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
-import { IConversation, IMessage, IPhone } from '../Types';
+import { ICall, IConversation, IMessage, IPhone } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
@@ -49,6 +49,32 @@ function useApi() {
         ...data,
         created_on: new Date(data.created_on)
       };
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const createCall = useCallback(async ({ from, to }) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call`,
+      {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: from,
+          to: to
+        })
+      }
+    );
+
+    const data = await result.json();
+
+    if(result.ok) {
+      return data;
     } else {
       throw new Error(data.message);
     }
@@ -196,6 +222,24 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const getCallListByPhoneId = useCallback(async (phone_id: number) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call/phone/${phone_id}`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data.map((item: any) => {
+        return {
+          ...item,
+          created_on: new Date(item.created_on)
+        }
+      }) as ICall[];
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
   const getVoiceAccessToken = useCallback(async () => {
 
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/voice/generateToken`);
@@ -219,7 +263,9 @@ function useApi() {
     checkApiKey,
     createPhone,
     updatePhone,
-    getPhoneById
+    getPhoneById,
+    getCallListByPhoneId,
+    createCall
   };
 }
 

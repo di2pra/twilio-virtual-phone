@@ -165,6 +165,8 @@ const voiceResponse = (request, response) => {
   if (toNumberOrClientName == callerId) {
     let dial = twiml.dial();
 
+    call.create({ from_number: request.body.From, to_number: request.body.To });    
+
     // This will connect the caller with your Twilio.Device/client 
     dial.client(phoneIdentity);
 
@@ -176,9 +178,7 @@ const voiceResponse = (request, response) => {
 
     // Check if the 'To' parameter is a Phone Number or Client Name
     // in order to use the appropriate TwiML noun 
-    const attr = isAValidPhoneNumber(toNumberOrClientName)
-      ? "number"
-      : "client";
+    const attr = isAValidPhoneNumber(toNumberOrClientName) ? "number" : "client";
     dial[attr]({}, toNumberOrClientName);
   } else {
     twiml.say("Thanks for calling!");

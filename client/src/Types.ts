@@ -29,3 +29,12 @@ export interface IConversation {
   body: string;
   created_on: Date;
 }
+
+export interface ICall {
+  call_id: number;
+  from_number: string;
+  from_phone_id: number | null;
+  to_number: string;
+  to_phone_id: number | null;
+  created_on: Date;
+}

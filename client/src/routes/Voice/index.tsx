@@ -5,13 +5,13 @@ import Row from "react-bootstrap/Row";
 import useApi from "../../hooks/useApi";
 import { Device, Call } from '@twilio/voice-sdk';
 import VoiceDevice from "./VoiceDevice";
+import { ListGroup } from "react-bootstrap";
 
 function Voice() {
 
   const { getVoiceAccessToken } = useApi();
 
   const [voiceAccessToken, setVoiceAccessToken] = useState<string | null>(null);
-  const [, setDeviceName] = useState<string | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
   const [, setIsPhoneConnecting] = useState<boolean>(false);
 
@@ -24,8 +24,10 @@ function Voice() {
     getVoiceAccessToken().then((data) => {
 
       if (isMounted) {
-        setVoiceAccessToken(data.token);
-        setDeviceName(data.identity);
+        const device = new Device(data.token, {
+          codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+        });
+        setDevice(device);
       }
 
     }).catch((error) => {
@@ -38,30 +40,26 @@ function Voice() {
 
   }, [getVoiceAccessToken]);
 
+  const handleRegistered = useCallback(() => {
+    setIsPhoneConnecting(false);
+  }, []);
+
+  const handleUnregistered = useCallback((device : Device) => {
+    setDevice(null);
+  }, []);
+
   const disconnectPhone = useCallback(() => {
 
     if (device) {
       if (device.state === Device.State.Registered) {
-        device.unregister();
+        device.unregister().then(() => {
+          device.off(Device.EventName.Registered, handleRegistered);
+          device.off(Device.EventName.Unregistered, handleUnregistered);
+        });
       }
     }
 
   }, [device]);
-
-  useEffect(() => {
-
-    if (voiceAccessToken) {
-
-      const device = new Device(voiceAccessToken, {
-        logLevel: 0,
-        codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
-      });
-
-      setDevice(device);
-
-    }
-
-  }, [voiceAccessToken]);
 
   useEffect(() => {
 
@@ -70,7 +68,6 @@ function Voice() {
         device.register();
       }
     }
-
 
     return () => {
       if (device) {
@@ -85,45 +82,20 @@ function Voice() {
   useEffect(() => {
 
     if (device) {
-      device.on(Device.EventName.Registered, function () {
-        console.log("Twilio.Device Ready to make and receive calls!");
-        setIsPhoneConnecting(false);
-      });
 
-      device.on(Device.EventName.Unregistered, function () {
-        console.log("Twilio.Device is switched off!");
-        device.destroy();
-        setDevice(null);
-      });
-
-      device.on("error", function (error) {
-        console.log("Twilio.Device Error: " + error.message);
-      });
-
-      //device.on(Device.EventName.Incoming, handleIncomingCall);
-
-      if (device.audio) {
-        // device.audio.on("deviceChange", updateAllAudioDevices.bind(device));
-
-        // Show audio selection UI if it is supported by the browser.
-        if (device.audio.isOutputSelectionSupported) {
-        }
-      }
+      device.on(Device.EventName.Registered, handleRegistered);
+      device.on(Device.EventName.Unregistered, handleUnregistered);
 
     }
 
     return () => {
-
-      /*if (device) {
-        device.off(Device.EventName.Incoming, handleIncomingCall);
-      }*/
-
+      if(device) {
+        device.off(Device.EventName.Registered, handleRegistered);
+        device.off(Device.EventName.Unregistered, handleUnregistered);
+      }
     }
 
-  }, [device /*, handleIncomingCall*/]);
-
-
-  console.log(device);
+  }, [device, handleRegistered, handleUnregistered]);
 
   return (
     <Row className="justify-content-md-center">
@@ -131,7 +103,31 @@ function Voice() {
         <Row className="mb-3">
           <Col>
             {device ? <Button variant="danger" onClick={() => { disconnectPhone() }}>Disconnect your phone</Button> : <Button variant="primary" onClick={() => { connectToPhone() }}>Connect your phone</Button>}
-            {device ? <VoiceDevice device={device} /> : null}
+          </Col>
+        </Row>
+        {device ? <VoiceDevice device={device} /> : null}
+        <Row>
+          <Col>
+            <ListGroup as="ol">
+              <ListGroup.Item className="d-flex justify-content-between align-items-center">
+                <div className="ms-2 me-auto">
+                  <p className="fw-bold m-0">+33609474040</p>
+                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
+                </div>
+              </ListGroup.Item>
+              <ListGroup.Item className="d-flex justify-content-between align-items-center">
+                <div className="ms-2 me-auto">
+                  <p className="fw-bold m-0">+33609474040</p>
+                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
+                </div>
+              </ListGroup.Item>
+              <ListGroup.Item className="d-flex justify-content-between align-items-center">
+                <div className="ms-2 me-auto">
+                  <p className="fw-bold m-0">+33609474040</p>
+                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
+                </div>
+              </ListGroup.Item>
+            </ListGroup>
           </Col>
         </Row>
       </Col>
