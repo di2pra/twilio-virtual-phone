@@ -43,3 +43,12 @@ export interface IConfig {
   applicationSID: string;
   phone_identifier: string;
 }
+
+export interface IApplication {
+  friendlyName: string;
+  dateCreated: Date;
+  voiceUrl: string;
+  smsUrl: string;
+  dateUpdated: Date;
+  sid: string;
+}

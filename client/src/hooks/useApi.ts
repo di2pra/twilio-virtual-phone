@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
-import { ICall, IConfig, IConversation, IMessage, IPhone } from '../Types';
+import { IApplication, ICall, IConfig, IConversation, IMessage, IPhone } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
@@ -151,7 +151,7 @@ function useApi() {
 
   const getAllPhone = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`);
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/phone`);
     const data = await result.json();
 
     if (result.ok) {
@@ -162,6 +162,27 @@ function useApi() {
           created_on: new Date(item.created_on)
         }
       }) as IPhone[];
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const getAllApplication = useCallback(async () => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`);
+    const data = await result.json();
+
+    if (result.ok) {
+
+      return data.map((item: any) => {
+        return {
+          ...item,
+          dateUpdated: new Date(item.dateUpdated),
+          dateCreated: new Date(item.dateCreated)
+        }
+      }) as IApplication[];
 
     } else {
       throw new Error(data.message);
@@ -280,7 +301,8 @@ function useApi() {
     getPhoneById,
     getCallListByPhoneId,
     createCall,
-    getConfiguration
+    getConfiguration,
+    getAllApplication
   };
 }
 

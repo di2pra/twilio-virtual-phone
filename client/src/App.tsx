@@ -4,12 +4,11 @@ import Settings from "./routes/Settings";
 import Layout from "./Layout";
 import NotFound from "./routes/NotFound";
 import Voice from "./routes/Voice";
-import Message from "./routes/Message/Message";
+import Message from "./routes/Message";
 import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
 import NewPhoneForm from "./routes/Settings/NewPhoneForm";
 import EditPhoneForm from "./routes/Settings/EditPhoneForm";
-import "./App.scss";
 
 function App() {
 

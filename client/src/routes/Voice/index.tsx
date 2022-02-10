@@ -5,14 +5,11 @@ import Row from "react-bootstrap/Row";
 import useApi from "../../hooks/useApi";
 import { Device, Call } from '@twilio/voice-sdk';
 import VoiceDevice from "./VoiceDevice";
-import { ListGroup } from "react-bootstrap";
 import CallHistory from "./CallHistory";
 
 function Voice() {
 
   const { getVoiceAccessToken } = useApi();
-
-  const [voiceAccessToken, setVoiceAccessToken] = useState<string | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
   const [, setIsPhoneConnecting] = useState<boolean>(false);
 
@@ -60,7 +57,7 @@ function Voice() {
       }
     }
 
-  }, [device]);
+  }, [device, handleRegistered, handleUnregistered]);
 
   useEffect(() => {
 
