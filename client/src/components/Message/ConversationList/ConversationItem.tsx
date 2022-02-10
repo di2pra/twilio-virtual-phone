@@ -25,7 +25,7 @@ function ConversationItem({ conversation, selectedPhone }: Props) {
       <div className="ms-2 me-auto">
         <p className="fw-bold m-0">{conversation.contact_number}</p>
         <p className="my-1">{conversation.body}</p>
-        <p className="m-0 fw-light text-muted" style={{fontSize: '0.8rem'}}>{conversation.created_on.toLocaleDateString()} à {conversation.created_on.toLocaleTimeString()}</p>
+        <p className="m-0 fw-light text-muted" style={{fontSize: '0.8rem'}}>{conversation.created_on.toLocaleDateString()} at {conversation.created_on.toLocaleTimeString()}</p>
       </div>
       <IoIosArrowForward />
     </ListGroup.Item>

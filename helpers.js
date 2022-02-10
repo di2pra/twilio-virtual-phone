@@ -36,7 +36,7 @@ const handleError = (err, res) => {
  * @param {Number|String} number
  * @return {Boolean}
  */
- function isAValidPhoneNumber(number) {
+function isAValidPhoneNumber(number) {
   return /^[\d\+\-\(\) ]+$/.test(number);
 }
 

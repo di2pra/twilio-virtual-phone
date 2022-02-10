@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
-import { ICall, IConversation, IMessage, IPhone } from '../Types';
+import { ICall, IConfig, IConversation, IMessage, IPhone } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
@@ -184,6 +184,20 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const getConfiguration = useCallback(async () => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/configuration`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IConfig;
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
 
   const getMessageByConversation = useCallback(async ({ phone_id, contact_number }) => {
 
@@ -265,7 +279,8 @@ function useApi() {
     updatePhone,
     getPhoneById,
     getCallListByPhoneId,
-    createCall
+    createCall,
+    getConfiguration
   };
 }
 

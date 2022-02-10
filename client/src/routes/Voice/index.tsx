@@ -6,6 +6,7 @@ import useApi from "../../hooks/useApi";
 import { Device, Call } from '@twilio/voice-sdk';
 import VoiceDevice from "./VoiceDevice";
 import { ListGroup } from "react-bootstrap";
+import CallHistory from "./CallHistory";
 
 function Voice() {
 
@@ -106,30 +107,7 @@ function Voice() {
           </Col>
         </Row>
         {device ? <VoiceDevice device={device} /> : null}
-        <Row>
-          <Col>
-            <ListGroup as="ol">
-              <ListGroup.Item className="d-flex justify-content-between align-items-center">
-                <div className="ms-2 me-auto">
-                  <p className="fw-bold m-0">+33609474040</p>
-                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
-                </div>
-              </ListGroup.Item>
-              <ListGroup.Item className="d-flex justify-content-between align-items-center">
-                <div className="ms-2 me-auto">
-                  <p className="fw-bold m-0">+33609474040</p>
-                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
-                </div>
-              </ListGroup.Item>
-              <ListGroup.Item className="d-flex justify-content-between align-items-center">
-                <div className="ms-2 me-auto">
-                  <p className="fw-bold m-0">+33609474040</p>
-                  <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>at 2022/02/03</p>
-                </div>
-              </ListGroup.Item>
-            </ListGroup>
-          </Col>
-        </Row>
+        <CallHistory />
       </Col>
     </Row>
   )

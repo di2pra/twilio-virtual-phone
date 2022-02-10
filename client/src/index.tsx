@@ -6,14 +6,17 @@ import PhoneProvider from "./providers/PhoneProvider";
 import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import ApiKeyProvider from './providers/ApiKeyProvider';
+import ConfigProvider from './providers/ConfigProvider';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ApiKeyProvider>
-        <PhoneProvider>
-          <SocketProvider><App /></SocketProvider>
-        </PhoneProvider>
+        <ConfigProvider>
+          <PhoneProvider>
+            <SocketProvider><App /></SocketProvider>
+          </PhoneProvider>
+        </ConfigProvider>
       </ApiKeyProvider>
     </BrowserRouter>
   </React.StrictMode>,

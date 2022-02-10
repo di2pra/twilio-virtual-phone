@@ -38,3 +38,8 @@ export interface ICall {
   to_phone_id: number | null;
   created_on: Date;
 }
+
+export interface IConfig {
+  applicationSID: string;
+  phone_identifier: string;
+}
