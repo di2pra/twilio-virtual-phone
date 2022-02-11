@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
 import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
 
@@ -15,7 +15,7 @@ const stateSchema: FormSchema = {
   number: { value: '', errorMessage: '', isInvalid: false }
 };
 
-const validationStateSchema : ValidationSchema = {
+const validationStateSchema: ValidationSchema = {
   alias: {
     required: true
   },
@@ -39,10 +39,6 @@ function NewPhoneForm() {
 
   const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
-  const goBackToSettings = useCallback(() => {
-    navigate(`/settings`, { replace: false });
-  }, [navigate]);
-
   const processCreatePhone = useCallback((state) => {
 
     let isMounted = true;
@@ -56,13 +52,15 @@ function NewPhoneForm() {
     })
       .then(
         (data) => {
-          
-          if(setPhoneList) {
-            setPhoneList(data);
+
+          if (isMounted) {
+            if (setPhoneList) {
+              setPhoneList(data);
+            }
+
+            navigate(`/settings`, { replace: true });
           }
 
-          goBackToSettings(); 
-          
         },
         (error) => {
           if (isMounted) {
@@ -75,13 +73,13 @@ function NewPhoneForm() {
         }
       )
 
-      return () => {
-        isMounted = false;
-      }
+    return () => {
+      isMounted = false;
+    }
 
-  }, [createPhone, setAlertMessage, goBackToSettings, setPhoneList]);
+  }, [createPhone, setAlertMessage, navigate, setPhoneList]);
 
-  
+
 
   return (
     <Row className="justify-content-md-center">
@@ -101,7 +99,9 @@ function NewPhoneForm() {
                 <div className="invalid-feedback">{state.number.errorMessage}</div>
               </Form.Group>
               <Button variant="primary" type="submit" disabled={isAdding}>{isAdding ? 'Adding...' : 'Add'}</Button>{' '}
-              <Button variant="danger" type="button" onClick={() => { goBackToSettings() }}>Cancel</Button>
+              <Link to={`/settings`} replace>
+                <Button variant="danger" type="button">Cancel</Button>
+              </Link>
             </Form>
           </Card.Body>
         </Card>

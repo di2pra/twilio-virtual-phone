@@ -44,7 +44,7 @@ function useApi() {
 
     const data = await result.json();
 
-    if(result.ok) {
+    if (result.ok) {
       return {
         ...data,
         created_on: new Date(data.created_on)
@@ -73,7 +73,7 @@ function useApi() {
 
     const data = await result.json();
 
-    if(result.ok) {
+    if (result.ok) {
       return data;
     } else {
       throw new Error(data.message);
@@ -99,7 +99,7 @@ function useApi() {
 
     const data = await result.json();
 
-    if(result.ok) {
+    if (result.ok) {
       return data;
     } else {
       throw new Error(data.message);
@@ -125,7 +125,7 @@ function useApi() {
 
     const data = await result.json();
 
-    if(result.ok) {
+    if (result.ok) {
       return data;
     } else {
       throw new Error(data.message);
@@ -136,7 +136,7 @@ function useApi() {
 
   const checkApiKey = useCallback(async (apiKey) => {
 
-    const result = await fetch(`${API_HOSTNAME}/api/v1`, {headers: {[API_KEY_HEADER]: apiKey}});
+    const result = await fetch(`${API_HOSTNAME}/api/v1`, { headers: { [API_KEY_HEADER]: apiKey } });
     const data = await result.json();
 
     if (result.ok) {
@@ -151,7 +151,7 @@ function useApi() {
 
   const getAllPhone = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/phone`);
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`);
     const data = await result.json();
 
     if (result.ok) {
@@ -190,7 +190,31 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const getPhoneById = useCallback(async (phone_id : number) => {
+  const createApplication = useCallback(async ({friendlyName} : {friendlyName: string}) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`,
+      {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          friendlyName: friendlyName
+        })
+      }
+    );
+    const data = await result.json();
+
+    if (result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const getPhoneById = useCallback(async (phone_id: number) => {
 
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${phone_id}`);
     const data = await result.json();
@@ -302,7 +326,8 @@ function useApi() {
     getCallListByPhoneId,
     createCall,
     getConfiguration,
-    getAllApplication
+    getAllApplication,
+    createApplication
   };
 }
 

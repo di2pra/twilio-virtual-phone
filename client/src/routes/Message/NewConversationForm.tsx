@@ -5,9 +5,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
-import { useIsMounted } from '../../hooks/useIsMounted';
 import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
 
 
@@ -35,24 +34,19 @@ function NewConversationForm() {
   let navigate = useNavigate();
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
   const { sendMessage } = useApi();
-  const { isMounted } = useIsMounted();
   const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
   const [isSending, setIsSending] = useState<boolean>(false);
 
-  const goToConversation = useCallback((number:string) => {
+  const goToConversation = useCallback((number: string) => {
     if (selectedPhone) {
       navigate(`/${selectedPhone.phone_id}/message/${number}`, { replace: false });
     }
   }, [navigate, selectedPhone]);
 
-  const goBackToConversationList = useCallback(() => {
-    if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message`, { replace: false });
-    }
-  }, [navigate, selectedPhone]);
-
   const processSendMessage = useCallback((state) => {
+
+    let isMounted = true;
 
     if (selectedPhone) {
       setIsSending(true);
@@ -64,13 +58,13 @@ function NewConversationForm() {
       })
         .then(
           () => {
-            if(isMounted) {
+            if (isMounted) {
               setIsSending(false);
               goToConversation(state.to.value);
             }
           },
           (error) => {
-            if(isMounted) {
+            if (isMounted) {
               setIsSending(false);
               setAlertMessage({
                 type: AlertMessageType.ERROR,
@@ -81,11 +75,15 @@ function NewConversationForm() {
         )
     }
 
-  }, [selectedPhone, sendMessage, setAlertMessage, goToConversation, isMounted]);
+    return () => {
+      isMounted = false;
+    }
 
-  
+  }, [selectedPhone, sendMessage, setAlertMessage, goToConversation]);
 
-  if(!selectedPhone) {
+
+
+  if (!selectedPhone) {
     return null
   }
 
@@ -111,7 +109,9 @@ function NewConversationForm() {
                 <div className="invalid-feedback">{state.body.errorMessage}</div>
               </Form.Group>
               <Button variant="primary" type="submit" disabled={isSending}>{isSending ? 'Sending...' : 'Send'}</Button>{' '}
-              <Button variant="danger" type="button" onClick={() => { goBackToConversationList() }}>Cancel</Button>
+              <Link to={`/${selectedPhone.phone_id}/message`} replace>
+                <Button variant="danger" type="button">Cancel</Button>
+              </Link>
             </Form>
           </Card.Body>
         </Card>

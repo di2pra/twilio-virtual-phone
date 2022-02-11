@@ -1,13 +1,17 @@
 import { useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import { Outlet, useParams } from "react-router-dom";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from './components/Header';
+import { ConfigContext } from "./providers/ConfigProvider";
 import { PhoneContext } from "./providers/PhoneProvider";
 
 const LOCAL_STORE_SELECTED_PHONE_ID_KEY = 'selectedPhoneId';
 
-function Layout() {
+function AppLayout() {
+
+
+  const { config } = useContext(ConfigContext);
 
   const { phoneList, setSelectedPhone } = useContext(PhoneContext);
 
@@ -49,6 +53,12 @@ function Layout() {
 
   }, [params, setSelectedPhone, phoneList]);
 
+  if(config === null) {
+    return (
+      <Navigate to="/configuration" replace/>
+    )
+  }
+
   return (
     <>
       <Header />
@@ -61,4 +71,4 @@ function Layout() {
 
 }
 
-export default Layout;
+export default AppLayout;

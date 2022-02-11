@@ -94,6 +94,8 @@ app.get('/api/v1/voice/generateToken', api.tokenGenerator);
 app.post('/voice', api.voiceResponse);
 app.get('/api/v1/twilio/number', twilioMiddleware.getAllNumbers);
 app.get('/api/v1/twilio/application', twilioMiddleware.getAllApplicaions);
+app.post('/api/v1/twilio/application', twilioMiddleware.createApplication);
+app.delete('/api/v1/twilio/application', twilioMiddleware.deleteApplication);
 app.get('/api/v1/configuration', configuration.getConfiguration(redisClient));
 app.post('/api/v1/configuration', configuration.getConfiguration(redisClient));
 

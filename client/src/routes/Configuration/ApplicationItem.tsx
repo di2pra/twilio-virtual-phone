@@ -1,5 +1,4 @@
 import { Button, ListGroup } from "react-bootstrap";
-import { VscCallIncoming, VscCallOutgoing } from "react-icons/vsc";
 import { IApplication } from "../../Types";
 
 type Props = {

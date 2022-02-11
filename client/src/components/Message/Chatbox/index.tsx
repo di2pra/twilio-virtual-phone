@@ -11,6 +11,7 @@ import { Spinner } from 'react-bootstrap';
 import { SocketContext } from '../../../providers/SocketProvider';
 import useForm, { FormSchema } from '../../../hooks/useForm';
 import { IMessage, IPhone } from '../../../Types';
+import { Link, useNavigate } from 'react-router-dom';
 
 const stateSchema: FormSchema = {
   body: { value: '', errorMessage: '', isInvalid: false }
@@ -25,10 +26,9 @@ const validationStateSchema = {
 type Props = {
   selectedPhone: IPhone,
   contact_number: string
-  close: () => void
 }
 
-function Chatbox({ selectedPhone, contact_number, close }: Props) {
+function Chatbox({ selectedPhone, contact_number }: Props) {
 
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,6 +36,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: true });
   const { sendMessage, getMessageByConversation } = useApi();
+  let navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -63,9 +64,9 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
       (data) => {
         if (isComponentMounted) {
-          
-          if(data.length === 0) {
-            close()
+
+          if (data.length === 0) {
+            navigate(`/${selectedPhone.phone_id}/message`, {replace: true});
           } else {
             setConversationMessageList(data);
             setIsLoading(false);
@@ -85,7 +86,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
       isComponentMounted = false;
     }
 
-  }, [selectedPhone.phone_id, contact_number, getMessageByConversation, close]);
+  }, [selectedPhone.phone_id, contact_number, getMessageByConversation, navigate]);
 
   const refreshMessageListener = useCallback(() => {
 
@@ -105,7 +106,7 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     }
 
     return () => {
-      if(socket) {
+      if (socket) {
         socket.off("refreshMessage", refreshMessageListener);
       }
     }
@@ -126,14 +127,14 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     })
       .then(
         (data) => {
-          if(isComponentMounted) {
+          if (isComponentMounted) {
             setIsSending(false);
             setConversationMessageList(prevState => [...prevState as IMessage[], data]);
             scrollToBottom('smooth');
           }
         },
         (error) => {
-          if(isComponentMounted) {
+          if (isComponentMounted) {
             setIsSending(false);
             setAlertMessage({
               type: AlertMessageType.ERROR,
@@ -142,14 +143,14 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
           }
         }
       );
-      
+
     return () => {
       isComponentMounted = false;
     }
 
   }, [setAlertMessage, sendMessage, selectedPhone, contact_number]);
 
-  
+
 
   let chatboxBody = <Card.Body><div className='chat-box d-flex flex-column justify-content-center align-items-center' ><Spinner animation="border" variant="danger" /></div></Card.Body>;
 
@@ -169,7 +170,9 @@ function Chatbox({ selectedPhone, contact_number, close }: Props) {
     <Card>
       <Card.Header className="d-flex flex-row align-items-center p-3">
         <p className='flex-grow-1 m-0'>{contact_number}</p>
-        <CloseButton onClick={() => { if(!isSending) {close();} }} />
+        <Link to={`/${selectedPhone.phone_id}/message`} replace>
+          <CloseButton />
+        </Link>
       </Card.Header>
       {chatboxBody}
       <Card.Footer>

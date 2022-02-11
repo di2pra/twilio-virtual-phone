@@ -1,44 +1,40 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
-import { IPhone } from "../../Types";
 
 function Settings() {
 
   const { phoneList } = useContext(PhoneContext);
-  let navigate = useNavigate();
-
-  const goToAddNewPhone = useCallback(() => {
-    navigate(`/settings/phone/new`, { replace: false });
-  }, [navigate]);
-
-  const goToEditPhone = useCallback((phone: IPhone) => {
-    navigate(`/settings/phone/${phone.phone_id}/edit`, { replace: false, state: {selectedPhone: phone} });
-  }, [navigate]);
 
   return (
     <Row className="justify-content-md-center">
       <Col md={10}>
         <Row>
           <Col>
-            <Button className="mb-3" type='button' variant='primary' onClick={() => {goToAddNewPhone()}}>Add New Phone</Button>
+            <Link to={`/settings/phone/new`} replace>
+              <Button className="mb-3" type='button' variant='primary'>Add New Phone</Button>
+            </Link>
           </Col>
         </Row>
         <Row>
           <Col>
             <ListGroup className="mb-3" as="ol">
               {phoneList?.map((item, index) => {
-                return (<ListGroup.Item
-                  key={index} className="d-flex justify-content-between align-items-center"
-                >
-                  <div className="ms-2 me-auto">
-                    <p className="fw-bold m-0">{item.alias}</p>
-                    <p className="my-1">{item.number}</p>
-                  </div>
-                  <Button className="mx-2" type='button' variant='warning' onClick={() => {goToEditPhone(item)}}>Edit</Button>
-                  <Button className="mx-2" type='button' variant='danger' disabled>Delete</Button>
-                </ListGroup.Item>)
+                return (
+                  <ListGroup.Item
+                    key={index} className="d-flex justify-content-between align-items-center"
+                  >
+                    <div className="ms-2 me-auto">
+                      <p className="fw-bold m-0">{item.alias}</p>
+                      <p className="my-1">{item.number}</p>
+                    </div>
+                    <Link to={`/settings/phone/${item.phone_id}/edit`} state={{ selectedPhone: item }} replace>
+                      <Button className="mx-2" type='button' variant='warning'>Edit</Button>
+                    </Link>
+                    <Button className="mx-2" type='button' variant='danger' disabled>Delete</Button>
+                  </ListGroup.Item>
+                )
               })}
             </ListGroup>
           </Col>

@@ -6,14 +6,13 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
-import { useIsMounted } from '../../hooks/useIsMounted';
 import { IPhone } from '../../Types';
 
 
 const stateSchema: FormSchema = {
-  id: {value: '', errorMessage: '', isInvalid: false},
+  id: { value: '', errorMessage: '', isInvalid: false },
   number: { value: '', errorMessage: '', isInvalid: false },
   alias: { value: '', errorMessage: '', isInvalid: false }
 };
@@ -32,8 +31,7 @@ function EditPhoneForm() {
   let params = useParams();
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: true });
   const { updatePhone, getPhoneById } = useApi();
-  const { isMounted } = useIsMounted();
-  
+
   const [initState, setInitState] = useState<FormSchema>(stateSchema);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [selectedPhone, setSelectedPhone] = useState<IPhone | null>(null);
@@ -43,7 +41,7 @@ function EditPhoneForm() {
 
   useEffect(() => {
 
-    let isComponentMounted = true;
+    let isMounted = true;
 
     const locationState = location.state as {
       selectedPhone: IPhone
@@ -53,10 +51,10 @@ function EditPhoneForm() {
 
       const phoneId = parseInt(params.edit_phone_id || '');
 
-      if(phoneId) {
+      if (phoneId) {
         getPhoneById(phoneId).then(
           (data) => {
-            if(isComponentMounted) {
+            if (isMounted) {
               setSelectedPhone(data);
             }
           }
@@ -68,23 +66,23 @@ function EditPhoneForm() {
     }
 
     return () => {
-      isComponentMounted = false
+      isMounted = false
     }
 
   }, [location, getPhoneById, params.edit_phone_id]);
 
-  
+
 
   useEffect(() => {
 
-    if(selectedPhone) {
+    if (selectedPhone) {
       setInitState(prevState => {
         return {
           ...prevState,
           ...{
-            number: { ...prevState.number, ...{ value: selectedPhone.number}},
-            alias : { ...prevState.alias, ...{ value: selectedPhone.alias}},
-            id : { ...prevState.id, ...{ value: selectedPhone.phone_id.toString()}}
+            number: { ...prevState.number, ...{ value: selectedPhone.number } },
+            alias: { ...prevState.alias, ...{ value: selectedPhone.alias } },
+            id: { ...prevState.id, ...{ value: selectedPhone.phone_id.toString() } }
           }
         };
       })
@@ -99,6 +97,8 @@ function EditPhoneForm() {
 
   const processUpdatePhone = useCallback((state: FormSchema) => {
 
+    let isMounted = true;
+
     setIsUpdating(true);
     setAlertMessage(null);
 
@@ -109,11 +109,12 @@ function EditPhoneForm() {
       .then(
         (data) => {
 
-          if (setPhoneList) {
-            setPhoneList(data);
+          if (isMounted) {
+            if (setPhoneList) {
+              setPhoneList(data);
+            }
+            goBackToSettings();
           }
-
-          goBackToSettings();
 
         },
         (error) => {
@@ -127,9 +128,13 @@ function EditPhoneForm() {
         }
       )
 
-  }, [updatePhone, setAlertMessage, isMounted, goBackToSettings, setPhoneList]);
+    return () => {
+      isMounted = false;
+    }
 
-  if(!state.id.value) {
+  }, [updatePhone, setAlertMessage, goBackToSettings, setPhoneList]);
+
+  if (!state.id.value) {
     return null
   }
 
@@ -150,7 +155,9 @@ function EditPhoneForm() {
                 <Form.Control name='number' value={state.number.value} disabled />
               </Form.Group>
               <Button variant="primary" type="submit" disabled={isUpdating}>{isUpdating ? 'Updating...' : 'Update'}</Button>{' '}
-              <Button variant="danger" type="button" onClick={() => { goBackToSettings() }}>Cancel</Button>
+              <Link to="/settings">
+                <Button variant="danger" type="button">Cancel</Button>
+              </Link>
             </Form>
           </Card.Body>
         </Card>
