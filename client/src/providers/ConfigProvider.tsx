@@ -1,17 +1,18 @@
-import { createContext, FC, useEffect, useState } from "react";
+import { createContext, FC, useCallback, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import useApi from "../hooks/useApi";
-import { IConfig } from "../Types";
+import { IApplication, IConfig } from "../Types";
 
 export const ConfigContext = createContext<{
   config: IConfig | null;
+  updateConfig?: (application: IApplication) => void
 }>({
   config: null
 });
 
 const ConfigProvider: FC = ({ children }) => {
 
-  const { getConfiguration } = useApi();
+  const { getConfiguration, setConfiguration } = useApi();
   const [config, setConfig] = useState<IConfig | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -33,6 +34,25 @@ const ConfigProvider: FC = ({ children }) => {
 
   }, [getConfiguration]);
 
+  const updateConfig = useCallback((application: IApplication) => {
+
+    let isMounted = true;
+
+    setIsLoading(true);
+
+    setConfiguration(application.sid).then(data => {
+      if(isMounted) {
+        setConfig(data);
+        setIsLoading(false);
+      }
+    })
+
+    return () => {
+      isMounted = false;
+    }
+
+  } ,[setConfiguration]);
+
   if (isLoading) {
     return (
       <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
@@ -43,7 +63,8 @@ const ConfigProvider: FC = ({ children }) => {
 
   return (
     <ConfigContext.Provider value={{
-      config: config
+      config: config,
+      updateConfig: updateConfig
     }}>
       {children}
     </ConfigContext.Provider>

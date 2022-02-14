@@ -39,17 +39,6 @@ function Settings() {
             </ListGroup>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Alert variant="info">
-              <Alert.Heading>Webhook</Alert.Heading>
-              <p>
-                Set the url below as the callback url for the added phone numbers in the Twilio Console.<br />
-                <code>{`${window.location.origin}/webhook/v1/message`}</code>
-              </p>
-            </Alert>
-          </Col>
-        </Row>
       </Col>
     </Row>
   )

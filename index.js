@@ -95,9 +95,11 @@ app.post('/voice', api.voiceResponse);
 app.get('/api/v1/twilio/number', twilioMiddleware.getAllNumbers);
 app.get('/api/v1/twilio/application', twilioMiddleware.getAllApplicaions);
 app.post('/api/v1/twilio/application', twilioMiddleware.createApplication);
-app.delete('/api/v1/twilio/application', twilioMiddleware.deleteApplication);
+//app.delete('/api/v1/twilio/application', twilioMiddleware.deleteApplication);
 app.get('/api/v1/configuration', configuration.getConfiguration(redisClient));
-app.post('/api/v1/configuration', configuration.getConfiguration(redisClient));
+app.post('/api/v1/configuration', configuration.setConfiguration(redisClient, twilioClient));
+app.delete('/api/v1/configuration', configuration.deleteConfiguration(redisClient));
+
 
 app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
 app.post('/webhook/v1/message', api.createMessage, (req, res) => {

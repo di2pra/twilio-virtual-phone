@@ -190,7 +190,7 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const createApplication = useCallback(async ({friendlyName} : {friendlyName: string}) => {
+  const createApplication = useCallback(async ({ friendlyName }: { friendlyName: string }) => {
 
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`,
       {
@@ -232,6 +232,33 @@ function useApi() {
   const getConfiguration = useCallback(async () => {
 
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/configuration`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IConfig;
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const setConfiguration = useCallback(async (sid: string) => {
+
+    const result = await fetchWithAuth(
+      `${API_HOSTNAME}/api/v1/configuration`,
+      {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sid: sid
+        })
+      }
+    );
+
     const data = await result.json();
 
     if (result.ok) {
@@ -326,6 +353,7 @@ function useApi() {
     getCallListByPhoneId,
     createCall,
     getConfiguration,
+    setConfiguration,
     getAllApplication,
     createApplication
   };

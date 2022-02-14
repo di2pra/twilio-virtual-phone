@@ -1,21 +1,44 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, ListGroup, Row, Spinner } from "react-bootstrap";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import useApi from "../../hooks/useApi";
 import useModalBox from "../../hooks/useModalBox";
+import { ConfigContext } from "../../providers/ConfigProvider";
 import { IApplication } from "../../Types";
 import ApplicationItem from "./ApplicationItem";
 
 const Configuration: FC = () => {
 
+  const { updateConfig } = useContext(ConfigContext);
+
   const { getAllApplication } = useApi();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [applicationList, setApplicationList] = useState<IApplication[]>([]);
 
-  const modalBox = useModalBox({
-    title: "Confirmation",
-    body: "Hello"
-  })
+
+  const handleOnConfirmSelectApplication = useCallback((context: IApplication | undefined) => {
+
+    if (context && updateConfig) {
+      updateConfig(context)
+    }
+
+  }, [updateConfig]);
+
+  const { modalDom, initModal } = useModalBox<IApplication>({
+    title: `Confirmation`,
+    closeBtnLabel: `Cancel`,
+    saveBtnLabel: `Confirm`,
+    handleOnConfirm: handleOnConfirmSelectApplication
+  });
+
+  const selectApplication = useCallback((application: IApplication) => {
+    initModal({
+      options: {
+        body: `Are you sure to use the Twiml App called "${application.friendlyName}" for your virtual phone application? This will override any current configuration of the Twiml App.`
+      },
+      context: application
+    });
+  }, [initModal, handleOnConfirmSelectApplication])
 
   useEffect(() => {
 
@@ -46,7 +69,7 @@ const Configuration: FC = () => {
 
   return (
     <>
-      {modalBox}
+      {modalDom}
       <Row className="justify-content-md-center mt-3">
         <Col md={10}>
           <Row className="mb-1">
@@ -66,7 +89,7 @@ const Configuration: FC = () => {
               <ListGroup as="ol">
                 {
                   applicationList.map((item, index) => {
-                    return <ApplicationItem application={item} key={index} />
+                    return <ApplicationItem selectApplication={selectApplication} application={item} key={index} />
                   })
                 }
               </ListGroup>

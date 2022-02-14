@@ -40,8 +40,7 @@ export interface ICall {
 }
 
 export interface IConfig {
-  applicationSID: string;
-  phone_identifier: string;
+  twimlAppSid: string;
 }
 
 export interface IApplication {
