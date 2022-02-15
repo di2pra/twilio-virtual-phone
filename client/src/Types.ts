@@ -51,3 +51,11 @@ export interface IApplication {
   dateUpdated: Date;
   sid: string;
 }
+
+export interface IPhoneNumber {
+  friendlyName: string;
+  phoneNumber: string;
+  dateCreated: Date;
+  dateUpdated: Date;
+  sid: string;
+}

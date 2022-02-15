@@ -38,7 +38,7 @@ const Configuration: FC = () => {
       },
       context: application
     });
-  }, [initModal, handleOnConfirmSelectApplication])
+  }, [initModal])
 
   useEffect(() => {
 

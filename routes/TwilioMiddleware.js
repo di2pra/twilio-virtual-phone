@@ -6,7 +6,7 @@ class TwilioMiddleware {
     this.twilioClient = twilioClient;
   }
 
-  getAllNumbers = async (request, response, next) => {
+  getAllNumber = async (request, response, next) => {
 
     try {
 
@@ -19,7 +19,22 @@ class TwilioMiddleware {
 
   }
 
-  getAllApplicaions = async (request, response, next) => {
+  getNumberByFilter = async (request, response, next) => {
+
+    try {
+
+      console.log(request.body.phoneNumbers);
+
+      const data = await this.twilioClient.incomingPhoneNumbers.list({phoneNumber: request.body.phoneNumbers});
+      response.status(200).json(data);
+
+    } catch (error) {
+      next(error);
+    }
+
+  }
+
+  getAllApplicaion = async (request, response, next) => {
 
     try {
 

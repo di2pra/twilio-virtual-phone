@@ -7,11 +7,12 @@ import Voice from "./routes/Voice";
 import Message from "./routes/Message";
 import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
-import NewPhoneForm from "./routes/Settings/NewPhoneForm";
 import EditPhoneForm from "./routes/Settings/EditPhoneForm";
 import Configuration from "./routes/Configuration";
 import AddApplicationForm from "./routes/Configuration/AddApplicationForm";
 import ConfigLayout from "./routes/Configuration/ConfigLayout";
+import AddPhoneForm from "./routes/Settings/AddPhoneForm";
+import PhoneLayout from "./PhoneLayout";
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
     <Routes>
       <Route path="/" element={<AppLayout />}>
         <Route index element={<Home />} />
-        <Route path=":phone_id">
+        <Route path=":phone_id" element={<PhoneLayout />}>
           <Route path="message" element={<Message />} />
           <Route path="message/new" element={<NewConversationForm />} />
           <Route path="message/:contact_number" element={<Chat />} />
@@ -28,7 +29,7 @@ function App() {
         <Route path="settings">
           <Route index element={<Settings />} />
           <Route path="phone">
-            <Route path="new" element={<NewPhoneForm />} />
+            <Route path="new" element={<AddPhoneForm />} />
             <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
           </Route>
         </Route>

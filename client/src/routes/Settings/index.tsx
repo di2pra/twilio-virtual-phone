@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Alert, Button, Col, ListGroup, Row } from "react-bootstrap";
+import { Button, Col, ListGroup, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
 
@@ -13,7 +13,7 @@ function Settings() {
         <Row>
           <Col>
             <Link to={`/settings/phone/new`} replace>
-              <Button className="mb-3" type='button' variant='primary'>Add New Phone</Button>
+              <Button className="mb-3" type='button' variant='primary'>Add New Number</Button>
             </Link>
           </Col>
         </Row>

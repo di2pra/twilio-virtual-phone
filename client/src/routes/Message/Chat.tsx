@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import Chatbox from "../../components/Message/Chatbox";
+import Chatbox from "./Chatbox";
 import { PhoneContext } from "../../providers/PhoneProvider";
 
 function Chat() {

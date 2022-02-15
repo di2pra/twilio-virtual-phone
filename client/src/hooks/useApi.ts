@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
-import { IApplication, ICall, IConfig, IConversation, IMessage, IPhone } from '../Types';
+import { IApplication, ICall, IConfig, IConversation, IMessage, IPhone, IPhoneNumber } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
@@ -55,33 +55,7 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const createCall = useCallback(async ({ from, to }) => {
-
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call`,
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: from,
-          to: to
-        })
-      }
-    );
-
-    const data = await result.json();
-
-    if (result.ok) {
-      return data;
-    } else {
-      throw new Error(data.message);
-    }
-
-  }, [fetchWithAuth]);
-
-  const createPhone = useCallback(async ({ alias, number }) => {
+  const createPhone = useCallback(async (sid: string) => {
 
     const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`,
       {
@@ -91,8 +65,7 @@ function useApi() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          alias: alias,
-          number: number
+          sid: sid
         })
       }
     );
@@ -183,6 +156,27 @@ function useApi() {
           dateCreated: new Date(item.dateCreated)
         }
       }) as IApplication[];
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const getAllNumber = useCallback(async () => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`);
+    const data = await result.json();
+
+    if (result.ok) {
+
+      return data.map((item: any) => {
+        return {
+          ...item,
+          dateUpdated: new Date(item.dateUpdated),
+          dateCreated: new Date(item.dateCreated)
+        }
+      }) as IPhoneNumber[];
 
     } else {
       throw new Error(data.message);
@@ -351,11 +345,11 @@ function useApi() {
     updatePhone,
     getPhoneById,
     getCallListByPhoneId,
-    createCall,
     getConfiguration,
     setConfiguration,
     getAllApplication,
-    createApplication
+    createApplication,
+    getAllNumber
   };
 }
 

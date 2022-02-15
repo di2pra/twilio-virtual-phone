@@ -2,7 +2,7 @@ import { useContext } from "react";
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { PhoneContext } from "../../providers/PhoneProvider";
-import ConversationList from "../../components/Message/ConversationList";
+import ConversationList from "./ConversationList";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 

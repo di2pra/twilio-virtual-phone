@@ -2,20 +2,15 @@ import { Call, Device } from "@twilio/voice-sdk";
 import { useCallback, useContext } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { MdCall } from "react-icons/md";
-import useApi from "../../hooks/useApi";
 import useForm, { FormSchema, ValidationSchema } from "../../hooks/useForm";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { CallMetadata } from "../../Types";
 
 const stateSchema: FormSchema = {
-  from: { value: '+33644648641', errorMessage: '', isInvalid: false },
   to: { value: '', errorMessage: '', isInvalid: false }
 };
 
 const validationStateSchema : ValidationSchema = {
-  from: {
-    required: true
-  },
   to: {
     required: true,
     validator: {
@@ -36,8 +31,6 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
   const { selectedPhone } = useContext(PhoneContext);
   const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
 
-  const { createCall } = useApi();
-
   const startOutgoingCall = useCallback((state) => {
 
     if (selectedPhone) {
@@ -46,33 +39,28 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
         To: state.to.value
       };
 
-      createCall(
-        {
+      device.connect({ params }).then(call => {
+
+        setCurrentCall(call);
+
+        setCallData({
+          type: Call.CallDirection.Outgoing,
           from: selectedPhone.number,
-          to: state.to.value
-        }
-      ).then((result) => {
-
-        device.connect({ params }).then(call => {
-
-          setCurrentCall(call);
-
-          setCallData({
-            type: Call.CallDirection.Outgoing,
-            from: state.from.value,
-            to: state.to.value,
-            status: call.status()
-          });
-
+          to: state.to.value,
+          status: call.status()
         });
 
       });
+
     }
 
 
 
-  }, [setCurrentCall, device, setCallData, createCall, selectedPhone]);
+  }, [setCurrentCall, device, setCallData, selectedPhone]);
 
+  if(!selectedPhone) {
+    return null
+  }
 
   return (
     <Card>
@@ -80,7 +68,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
         <Form onSubmit={(e) => { handleOnSubmit(e, startOutgoingCall) }}>
           <Form.Group className="mb-3" controlId="from">
             <Form.Label>From :</Form.Label>
-            <Form.Control disabled value={state.from.value} name='from' type="tel" />
+            <Form.Control disabled value={selectedPhone.number} name='from' type="tel" />
           </Form.Group>
           <Form.Group className="mb-3" controlId="to">
             <Form.Label>To :</Form.Label>

@@ -10,7 +10,7 @@ type Props<Type> = {
   handleOnCancel?: () => void;
 }
 
-function useModalBox<Type>({title, body, closeBtnLabel, saveBtnLabel, handleOnCancel, handleOnConfirm} : Props<Type>) {
+function useModalBox<Type>({ title, body, closeBtnLabel, saveBtnLabel, handleOnCancel, handleOnConfirm }: Props<Type>) {
 
   const [show, setShow] = useState(false);
   const [context, setContext] = useState<Type>();
@@ -22,37 +22,33 @@ function useModalBox<Type>({title, body, closeBtnLabel, saveBtnLabel, handleOnCa
     handleOnConfirm: handleOnConfirm,
     handleOnCancel: handleOnCancel
   });
-  //const [handleOnConfirmState, setHandleOnConfirmState] = useState<(context: Type | undefined) => void | undefined>();
-  //const [handleOnCancelState, setHandleOnCancelState] = useState<() => void | undefined>();
 
   const clickOnConfirm = useCallback(() => {
 
-    console.log(options.handleOnConfirm);
-
-    if(options.handleOnConfirm) {
+    if (options.handleOnConfirm) {
       console.log(options.handleOnConfirm)
       options.handleOnConfirm(context);
     }
 
     setShow(false);
 
-  }, [options.handleOnConfirm, context]);
+  }, [options, context]);
 
   const clickOnCancel = useCallback(() => {
 
-    if(options.handleOnCancel) {
+    if (options.handleOnCancel) {
       options.handleOnCancel();
     }
 
     setShow(false);
 
-  }, [options.handleOnCancel]);
+  }, [options]);
 
   const initModal = useCallback((
     { options, context }: {
-    options: Props<Type>;
-    context?: Type
-  }) => {
+      options: Props<Type>;
+      context?: Type
+    }) => {
 
     setShow(true);
     setContext(context);
@@ -64,8 +60,6 @@ function useModalBox<Type>({title, body, closeBtnLabel, saveBtnLabel, handleOnCa
     });
 
   }, []);
-
-  console.log(options.handleOnConfirm);
 
   return {
     modalDom: <Modal show={show} animation={false}>

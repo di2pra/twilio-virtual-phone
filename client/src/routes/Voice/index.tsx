@@ -42,7 +42,7 @@ function Voice() {
     setIsPhoneConnecting(false);
   }, []);
 
-  const handleUnregistered = useCallback((device : Device) => {
+  const handleUnregistered = useCallback((device: Device) => {
     setDevice(null);
   }, []);
 
@@ -87,7 +87,7 @@ function Voice() {
     }
 
     return () => {
-      if(device) {
+      if (device) {
         device.off(Device.EventName.Registered, handleRegistered);
         device.off(Device.EventName.Unregistered, handleUnregistered);
       }
