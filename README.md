@@ -20,7 +20,7 @@ Install Guide :
     | API_KEY  | Not null Random key to access the application  |
     | TWILIO_ACCOUNT_SID  | Your Twilio Account SID  |
     | TWILIO_API_KEY  | Your Twilio API Key  |
-    | TWILIO_API_SECRET  | Your Twilio Api Key Secret  |
+    | TWILIO_API_SECRET  | Your Twilio API Key Secret  |
   
   
 3. Deploy the Node.js application in your hosting service and run following command to build and install the application.

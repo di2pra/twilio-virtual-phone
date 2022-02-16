@@ -17,7 +17,7 @@
       "required": true
     },
     "TWILIO_API_SECRET": {
-      "description": "Your Twilio Api Key Secret",
+      "description": "Your Twilio API Key Secret",
       "required": true
     },
     "API_KEY": {
