@@ -1,7 +1,7 @@
 {
   "name": "twilio-virtual-phone-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Twilio Virtual Phone Backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

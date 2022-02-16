@@ -1,0 +1,29 @@
+{
+  "name": "Twilio Virtual Phone",
+  "description": "Twilio Virtual Phone deployable on Heroku",
+  "repository": "https://github.com/di2pra/twilio-virtual-phone",
+  "keywords": ["twilio", "voice", "messaging"],
+  "addons": [
+    "heroku-redis",
+    "heroku-postgresql"
+  ],
+  "env": {
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Your Twilio Account SID",
+      "required": true
+    },
+    "TWILIO_API_KEY": {
+      "description": "Your Twilio API Key",
+      "required": true
+    },
+    "TWILIO_API_SECRET": {
+      "description": "Your Twilio Api Key Secret",
+      "required": true
+    },
+    "API_KEY": {
+      "description": "Not null Random key to access the application",
+      "required": true,
+      "generator": "secret"
+    }
+  }
+}
