@@ -163,9 +163,24 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const getAllNumber = useCallback(async () => {
+  const getAllNumber = useCallback(async (numbers?: string[]) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`);
+    let param;
+
+    if (numbers) {
+      param = {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phoneNumbers: numbers
+        })
+      }
+    }
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`, param);
     const data = await result.json();
 
     if (result.ok) {

@@ -57,5 +57,7 @@ export interface IPhoneNumber {
   phoneNumber: string;
   dateCreated: Date;
   dateUpdated: Date;
+  smsApplicationSid: string;
+  voiceApplicationSid: string;
   sid: string;
 }

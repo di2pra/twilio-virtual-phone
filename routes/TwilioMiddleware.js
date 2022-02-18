@@ -10,23 +10,25 @@ class TwilioMiddleware {
 
     try {
 
-      const data = await this.twilioClient.incomingPhoneNumbers.list();
-      response.status(200).json(data);
+      let responseData = Array();
 
-    } catch (error) {
-      next(error);
-    }
+      if(request.body.phoneNumbers) {
 
-  }
+        for(const number of request.body.phoneNumbers) {
+          const data = await this.twilioClient.incomingPhoneNumbers.list({phoneNumber: number});
 
-  getNumberByFilter = async (request, response, next) => {
+          if(data.length === 1) {
+            responseData.push(data[0]);
+          }
+        }
 
-    try {
+      } else {
 
-      console.log(request.body.phoneNumbers);
+        responseData = await this.twilioClient.incomingPhoneNumbers.list();
 
-      const data = await this.twilioClient.incomingPhoneNumbers.list({phoneNumber: request.body.phoneNumbers});
-      response.status(200).json(data);
+      }
+      
+      response.status(200).json(responseData);
 
     } catch (error) {
       next(error);

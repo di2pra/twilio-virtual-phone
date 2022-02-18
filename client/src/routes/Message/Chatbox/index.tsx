@@ -40,8 +40,9 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [resetForm, setResetForm] = useState<boolean>(false);
   const [conversationMessageList, setConversationMessageList] = useState<IMessage[] | null>(null);
-  const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema);
+  const { state, handleOnChange, handleOnSubmit } = useForm(stateSchema, validationStateSchema, resetForm);
 
   const scrollToBottom = (behavior: ScrollBehavior) => {
 
@@ -66,7 +67,7 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
         if (isComponentMounted) {
 
           if (data.length === 0) {
-            navigate(`/${selectedPhone.phone_id}/message`, {replace: true});
+            navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
           } else {
             setConversationMessageList(data);
             setIsLoading(false);
@@ -131,6 +132,7 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
             setIsSending(false);
             setConversationMessageList(prevState => [...prevState as IMessage[], data]);
             scrollToBottom('smooth');
+            setResetForm(prevState => !prevState)
           }
         },
         (error) => {

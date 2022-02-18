@@ -83,6 +83,7 @@ app.post('/api/v1/phone', api.createPhone);
 app.put('/api/v1/phone/:id', api.updatePhone);
 app.get('/api/v1/voice/generateToken', api.tokenGenerator);
 app.get('/api/v1/twilio/number', twilioMiddleware.getAllNumber);
+app.post('/api/v1/twilio/number', twilioMiddleware.getAllNumber);
 app.get('/api/v1/twilio/application', twilioMiddleware.getAllApplicaion);
 app.post('/api/v1/twilio/application', twilioMiddleware.createApplication);
 app.get('/api/v1/configuration', api.getConfiguration);
