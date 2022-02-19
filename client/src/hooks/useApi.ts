@@ -163,6 +163,19 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const getApplicationById = useCallback(async (sid: string) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application/${sid}`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IApplication;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
   const getAllNumber = useCallback(async (numbers?: string[]) => {
 
     let param;
@@ -363,6 +376,7 @@ function useApi() {
     getConfiguration,
     setConfiguration,
     getAllApplication,
+    getApplicationById,
     createApplication,
     getAllNumber
   };

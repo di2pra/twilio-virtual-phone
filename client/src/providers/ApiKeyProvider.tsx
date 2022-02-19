@@ -66,7 +66,7 @@ const ApiKeyProvider: FC = ({ children }) => {
                     <Form.Control disabled={isChecking} value={state.apiKeyInput.value} isInvalid={state.apiKeyInput.isInvalid} onChange={handleOnChange} placeholder="Enter your API KEY" name='apiKeyInput' />
                     <div className="invalid-feedback">{state.apiKeyInput.errorMessage}</div>
                   </Form.Group>
-                  <Button disabled={isChecking} variant="primary" type="submit">{isChecking ? 'Checking...' : 'Set Key'}</Button>
+                  <Button disabled={isChecking} variant="primary" type="submit">{isChecking ? 'Login...' : 'Login'}</Button>
                 </Form>
               </Card.Body>
             </Card>

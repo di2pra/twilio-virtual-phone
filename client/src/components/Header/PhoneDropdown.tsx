@@ -1,10 +1,10 @@
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { IPhone } from "../../Types";
+import { IPhoneTwilio } from "../../Types";
 
 type Props = {
-  phoneList: IPhone[],
-  selectedPhone: IPhone | null
-  updateSelectedPhone: (item: IPhone) => void
+  phoneList: IPhoneTwilio[],
+  selectedPhone: IPhoneTwilio | null
+  updateSelectedPhone: (item: IPhoneTwilio) => void
 }
 
 function PhoneDropdown({ phoneList , selectedPhone, updateSelectedPhone } : Props) {

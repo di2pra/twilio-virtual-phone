@@ -125,10 +125,18 @@ class Api {
 
     try {
 
-      const value = await this.redisClient.get('configuration');
+      const configJson = await this.redisClient.get('configuration');
 
-      if (value) {
-        response.status(200).json(JSON.parse(value));
+      if (configJson) {
+
+        const config = JSON.parse(configJson);
+
+        const data = await this.twilioClient.applications(config.twimlApp.sid).fetch();
+
+        await this.redisClient.set('configuration', JSON.stringify({ twimlApp: data }));
+
+        response.status(200).json({ twimlApp: data });
+
       } else {
         response.status(200).json(null);
       }
@@ -161,7 +169,7 @@ class Api {
           voiceUrl: `https://${hostname}/webhook/voice`
         });
 
-      await this.redisClient.set('configuration', JSON.stringify({ twimlAppSid: data.sid }));
+      await this.redisClient.set('configuration', JSON.stringify({ twimlApp: data }));
 
       const value = await this.redisClient.get('configuration');
 

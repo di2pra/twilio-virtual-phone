@@ -26,7 +26,7 @@ const ConfigProvider: FC = ({ children }) => {
         setConfig(data);
         setIsLoading(false);
       }
-    })
+    });
 
     return () => {
       isMounted = false;

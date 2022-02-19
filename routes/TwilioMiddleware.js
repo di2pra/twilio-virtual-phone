@@ -36,12 +36,19 @@ class TwilioMiddleware {
 
   }
 
-  getAllApplicaion = async (request, response, next) => {
+  getApplication = async (request, response, next) => {
 
     try {
 
-      const data = await this.twilioClient.applications.list();
-      response.status(200).json(data);
+      let responseData = null;
+
+      if(request.params.sid) {
+        responseData = await this.twilioClient.applications(request.params.sid).fetch();
+      } else {
+        responseData = await this.twilioClient.applications.list();
+      }
+
+      response.status(200).json(responseData);
 
     } catch (error) {
       next(error);

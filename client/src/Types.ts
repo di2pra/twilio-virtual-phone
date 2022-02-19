@@ -40,7 +40,7 @@ export interface ICall {
 }
 
 export interface IConfig {
-  twimlAppSid: string;
+  twimlApp: IApplication;
 }
 
 export interface IApplication {
@@ -61,3 +61,5 @@ export interface IPhoneNumber {
   voiceApplicationSid: string;
   sid: string;
 }
+
+export type IPhoneTwilio = IPhone & IPhoneNumber;
