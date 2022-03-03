@@ -214,8 +214,8 @@ class Api {
     const appConfig = JSON.parse(appConfigJson);
 
     const grant = new VoiceGrant({
-      outgoingApplicationSid: appConfig.twimlAppSid,
-      incomingAllow: true,
+      outgoingApplicationSid: appConfig.twimlApp.sid,
+      incomingAllow: true
     });
 
     accessToken.addGrant(grant);
