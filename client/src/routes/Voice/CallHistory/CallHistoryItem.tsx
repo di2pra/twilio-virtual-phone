@@ -1,10 +1,10 @@
 import { ListGroup } from "react-bootstrap";
-import { ICall, IPhone } from "../../../Types";
+import { ICall, IPhoneNumber } from "../../../Types";
 import { VscCallIncoming, VscCallOutgoing } from "react-icons/vsc";
 
 type Props = {
   call: ICall;
-  selectedPhone: IPhone
+  selectedPhone: IPhoneNumber
 }
 
 function CallHistoryItem({ call, selectedPhone }: Props) {

@@ -3,13 +3,13 @@ import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { IPhoneNumber, IPhoneTwilio } from "../Types";
+import { IPhoneNumber, ITwilioPhoneNumber  } from "../Types";
 
 export const PhoneContext = createContext<{
-  phoneList: IPhoneTwilio[];
-  selectedPhone: IPhoneTwilio | null;
-  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhoneTwilio | null>> | null,
-  setPhoneList?: React.Dispatch<React.SetStateAction<IPhoneTwilio[]>>
+  phoneList: IPhoneNumber[];
+  selectedPhone: IPhoneNumber | null;
+  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhoneNumber | null>> | null,
+  setPhoneList?: React.Dispatch<React.SetStateAction<IPhoneNumber[]>>
 }>({
   phoneList: [],
   selectedPhone: null,
@@ -21,8 +21,8 @@ const PhoneProvider: FC = ({ children }) => {
   const { getAllPhone, getAllNumber } = useApi();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [phoneList, setPhoneList] = useState<IPhoneTwilio[]>([]);
-  const [selectedPhone, setSelectedPhone] = useState<IPhoneTwilio | null>(null);
+  const [phoneList, setPhoneList] = useState<IPhoneNumber[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState<IPhoneNumber | null>(null);
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
@@ -40,7 +40,7 @@ const PhoneProvider: FC = ({ children }) => {
           getAllNumber(numberList).then((twilioPhoneData) => {
 
             const bothPhoneData = appPhoneData.map((item, index) => {
-              return { ...item, ...twilioPhoneData[index] as IPhoneNumber }
+              return { ...item, ...twilioPhoneData[index] as ITwilioPhoneNumber }
             })
 
             setPhoneList(bothPhoneData);

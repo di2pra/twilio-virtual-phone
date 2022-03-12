@@ -1,27 +1,28 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Col, ListGroup, Row, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import LoadingRow from "../../../components/LoadingRow";
 import useApi from "../../../hooks/useApi";
 import useModalBox from "../../../hooks/useModalBox";
 import { PhoneContext } from "../../../providers/PhoneProvider";
-import { IPhoneNumber } from "../../../Types";
+import { IPhoneNumber, ITwilioPhoneNumber } from "../../../Types";
 import PhoneNumberItem from "./PhoneNumberItem";
 
 function AddPhoneForm() {
 
   const { phoneList, setPhoneList } = useContext(PhoneContext);
-  const { getAllNumber, createPhone } = useApi();
+  const { getAllNumber, addPhone } = useApi();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [phoneNumberList, setPhoneNumberList] = useState<IPhoneNumber[]>([]);
+  const [phoneNumberList, setPhoneNumberList] = useState<ITwilioPhoneNumber[]>([]);
   let navigate = useNavigate();
 
-  const handleOnConfirmSelectPhoneNumber = useCallback((phoneNumber: IPhoneNumber | undefined) => {
+  const handleOnConfirmSelectPhoneNumber = useCallback((phoneNumber: ITwilioPhoneNumber | undefined) => {
 
     if (phoneNumber) {
 
       setIsLoading(true);
 
-      createPhone(phoneNumber.sid).then(data => {
+      addPhone(phoneNumber.sid).then(data => {
 
         if (setPhoneList) {
           setPhoneList(data);
@@ -34,9 +35,9 @@ function AddPhoneForm() {
 
     }
 
-  }, [createPhone, setPhoneList, navigate])
+  }, [addPhone, setPhoneList, navigate])
 
-  const { modalDom, initModal } = useModalBox<IPhoneNumber>({
+  const { modalDom, initModal } = useModalBox<ITwilioPhoneNumber>({
     title: `Confirmation`,
     closeBtnLabel: `Cancel`,
     saveBtnLabel: `Confirm`,
@@ -61,7 +62,7 @@ function AddPhoneForm() {
 
   }, [getAllNumber]);
 
-  const selectPhoneNumber = useCallback((phoneNumber: IPhoneNumber) => {
+  const selectPhoneNumber = useCallback((phoneNumber: ITwilioPhoneNumber) => {
     initModal({
       options: {
         body: `Are you sure to use the Phone Number called "${phoneNumber.friendlyName}" for your virtual phone application? This will override any current configuration of the Phone Number.`
@@ -71,13 +72,7 @@ function AddPhoneForm() {
   }, [initModal]);
 
   if (isLoading) {
-    return (
-      <Row className="justify-content-md-center">
-        <Col className="d-flex flex-column justify-content-center align-items-center">
-          <Spinner animation="border" variant="danger" />
-        </Col>
-      </Row>
-    )
+    return <LoadingRow />
   }
 
   return (

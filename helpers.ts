@@ -1,5 +1,10 @@
-class ErrorHandler extends Error {
-  constructor(statusCode, message) {
+import { Response } from "express";
+
+export class ErrorHandler extends Error {
+
+  statusCode : number;
+
+  constructor(statusCode : number, message : string) {
     super();
     this.statusCode = statusCode;
     this.message = message;
@@ -12,7 +17,7 @@ class ErrorHandler extends Error {
  * @param {Error} err
  * @return {Boolean}
  */
-const handleError = (err, res) => {
+export const handleError = (err : Error, res: Response) => {
   
   if(err instanceof ErrorHandler) {
     const { statusCode, message } = err;
@@ -36,13 +41,6 @@ const handleError = (err, res) => {
  * @param {Number|String} number
  * @return {Boolean}
  */
-function isAValidPhoneNumber(number) {
-  return /^[\d\+\-\(\) ]+$/.test(number);
-}
-
-
-module.exports = {
-  ErrorHandler,
-  handleError,
-  isAValidPhoneNumber
+export function isAValidPhoneNumber(number: number | string): boolean {
+  return /^[\d\+\-\(\) ]+$/.test(number.toString());
 }

@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button';
 import { Spinner } from 'react-bootstrap';
 import { SocketContext } from '../../../providers/SocketProvider';
 import useForm, { FormSchema } from '../../../hooks/useForm';
-import { IMessage, IPhone } from '../../../Types';
+import { IMessage, IPhoneNumber } from '../../../Types';
 import { Link, useNavigate } from 'react-router-dom';
 
 const stateSchema: FormSchema = {
@@ -24,7 +24,7 @@ const validationStateSchema = {
 };
 
 type Props = {
-  selectedPhone: IPhone,
+  selectedPhone: IPhoneNumber,
   contact_number: string
 }
 

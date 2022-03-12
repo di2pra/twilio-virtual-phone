@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es2020",
+    "rootDir": "./",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "strict": true
+  },
+  "exclude": [
+    "client"
+  ]
+}
