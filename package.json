@@ -9,7 +9,7 @@
     "dev": "nodemon --exec ts-node-esm -r dotenv/config index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --project ./",
-    "heroku-postbuild": "cd client && npm install && npm run build && mv build/ ../public && cd ../ && rm -rf client"
+    "heroku-postbuild": "tsc --project ./ && cd client && npm install && npm run build && mv build/ ../public && cd ../ && rm -rf client"
   },
   "author": "",
   "license": "ISC",
