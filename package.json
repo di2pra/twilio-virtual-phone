@@ -2,10 +2,10 @@
   "name": "twilio-virtual-phone-backend",
   "version": "1.0.0",
   "description": "Twilio Virtual Phone Backend",
-  "main": "index.js",
+  "main": "build/index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node build/index.js",
     "dev": "nodemon --exec ts-node-esm -r dotenv/config index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --project ./",
