@@ -1,10 +1,10 @@
 import { Button, ListGroup } from "react-bootstrap";
-import { IPhone, IPhoneNumber } from "../../../Types";
+import { IAppPhoneNumber, ITwilioPhoneNumber } from "../../../Types";
 
 type Props = {
-  phoneNumber: IPhoneNumber;
-  selectPhoneNumber: (phoneNumber: IPhoneNumber) => void
-  phoneList: IPhone[]
+  phoneNumber: ITwilioPhoneNumber;
+  selectPhoneNumber: (phoneNumber: ITwilioPhoneNumber) => void
+  phoneList: IAppPhoneNumber[]
 }
 
 function PhoneNumberItem({ selectPhoneNumber, phoneNumber, phoneList }: Props) {

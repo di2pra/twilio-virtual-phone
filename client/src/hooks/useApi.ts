@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ApiKeyContext } from '../providers/ApiKeyProvider';
-import { IApplication, ICall, IConfig, IConversation, IMessage, IPhone, IPhoneNumber } from '../Types';
+import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
@@ -10,37 +10,46 @@ function useApi() {
   const { apiKey } = useContext(ApiKeyContext);
 
   const fetchWithAuth = useCallback((input: RequestInfo, init?: RequestInit | undefined) => {
+
+    let newInit = { headers: { [API_KEY_HEADER]: apiKey } };
+
     if (init) {
 
-      const newInit = {
+      newInit = {
         ...init,
         ...{
           'headers': { ...init.headers, ...{ [API_KEY_HEADER]: apiKey } }
         }
       }
-      return fetch(input, newInit);
-    } else {
-      return fetch(input, { headers: { [API_KEY_HEADER]: apiKey } })
+
     }
 
-  }, [apiKey])
+    return fetch(input, newInit);
+
+  }, [apiKey]);
+
+  const postWithAuth = useCallback(async (input: RequestInfo, body: object) => {
+
+    const init = {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+
+    return fetchWithAuth(input, init)
+
+  }, [fetchWithAuth]);
 
   const sendMessage = useCallback(async ({ from, to, body }) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message`,
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: from,
-          to: to,
-          body: body
-        })
-      }
-    );
+    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/message`, {
+      from: from,
+      to: to,
+      body: body
+    });
 
     const data = await result.json();
 
@@ -53,22 +62,13 @@ function useApi() {
       throw new Error(data.message);
     }
 
-  }, [fetchWithAuth]);
+  }, [postWithAuth]);
 
-  const createPhone = useCallback(async (sid: string) => {
+  const addPhone = useCallback(async (sid: string) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`,
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          sid: sid
-        })
-      }
-    );
+    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/phone`, {
+      sid: sid
+    });
 
     const data = await result.json();
 
@@ -78,23 +78,30 @@ function useApi() {
       throw new Error(data.message);
     }
 
-  }, [fetchWithAuth]);
+  }, [postWithAuth]);
 
 
   const updatePhone = useCallback(async ({ id, alias }) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          alias: alias
-        })
-      }
-    );
+    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`, {
+      alias: alias
+    });
+
+    const data = await result.json();
+
+    if (result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [postWithAuth]);
+
+  const deletePhone = useCallback(async (id) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`, {
+      method: "DELETE"
+    });
 
     const data = await result.json();
 
@@ -134,7 +141,7 @@ function useApi() {
           ...item,
           created_on: new Date(item.created_on)
         }
-      }) as IPhone[];
+      }) as IAppPhoneNumber[];
 
     } else {
       throw new Error(data.message);
@@ -178,22 +185,10 @@ function useApi() {
 
   const getAllNumber = useCallback(async (numbers?: string[]) => {
 
-    let param;
+    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`, {
+      phoneNumbers: numbers
+    });
 
-    if (numbers) {
-      param = {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          phoneNumbers: numbers
-        })
-      }
-    }
-
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`, param);
     const data = await result.json();
 
     if (result.ok) {
@@ -210,22 +205,13 @@ function useApi() {
       throw new Error(data.message);
     }
 
-  }, [fetchWithAuth]);
+  }, [postWithAuth]);
 
   const createApplication = useCallback(async ({ friendlyName }: { friendlyName: string }) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`,
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          friendlyName: friendlyName
-        })
-      }
-    );
+    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`, {
+      friendlyName: friendlyName
+    });
     const data = await result.json();
 
     if (result.ok) {
@@ -243,7 +229,7 @@ function useApi() {
 
     if (result.ok) {
 
-      return data as IPhone;
+      return data as IAppPhoneNumber;
 
     } else {
       throw new Error(data.message);
@@ -267,19 +253,10 @@ function useApi() {
 
   const setConfiguration = useCallback(async (sid: string) => {
 
-    const result = await fetchWithAuth(
-      `${API_HOSTNAME}/api/v1/configuration`,
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          sid: sid
-        })
-      }
-    );
+    const result = await postWithAuth(
+      `${API_HOSTNAME}/api/v1/configuration`, {
+      sid: sid
+    });
 
     const data = await result.json();
 
@@ -290,7 +267,7 @@ function useApi() {
       throw new Error(data.message);
     }
 
-  }, [fetchWithAuth]);
+  }, [postWithAuth]);
 
 
   const getMessageByConversation = useCallback(async ({ phone_id, contact_number }) => {
@@ -369,8 +346,9 @@ function useApi() {
     getMessageByConversation,
     getConversationListByPhoneId,
     checkApiKey,
-    createPhone,
+    addPhone,
     updatePhone,
+    deletePhone,
     getPhoneById,
     getCallListByPhoneId,
     getConfiguration,

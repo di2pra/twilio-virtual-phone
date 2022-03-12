@@ -7,7 +7,7 @@ export type CallMetadata = {
   status: string;
 }
 
-export interface IPhone {
+export interface IAppPhoneNumber {
   phone_id: number;
   alias: string;
   number: string;
@@ -52,7 +52,7 @@ export interface IApplication {
   sid: string;
 }
 
-export interface IPhoneNumber {
+export interface ITwilioPhoneNumber {
   friendlyName: string;
   phoneNumber: string;
   dateCreated: Date;
@@ -62,4 +62,4 @@ export interface IPhoneNumber {
   sid: string;
 }
 
-export type IPhoneTwilio = IPhone & IPhoneNumber;
+export type IPhoneNumber = IAppPhoneNumber & ITwilioPhoneNumber;

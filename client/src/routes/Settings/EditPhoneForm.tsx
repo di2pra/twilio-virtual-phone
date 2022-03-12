@@ -8,7 +8,7 @@ import Card from 'react-bootstrap/Card';
 import { PhoneContext } from '../../providers/PhoneProvider';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
-import { IPhone } from '../../Types';
+import { IAppPhoneNumber } from '../../Types';
 
 
 const stateSchema: FormSchema = {
@@ -34,7 +34,7 @@ function EditPhoneForm() {
 
   const [initState, setInitState] = useState<FormSchema>(stateSchema);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
-  const [selectedPhone, setSelectedPhone] = useState<IPhone | null>(null);
+  const [selectedPhone, setSelectedPhone] = useState<IAppPhoneNumber | null>(null);
 
   const { state, handleOnChange, handleOnSubmit } = useForm(initState, validationStateSchema);
 
@@ -44,7 +44,7 @@ function EditPhoneForm() {
     let isMounted = true;
 
     const locationState = location.state as {
-      selectedPhone: IPhone
+      selectedPhone: IAppPhoneNumber
     } | null;
 
     if (locationState === null) {

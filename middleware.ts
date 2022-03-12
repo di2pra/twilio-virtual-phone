@@ -1,6 +1,7 @@
-const { ErrorHandler } = require("./helpers");
+import { NextFunction, Request, RequestHandler } from "express";
+import { ErrorHandler } from "./helpers";
 
-const validateApiKey = (request, response, next) => {
+const validateApiKey = (request : Request, _ : RequestHandler, next : NextFunction) => {
 
   const requestApiKey = request.get('X-API-KEY');
 

@@ -9,6 +9,7 @@ import { PhoneContext } from "../../../providers/PhoneProvider";
 import { SocketContext } from "../../../providers/SocketProvider";
 import ConversationItem from "./ConversationItem";
 import { IConversation } from "../../../Types";
+import LoadingRow from "../../../components/LoadingRow";
 
 
 function ConversationList() {
@@ -93,13 +94,7 @@ function ConversationList() {
 
 
   if (isLoading) {
-    return (
-      <Row>
-        <Col className="d-flex flex-column justify-content-center align-items-center">
-          <Spinner animation="border" variant="danger" />
-        </Col>
-      </Row>
-    );
+    return <LoadingRow />;
   }
 
   if (alertDom) {
