@@ -15,7 +15,7 @@ const accountSid : string = process.env.TWILIO_ACCOUNT_SID || '';
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
-const phoneIdentity = "TwilioVirtualPhone";
+
 
 export default class WebhookController {
 
@@ -23,6 +23,7 @@ export default class WebhookController {
   private call: Call
   private message: Message
   private configuration : Configuration
+  private phoneIdentity = "TwilioVirtualPhone";
 
   constructor(pgClient: Pool, socketIoServer: Server) {
     this.socketIoServer = socketIoServer;
@@ -39,7 +40,7 @@ export default class WebhookController {
       apiSecret
     );
 
-    accessToken.identity = phoneIdentity;
+    accessToken.identity = this.phoneIdentity;
 
     const appConfigRaw = await this.configuration.getLast();
 
@@ -54,7 +55,7 @@ export default class WebhookController {
 
     // Include identity and token in a JSON response
     response.status(201).json({
-      identity: phoneIdentity,
+      identity: this.phoneIdentity,
       token: accessToken.toJwt(),
     });
 
@@ -68,7 +69,7 @@ export default class WebhookController {
 
     await this.call.create({ from_number: request.body.From, to_number: request.body.To });
 
-    if (request.body.Caller === `client:${phoneIdentity}`) {
+    if (request.body.Caller === `client:${this.phoneIdentity}`) {
 
       let dial = twiml.dial({ callerId: fromNumberOrClientName });
 
@@ -83,7 +84,7 @@ export default class WebhookController {
       let dial = twiml.dial();
 
       // This will connect the caller with your Twilio.Device/client 
-      dial.client(phoneIdentity);
+      dial.client(this.phoneIdentity);
 
     }
 
