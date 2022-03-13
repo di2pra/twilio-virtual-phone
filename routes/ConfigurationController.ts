@@ -23,9 +23,7 @@ export default class ConfigurationController {
       if (config) {
 
         const configData = JSON.parse(config.data);
-
-        const data = await this.twilioRessource.applications.get(configData.twimlApp.sid);
-
+        
         response.status(200).json(configData);
 
       } else {

@@ -4,7 +4,6 @@
   "repository": "https://github.com/di2pra/twilio-virtual-phone",
   "keywords": ["twilio", "voice", "messaging"],
   "addons": [
-    "heroku-redis",
     "heroku-postgresql"
   ],
   "env": {

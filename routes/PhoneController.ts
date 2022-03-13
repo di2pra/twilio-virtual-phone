@@ -1,20 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 import { Pool } from "pg";
 import { ErrorHandler } from "../helpers.js";
+import Configuration from "../models/Configuration.js";
 import Phone from "../models/Phone.js";
 import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class PhoneController {
 
   private phone: Phone
-  private twilioRessource : TwilioRessource
+  private twilioRessource: TwilioRessource
+  private configuration: Configuration
 
-  constructor(pgClient : Pool, twilioRessource : TwilioRessource) {
+  constructor(pgClient: Pool, twilioRessource: TwilioRessource) {
     this.phone = new Phone(pgClient);
     this.twilioRessource = twilioRessource;
+    this.configuration = new Configuration(pgClient)
   }
 
-  get = async (request : Request, response : Response, next : NextFunction) => {
+  get = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -34,7 +37,7 @@ export default class PhoneController {
 
   }
 
-    add = async (request : Request, response : Response, next : NextFunction) => {
+  add = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -42,20 +45,18 @@ export default class PhoneController {
         throw new ErrorHandler(400, 'Bad Request')
       }
 
-      //const redisData = await this.redisClient.get('configuration');
-      //const appConfig = JSON.parse(redisData);
-
-      /*const appConfig = {}
+      const config = await this.configuration.getLast();
+      const configData = JSON.parse(config.data);
 
       const phoneNumber = await this.twilioRessource.incomingPhoneNumbers.update({
         sid: request.body.sid,
-        voiceApplicationSid: appConfig.twimlAppSid,
-        smsApplicationSid: appConfig.twimlAppSid
+        voiceApplicationSid: configData.twimlApp.sid,
+        smsApplicationSid: configData.twimlApp.sid
       })
 
       const id = await this.phone.create({ alias: phoneNumber.friendlyName, number: phoneNumber.phoneNumber });
       const phoneList = await this.phone.getAll();
-      response.status(201).json(phoneList);*/
+      response.status(201).json(phoneList);
 
     } catch (error) {
       next(error)
@@ -63,7 +64,7 @@ export default class PhoneController {
 
   }
 
-  update = async (request : Request, response : Response, next : NextFunction) => {
+  update = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -84,7 +85,7 @@ export default class PhoneController {
 
   }
 
-  delete = async (request : Request, response : Response, next : NextFunction) => {
+  delete = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
