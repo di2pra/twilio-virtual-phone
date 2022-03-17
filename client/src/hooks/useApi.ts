@@ -113,6 +113,21 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const deleteCall = useCallback(async (id) => {
+
+    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call/${id}`, {
+      method: "DELETE"
+    });
+
+    const data = await result.json();
+
+    if (result.ok) {
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
 
   const checkApiKey = useCallback(async (apiKey) => {
 
@@ -220,7 +235,7 @@ function useApi() {
       throw new Error(data.message);
     }
 
-  }, [fetchWithAuth]);
+  }, [postWithAuth]);
 
   const getPhoneById = useCallback(async (phone_id: number) => {
 
@@ -356,7 +371,8 @@ function useApi() {
     getAllApplication,
     getApplicationById,
     createApplication,
-    getAllNumber
+    getAllNumber,
+    deleteCall
   };
 }
 

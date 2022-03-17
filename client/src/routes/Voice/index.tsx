@@ -5,7 +5,6 @@ import Row from "react-bootstrap/Row";
 import useApi from "../../hooks/useApi";
 import { Device, Call } from '@twilio/voice-sdk';
 import VoiceDevice from "./VoiceDevice";
-import CallHistory from "./CallHistory";
 
 function Voice() {
 
@@ -104,7 +103,6 @@ function Voice() {
           </Col>
         </Row>
         {device ? <VoiceDevice device={device} /> : null}
-        <CallHistory />
       </Col>
     </Row>
   )

@@ -10,7 +10,7 @@ export default class CallController {
     this.call = new Call(pgClient);
   }
 
-  getCallListByPhone = async (request : Request, response : Response, next : NextFunction) => {
+  getByPhone = async (request : Request, response : Response, next : NextFunction) => {
 
     try {
 
@@ -20,6 +20,24 @@ export default class CallController {
 
         data = await this.call.getByPhoneId(Number(request.params.id));
         
+      }
+
+      response.status(200).json(data);
+
+    } catch (error) {
+      next(error)
+    }
+
+  }
+
+  delete = async (request : Request, response : Response, next : NextFunction) => {
+
+    try {
+
+      let data;
+
+      if (request.params.id) {
+        data = await this.call.delete(Number(request.params.id));
       }
 
       response.status(200).json(data);

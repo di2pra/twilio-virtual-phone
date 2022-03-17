@@ -62,4 +62,15 @@ export default class Call {
 
   }
 
+  delete = async (id: number) => {
+
+    try {
+      const result = await this.pool.query('DELETE FROM call WHERE call_id = $1', [id]);
+      return id;
+    } catch (error) {
+      throw new ErrorHandler(500, 'Internal DB Error')
+    }
+
+  }
+
 }

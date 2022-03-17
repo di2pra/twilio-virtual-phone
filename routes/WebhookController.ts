@@ -37,10 +37,12 @@ export default class WebhookController {
     const accessToken = new AccessToken(
       accountSid,
       apiKey,
-      apiSecret
+      apiSecret,
+      {
+        identity: this.phoneIdentity,
+        ttl: 86400
+      }
     );
-
-    accessToken.identity = this.phoneIdentity;
 
     const appConfigRaw = await this.configuration.getLast();
 

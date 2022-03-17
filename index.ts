@@ -64,7 +64,8 @@ app.post('/api/v1/message', routes.messageController.sendMessage);
 app.get('/api/v1/message/phone/:id/conversation', routes.messageController.getConversationListByPhone);
 app.get('/api/v1/message/phone/:id/conversation/:number', routes.messageController.getConversationMessageList);
 
-app.get('/api/v1/call/phone/:id', routes.callController.getCallListByPhone);
+app.get('/api/v1/call/phone/:id', routes.callController.getByPhone);
+app.delete('/api/v1/call/:id', routes.callController.delete);
 
 app.get('/api/v1/phone/:id?', routes.phoneController.get);
 app.post('/api/v1/phone', routes.phoneController.add);

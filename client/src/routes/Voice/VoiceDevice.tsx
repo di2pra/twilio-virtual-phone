@@ -5,6 +5,7 @@ import IncomingCallMenu from "./IncomingCallMenu";
 import NewCallForm from "./NewCallForm";
 import CallOpen from "./CallOpen";
 import { Col, Row } from "react-bootstrap";
+import CallHistory from "./CallHistory";
 
 type Props = {
   device: Device
@@ -14,6 +15,7 @@ function VoiceDevice({ device }: Props) {
 
   const [currentCall, setCurrentCall] = useState<Call | null>(null);
   const [callData, setCallData] = useState<CallMetadata | null>(null);
+  const [refreshList, setRefreshList] = useState<boolean>(false);
 
   const handleIncomingCall = useCallback((call: Call) => {
 
@@ -85,6 +87,8 @@ function VoiceDevice({ device }: Props) {
       }
     })
 
+    setRefreshList(prevState => !prevState)
+
   }, []);
 
   const handleDisconnectedCall = useCallback((call: Call) => {
@@ -115,11 +119,14 @@ function VoiceDevice({ device }: Props) {
   }, [currentCall, handleDisconnectedCall, handleAcceptedCall]);
 
   return (
-    <Row className="mb-3">
-      <Col>
+    <Row>
+      <Col className="mb-3">
         {callData ? null : <NewCallForm device={device} setCurrentCall={setCurrentCall} setCallData={setCallData} />}
         {(callData && (callData.status === Call.State.Open || callData.status === Call.State.Connecting)) ? <CallOpen callData={callData} cancelCall={cancelCall} /> : null}
         {(callData && callData.type === Call.CallDirection.Incoming && callData.status === Call.State.Pending) ? <IncomingCallMenu callData={callData} acceptCall={acceptCall} rejectCall={rejectCall} /> : null}
+      </Col>
+      <Col>
+        <CallHistory device={device} setCurrentCall={setCurrentCall} setCallData={setCallData} refreshList={refreshList} />
       </Col>
     </Row>
   )
