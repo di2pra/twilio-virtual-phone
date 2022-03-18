@@ -1,111 +1,144 @@
-import { useCallback, useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import useApi from "../../hooks/useApi";
-import { Device, Call } from '@twilio/voice-sdk';
-import VoiceDevice from "./VoiceDevice";
+import { Call, Device } from "@twilio/voice-sdk";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { CallMetadata } from "../../Types";
+import IncomingCallMenu from "./IncomingCallMenu";
+import NewCallForm from "./NewCallForm";
+import CallOpen from "./CallOpen";
+import { Col, Row } from "react-bootstrap";
+import CallHistory from "./CallHistory";
+import { VoiceDeviceContext } from "../../providers/VoiceDeviceProvider";
+
 
 function Voice() {
 
-  const { getVoiceAccessToken } = useApi();
-  const [device, setDevice] = useState<Device | null>(null);
-  const [, setIsPhoneConnecting] = useState<boolean>(false);
+  const { device } = useContext(VoiceDeviceContext);
 
-  const connectToPhone = useCallback(() => {
+  const [currentCall, setCurrentCall] = useState<Call | null>(null);
+  const [callData, setCallData] = useState<CallMetadata | null>(null);
+  const [refreshList, setRefreshList] = useState<boolean>(false);
 
-    let isMounted = true;
+  const handleIncomingCall = useCallback((call: Call) => {
 
-    setIsPhoneConnecting(true);
-
-    getVoiceAccessToken().then((data) => {
-
-      if (isMounted) {
-        const device = new Device(data.token, {
-          codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
-        });
-        setDevice(device);
-      }
-
-    }).catch((error) => {
-
+    setCurrentCall(call);
+    setCallData({
+      type: Call.CallDirection.Incoming,
+      from: call.parameters.From,
+      to: call.parameters.To,
+      status: call.status()
     });
 
-    return () => {
-      isMounted = false;
-    }
-
-  }, [getVoiceAccessToken]);
-
-  const handleRegistered = useCallback(() => {
-    setIsPhoneConnecting(false);
   }, []);
-
-  const handleUnregistered = useCallback((device: Device) => {
-    setDevice(null);
-  }, []);
-
-  const disconnectPhone = useCallback(() => {
-
-    if (device) {
-      if (device.state === Device.State.Registered) {
-        device.unregister().then(() => {
-          device.off(Device.EventName.Registered, handleRegistered);
-          device.off(Device.EventName.Unregistered, handleUnregistered);
-        });
-      }
-    }
-
-  }, [device, handleRegistered, handleUnregistered]);
 
   useEffect(() => {
 
     if (device) {
-      if (device.state === Device.State.Unregistered) {
-        device.register();
-      }
+      device.on(Device.EventName.Incoming, handleIncomingCall);
     }
 
     return () => {
+
       if (device) {
-        if (device.state === Device.State.Registered) {
-          device.unregister();
+        device.off(Device.EventName.Incoming, handleIncomingCall);
+      }
+
+    }
+
+  }, [device, handleIncomingCall]);
+
+  const acceptCall = useCallback(() => {
+
+    if (currentCall) {
+      if (currentCall.status() === Call.State.Pending) {
+        currentCall.accept()
+      }
+    }
+
+  }, [currentCall]);
+
+  const rejectCall = useCallback(() => {
+
+    if (currentCall) {
+      if (currentCall.status() === Call.State.Pending) {
+        currentCall.reject()
+      }
+    }
+
+  }, [currentCall]);
+
+  const cancelCall = useCallback(() => {
+
+    if (currentCall) {
+      currentCall.disconnect();
+    }
+
+  }, [currentCall]);
+
+
+  const handleAcceptedCall = useCallback((call) => {
+
+    setCallData(prevState => {
+      if (prevState) {
+        return {
+          ...prevState,
+          status: call.status()
         }
+      } else {
+        return prevState
       }
-    }
+    })
 
-  }, [device]);
+    setRefreshList(prevState => !prevState)
+
+  }, []);
+
+  const handleDisconnectedCall = useCallback((call: Call) => {
+
+    setCurrentCall(null);
+    setCallData(null);
+
+  }, []);
 
   useEffect(() => {
 
-    if (device) {
-
-      device.on(Device.EventName.Registered, handleRegistered);
-      device.on(Device.EventName.Unregistered, handleUnregistered);
-
+    if (currentCall) {
+      currentCall.on("accept", handleAcceptedCall);
+      currentCall.on("disconnect", handleDisconnectedCall);
+      currentCall.on("cancel", handleDisconnectedCall);
+      currentCall.on("reject", handleDisconnectedCall);
     }
 
     return () => {
-      if (device) {
-        device.off(Device.EventName.Registered, handleRegistered);
-        device.off(Device.EventName.Unregistered, handleUnregistered);
+      if (currentCall) {
+        currentCall.off("accept", handleAcceptedCall);
+        currentCall.off("disconnect", handleDisconnectedCall);
+        currentCall.off("cancel", handleDisconnectedCall);
+        currentCall.off("reject", handleDisconnectedCall);
       }
     }
 
-  }, [device, handleRegistered, handleUnregistered]);
+  }, [currentCall, handleDisconnectedCall, handleAcceptedCall]);
+
+  if (!device) {
+    return (<p>No Voice Device</p>)
+  }
 
   return (
     <Row className="justify-content-md-center">
       <Col md={10}>
-        <Row className="mb-3">
+        <Row>
+          <Col className="mb-3">
+            {callData ? null : <NewCallForm device={device} setCurrentCall={setCurrentCall} setCallData={setCallData} />}
+            {(callData && (callData.status === Call.State.Open || callData.status === Call.State.Connecting)) ? <CallOpen currentCall={currentCall} callData={callData} cancelCall={cancelCall} /> : null}
+            {(callData && callData.type === Call.CallDirection.Incoming && callData.status === Call.State.Pending) ? <IncomingCallMenu callData={callData} acceptCall={acceptCall} rejectCall={rejectCall} /> : null}
+          </Col>
           <Col>
-            {device ? <Button variant="danger" onClick={() => { disconnectPhone() }}>Disconnect your phone</Button> : <Button variant="primary" onClick={() => { connectToPhone() }}>Connect your phone</Button>}
+            <CallHistory device={device} setCurrentCall={setCurrentCall} setCallData={setCallData} refreshList={refreshList} />
           </Col>
         </Row>
-        {device ? <VoiceDevice device={device} /> : null}
       </Col>
     </Row>
   )
+
 }
 
 export default Voice;

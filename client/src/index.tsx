@@ -8,6 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import ApiKeyProvider from './providers/ApiKeyProvider';
 import ConfigProvider from './providers/ConfigProvider';
 import "./index.scss";
+import VoiceDeviceProvider from './providers/VoiceDeviceProvider';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,7 +16,9 @@ ReactDOM.render(
       <ApiKeyProvider>
         <ConfigProvider>
           <PhoneProvider>
-            <SocketProvider><App /></SocketProvider>
+            <VoiceDeviceProvider>
+              <SocketProvider><App /></SocketProvider>
+            </VoiceDeviceProvider>
           </PhoneProvider>
         </ConfigProvider>
       </ApiKeyProvider>

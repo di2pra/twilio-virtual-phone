@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import { Navigate, Outlet, useParams } from "react-router-dom";
+import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from './components/Header';
 import { ConfigContext } from "./providers/ConfigProvider";
@@ -13,9 +13,11 @@ function AppLayout() {
 
   const { config } = useContext(ConfigContext);
 
-  const { phoneList, setSelectedPhone } = useContext(PhoneContext);
+  const { phoneList, setSelectedPhone, selectedPhone } = useContext(PhoneContext);
 
   let params = useParams();
+
+  let navigate = useNavigate();
 
   useEffect(() => {
 
@@ -26,6 +28,10 @@ function AppLayout() {
 
       const paramPhoneId = parseInt(params.phone_id || '');
       const paramPhone = phoneList.filter((item) => item.phone_id === paramPhoneId)[0];
+
+      if(!paramPhone && params.phone_id) {
+        navigate('/');
+      }
 
       setSelectedPhone((prevState) => {
 
@@ -46,6 +52,7 @@ function AppLayout() {
         }
 
         localStorage.setItem(LOCAL_STORE_SELECTED_PHONE_ID_KEY, newValue.phone_id.toString());
+        
 
         return newValue;
       });
@@ -53,9 +60,9 @@ function AppLayout() {
 
   }, [params, setSelectedPhone, phoneList]);
 
-  if(config === null) {
+  if (config === null) {
     return (
-      <Navigate to="/configuration" replace/>
+      <Navigate to="/configuration" replace />
     )
   }
 

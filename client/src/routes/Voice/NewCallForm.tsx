@@ -90,8 +90,12 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
   useEffect(() => {
     function handleKeyDown(e : KeyboardEvent) {
 
-      if(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '*', '#', 'Backspace'].includes(e.key)) {
-        onKeyPressed(e.key)
+      if(refInput.current && refInput.current === document.activeElement) {
+      } else {
+        if(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '*', '#', 'Backspace'].includes(e.key)) {
+          e.preventDefault();
+          onKeyPressed(e.key);
+        }
       }
 
     }

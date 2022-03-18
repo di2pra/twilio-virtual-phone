@@ -72,7 +72,8 @@ const PhoneProvider: FC = ({ children }) => {
   if (isLoading) {
     return (
       <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <Spinner animation="border" variant="danger" />
+        <Spinner className="mb-3" animation="border" variant="danger" />
+        <h3>Loading Phone Numbers...</h3>
       </div>
     );
   }
