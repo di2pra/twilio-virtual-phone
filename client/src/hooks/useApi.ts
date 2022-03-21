@@ -1,13 +1,12 @@
 import { useCallback, useContext } from 'react';
-import { ApiKeyContext } from '../providers/ApiKeyProvider';
 import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
 
-function useApi() {
+const apiKey ='ddd';
 
-  const { apiKey } = useContext(ApiKeyContext);
+function useApi() {
 
   const fetchWithAuth = useCallback((input: RequestInfo, init?: RequestInit | undefined) => {
 

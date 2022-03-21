@@ -63,3 +63,8 @@ export interface ITwilioPhoneNumber {
 }
 
 export type IPhoneNumber = IAppPhoneNumber & ITwilioPhoneNumber;
+
+export interface IUser {
+  name: string;
+  email: string;
+}

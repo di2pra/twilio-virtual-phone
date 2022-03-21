@@ -5,18 +5,17 @@ import Footer from "./components/Footer";
 import Header from './components/Header';
 import { ConfigContext } from "./providers/ConfigProvider";
 import { PhoneContext } from "./providers/PhoneProvider";
+import { useOktaAuth } from '@okta/okta-react';
 
 const LOCAL_STORE_SELECTED_PHONE_ID_KEY = 'selectedPhoneId';
 
 function AppLayout() {
 
-
   const { config } = useContext(ConfigContext);
-
-  const { phoneList, setSelectedPhone, selectedPhone } = useContext(PhoneContext);
+  const { phoneList, setSelectedPhone } = useContext(PhoneContext);
+  const { oktaAuth, authState } = useOktaAuth()
 
   let params = useParams();
-
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +28,7 @@ function AppLayout() {
       const paramPhoneId = parseInt(params.phone_id || '');
       const paramPhone = phoneList.filter((item) => item.phone_id === paramPhoneId)[0];
 
-      if(!paramPhone && params.phone_id) {
+      if (!paramPhone && params.phone_id) {
         navigate('/');
       }
 
@@ -52,13 +51,13 @@ function AppLayout() {
         }
 
         localStorage.setItem(LOCAL_STORE_SELECTED_PHONE_ID_KEY, newValue.phone_id.toString());
-        
+
 
         return newValue;
       });
     }
 
-  }, [params, setSelectedPhone, phoneList]);
+  }, [params, setSelectedPhone, phoneList, navigate]);
 
   if (config === null) {
     return (
@@ -67,6 +66,7 @@ function AppLayout() {
   }
 
   return (
+
     <>
       <Header />
       <Container className="mt-3" fluid>
