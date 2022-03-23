@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
@@ -25,7 +25,7 @@ function useApi() {
 
     return fetch(input, newInit);
 
-  }, [apiKey]);
+  }, []);
 
   const postWithAuth = useCallback(async (input: RequestInfo, body: object) => {
 

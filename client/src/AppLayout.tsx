@@ -5,7 +5,6 @@ import Footer from "./components/Footer";
 import Header from './components/Header';
 import { ConfigContext } from "./providers/ConfigProvider";
 import { PhoneContext } from "./providers/PhoneProvider";
-import { useOktaAuth } from '@okta/okta-react';
 
 const LOCAL_STORE_SELECTED_PHONE_ID_KEY = 'selectedPhoneId';
 
@@ -13,7 +12,6 @@ function AppLayout() {
 
   const { config } = useContext(ConfigContext);
   const { phoneList, setSelectedPhone } = useContext(PhoneContext);
-  const { oktaAuth, authState } = useOktaAuth()
 
   let params = useParams();
   let navigate = useNavigate();

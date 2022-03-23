@@ -29,7 +29,7 @@ export default function Settings() {
       setIsLoading(false);
     })
 
-  }, [setPhoneList]);
+  }, [setPhoneList, deletePhone]);
 
   return (
     <Row className="justify-content-md-center">
@@ -79,7 +79,7 @@ function PhoneListTable({phoneList, onDeletePhone} : PhoneListTableProps) {
       });
     }
 
-  }, [phoneList]);
+  }, [phoneList, setAlertMessage]);
 
   if (alertDom) {
     return alertDom;

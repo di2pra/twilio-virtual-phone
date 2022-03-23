@@ -2,7 +2,7 @@ import { AuthState } from "@okta/okta-auth-js";
 import { useOktaAuth } from "@okta/okta-react";
 import { useCallback, useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { Link, NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { UserContext } from "../../SecureLayout";
 import { IPhoneNumber, IUser } from "../../Types";
@@ -12,7 +12,7 @@ import PhoneDropdown from "./PhoneDropdown";
 
 function Header() {
 
-  const { oktaAuth, authState } = useOktaAuth();
+  const { authState } = useOktaAuth();
   const { loggedInUser } = useContext(UserContext);
   const { pathname } = useLocation();
   let params = useParams();
