@@ -25,6 +25,8 @@ function App() {
 
   let navigate = useNavigate();
 
+  console.log(oktaConfig);
+
   const oktaAuth = new OktaAuth(oktaConfig.oidc);
 
   const restoreOriginalUri = async (_oktaAuth: any, originalUri: string) => {

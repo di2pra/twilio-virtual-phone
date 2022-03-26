@@ -10,8 +10,8 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-const CLIENT_ID = process.env.OKTA_CLIENT_ID || '0oa49iqayd7ESFdUu5d7';
-const ISSUER = process.env.OKTA_ISSUER || 'https://dev-40321378.okta.com/oauth2/default';
+const CLIENT_ID = process.env.REACT_APP_OKTA_CLIENT_ID || '';
+const ISSUER = process.env.REACT_APP_OKTA_ISSUER || '';
 const OKTA_TESTING_DISABLEHTTPSCHECK = process.env.OKTA_TESTING_DISABLEHTTPSCHECK || false;
 
 const oktaConfig = {
