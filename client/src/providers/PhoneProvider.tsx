@@ -66,9 +66,6 @@ const PhoneProvider: FC = ({ children }) => {
   }, [getAllPhone, getAllNumber, setAlertMessage]);
 
   useEffect(() => {
-
-    console.log("loadPhoneList");
-
     loadPhoneList();
   }, [loadPhoneList]);
 

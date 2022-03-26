@@ -20,7 +20,7 @@ const SecureLayout: FC = ({ children }) => {
 
   useEffect(() => {
 
-    if(authState && authState.isAuthenticated) {
+    if(authState?.isAuthenticated) {
       oktaAuth.getUser().then((data) => {
         setLoggedInUser(data as IUser);
       }).catch((error) => {
@@ -28,7 +28,7 @@ const SecureLayout: FC = ({ children }) => {
       });
     }
     
- }, [oktaAuth, authState])
+ }, [authState?.isAuthenticated])
 
   if (!authState) {
     return (
