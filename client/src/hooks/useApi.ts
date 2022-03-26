@@ -1,26 +1,33 @@
+import { AccessToken, AuthState } from '@okta/okta-auth-js';
+import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
 import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
 
 const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
 const API_KEY_HEADER = 'X-API-KEY';
 
-const apiKey ='ddd';
 
 function useApi() {
 
+  const { authState } = useOktaAuth();
+
   const fetchWithAuth = useCallback((input: RequestInfo, init?: RequestInit | undefined) => {
 
-    let newInit = { headers: { [API_KEY_HEADER]: apiKey } };
+    let newInit = {};
 
-    if (init) {
+    if(authState && authState.accessToken) {
+      newInit = { headers: { Authorization: 'Bearer ' + authState.accessToken.accessToken } };
 
-      newInit = {
-        ...init,
-        ...{
-          'headers': { ...init.headers, ...{ [API_KEY_HEADER]: apiKey } }
+      if (init) {
+
+        newInit = {
+          ...init,
+          ...{
+            'headers': { ...init.headers, ...{ Authorization: 'Bearer ' + authState.accessToken.accessToken } }
+          }
         }
-      }
 
+      }
     }
 
     return fetch(input, newInit);

@@ -13,6 +13,7 @@ export const ConfigContext = createContext<{
 const ConfigProvider: FC = ({ children }) => {
 
   const { getConfiguration, setConfiguration } = useApi();
+
   const [config, setConfig] = useState<IConfig | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -41,7 +42,7 @@ const ConfigProvider: FC = ({ children }) => {
     setIsLoading(true);
 
     setConfiguration(application.sid).then(data => {
-      if(isMounted) {
+      if (isMounted) {
         setConfig(data);
         setIsLoading(false);
       }
@@ -51,7 +52,7 @@ const ConfigProvider: FC = ({ children }) => {
       isMounted = false;
     }
 
-  } ,[setConfiguration]);
+  }, [setConfiguration]);
 
   if (isLoading) {
     return (

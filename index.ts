@@ -5,7 +5,8 @@ import pg from 'pg';
 import { createServer } from 'http';
 import { Server } from "socket.io";
 import cors from 'cors';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
+import enforce from 'express-sslify';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +17,7 @@ const twilioApiSecret: string = process.env.TWILIO_API_SECRET || '';
 import { handleError } from './helpers.js';
 import TwilioRessource from './models/TwilioRessource.js';
 import Routes from './Routes.js';
+import authenticationRequired from './middleware.js';
 
 const pgClient = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -45,6 +47,8 @@ if (process.env.NODE_ENV === 'development') {
   }
 
   app.use(cors(corsOptions));
+} else {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
 app.use(express.json());
@@ -56,6 +60,8 @@ app.use(express.urlencoded({
 
 const twilioRessource = new TwilioRessource(twilioClient);
 const routes = new Routes(pgClient, twilioRessource, socketIoServer);
+
+app.use('/api', authenticationRequired);
 
 app.get('/api/v1', (req, res) => {
   res.status(200).json({ message: `Twilio Virtual Phone API` });
@@ -88,6 +94,7 @@ app.post('/webhook/voice', routes.webhookController.voiceResponse);
 /*
 app.use('/api/', middleware.validateApiKey);
 */
+
 
 
 app.get('/index.html', (_, res) => {
