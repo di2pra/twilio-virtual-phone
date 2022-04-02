@@ -38,27 +38,30 @@ function App() {
         <Route path="/login/callback" element={<LoginCallback />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/" element={<SecureLayout><AppLayout /></SecureLayout>}>
-          <Route index element={<Home />} />
-          <Route path=":phone_id">
-            <Route path="message" element={<Message />} />
-            <Route path="message/new" element={<NewConversationForm />} />
-            <Route path="message/:contact_number" element={<Chat />} />
-            <Route path="voice" element={<Voice />} />
-          </Route>
-          <Route path="settings">
-            <Route index element={<Settings />} />
-            <Route path="phone">
-              <Route path="new" element={<AddPhoneForm />} />
-              <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
+        <Route path="/" element={<SecureLayout />}>
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path=":phone_id">
+              <Route path="message" element={<Message />} />
+              <Route path="message/new" element={<NewConversationForm />} />
+              <Route path="message/:contact_number" element={<Chat />} />
+              <Route path="voice" element={<Voice />} />
+            </Route>
+            <Route path="settings">
+              <Route index element={<Settings />} />
+              <Route path="phone">
+                <Route path="new" element={<AddPhoneForm />} />
+                <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
+              </Route>
             </Route>
           </Route>
           <Route path="configuration" element={<ConfigLayout />}>
             <Route index element={<Configuration />} />
+            <Route path="account" element={<Configuration />} />
             <Route path="application/new" element={<AddApplicationForm />} />
           </Route>
-          <Route path="*" element={<NotFound />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Security>
   )

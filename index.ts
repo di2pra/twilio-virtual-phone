@@ -17,7 +17,7 @@ const twilioApiSecret: string = process.env.TWILIO_API_SECRET || '';
 import { handleError } from './helpers.js';
 import TwilioRessource from './models/TwilioRessource.js';
 import Routes from './Routes.js';
-import authenticationRequired from './middleware.js';
+
 
 const pgClient = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -61,7 +61,7 @@ app.use(express.urlencoded({
 const twilioRessource = new TwilioRessource(twilioClient);
 const routes = new Routes(pgClient, twilioRessource, socketIoServer);
 
-app.use('/api', authenticationRequired);
+app.use('/api', routes.oktaController.authenticationRequired);
 
 app.get('/api/v1', (req, res) => {
   res.status(200).json({ message: `Twilio Virtual Phone API` });
@@ -78,6 +78,7 @@ app.post('/api/v1/phone', routes.phoneController.add);
 app.put('/api/v1/phone/:id', routes.phoneController.update);
 app.delete('/api/v1/phone/:id', routes.phoneController.delete);
 
+app.get('/api/v1/account', routes.accountController.get);
 app.get('/api/v1/configuration', routes.configurationController.get);
 app.post('/api/v1/configuration', routes.configurationController.set);
 

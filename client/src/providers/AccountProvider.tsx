@@ -11,7 +11,7 @@ export const ConfigContext = createContext<{
   config: null
 });
 
-const ConfigProvider: FC = ({ children }) => {
+const AccountProvider: FC = ({ children }) => {
 
   const { getConfiguration, setConfiguration } = useApi();
 
@@ -66,7 +66,7 @@ const ConfigProvider: FC = ({ children }) => {
 
   if (config === null) {
     return (
-      <Navigate to="/configuration" />
+      <Navigate to="/configuration" replace />
     )
   }
 
@@ -81,4 +81,4 @@ const ConfigProvider: FC = ({ children }) => {
 
 }
 
-export default ConfigProvider;
+export default AccountProvider;

@@ -52,10 +52,10 @@ function Header() {
             className="me-auto my-2 my-lg-0"
             navbarScroll
           >
-            <NavbarItem to="/" title="Home" />
+            <NavbarItem to="/app" title="Home" />
             {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/message`} title="Message" /> : null}
             {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/voice`} title="Voice" /> : null}
-            <NavbarItem to="/settings" title="Settings" />
+            <NavbarItem to="settings" title="Settings" />
             <PhoneDropdown phoneList={phoneList} selectedPhone={selectedPhone} updateSelectedPhone={updateSelectedPhone} />
           </Nav>
           {(authState && authState.isAuthenticated && loggedInUser) ? <LoggedInUserDropdown authState={authState} loggedInUser={loggedInUser} /> : null}

@@ -1,3 +1,14 @@
+CREATE TABLE IF NOT EXISTS account (
+	account_id serial PRIMARY KEY,
+	username VARCHAR (255) NOT NULL,
+	account_sid VARCHAR (255),
+	api_key VARCHAR (255),
+	api_secret VARCHAR (255),
+	twimlAppId VARCHAR (255),
+	created_on TIMESTAMP NOT NULL,
+	updated_on TIMESTAMP NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS configuration (
 	configuration_id serial PRIMARY KEY,
 	version integer NOT NULL,

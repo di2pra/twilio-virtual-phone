@@ -46,20 +46,24 @@ export default class WebhookController {
 
     const appConfigRaw = await this.configuration.getLast();
 
-    const configData = JSON.parse(appConfigRaw.data);
+    if(appConfigRaw) {
+      const configData = JSON.parse(appConfigRaw.data);
 
-    const grant = new VoiceGrant({
-      outgoingApplicationSid: configData.twimlApp.sid,
-      incomingAllow: true
-    });
-
-    accessToken.addGrant(grant);
-
-    // Include identity and token in a JSON response
-    response.status(201).json({
-      identity: this.phoneIdentity,
-      token: accessToken.toJwt(),
-    });
+      const grant = new VoiceGrant({
+        outgoingApplicationSid: configData.twimlApp.sid,
+        incomingAllow: true
+      });
+  
+      accessToken.addGrant(grant);
+  
+      // Include identity and token in a JSON response
+      response.status(201).json({
+        identity: this.phoneIdentity,
+        token: accessToken.toJwt(),
+      });
+    } else {
+      response.status(201).json({});
+    }
 
   };
 

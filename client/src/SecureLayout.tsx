@@ -1,18 +1,14 @@
 import { createContext, FC, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import ConfigProvider from "./providers/ConfigProvider";
-import PhoneProvider from "./providers/PhoneProvider";
+import { Navigate, Outlet } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
 import { Spinner } from "react-bootstrap";
-import VoiceDeviceProvider from "./providers/VoiceDeviceProvider";
-import SocketProvider from "./providers/SocketProvider";
 import { IUser } from "./Types";
 
 export const UserContext = createContext<{
   loggedInUser?: IUser;
 }>({});
 
-const SecureLayout: FC = ({ children }) => {
+const SecureLayout: FC = () => {
 
   const { oktaAuth, authState } = useOktaAuth();
 
@@ -20,15 +16,15 @@ const SecureLayout: FC = ({ children }) => {
 
   useEffect(() => {
 
-    if(authState?.isAuthenticated) {
+    if (authState?.isAuthenticated) {
       oktaAuth.getUser().then((data) => {
         setLoggedInUser(data as IUser);
       }).catch((error) => {
         oktaAuth.signOut()
       });
     }
-    
- }, [authState?.isAuthenticated])
+
+  }, [authState?.isAuthenticated])
 
   if (!authState) {
     return (
@@ -56,15 +52,7 @@ const SecureLayout: FC = ({ children }) => {
     <UserContext.Provider value={{
       loggedInUser: loggedInUser
     }}>
-    <ConfigProvider>
-      <PhoneProvider>
-        <VoiceDeviceProvider>
-          <SocketProvider>
-            {children}
-          </SocketProvider>
-        </VoiceDeviceProvider>
-      </PhoneProvider>
-    </ConfigProvider>
+      <Outlet />
     </UserContext.Provider>
   )
 

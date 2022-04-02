@@ -10,8 +10,8 @@ const oktaJwtVerifier = new OktaJwtVerifier({
   assertClaims: oktaConfig.resourceServer.assertClaims
 });
 
-const authenticationRequired = (request : Request, _ : Response, next : NextFunction) => {
-  const authHeader = request.headers.authorization || '';
+export const authenticationRequired = async (request : Request, response : Response, next : NextFunction) => {
+  /*const authHeader = request.headers.authorization || '';
   const match = authHeader.match(/Bearer (.+)/);
 
   if (!match) {
@@ -20,14 +20,17 @@ const authenticationRequired = (request : Request, _ : Response, next : NextFunc
 
   const accessToken = match[1];
   const audience = oktaConfig.resourceServer.assertClaims.aud;
-  return oktaJwtVerifier.verifyAccessToken(accessToken, audience)
-    .then((jwt) => {
-      //request.jwt = jwt;
-      next();
-    })
-    .catch((err) => {
-      throw new ErrorHandler(401, err.message);
-    });
-}
 
-export default authenticationRequired
+  try {
+    const jwt = oktaJwtVerifier.verifyAccessToken(accessToken, audience);
+
+    response.locals.jwt = jwt;
+
+    let userData = await user.getByUsername(jwt.claims.sub);
+
+    next();
+
+  } catch (error) {
+    throw new ErrorHandler(401, error.message);
+  }*/
+}

@@ -1,16 +1,17 @@
 import { useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from './components/Header';
-import { ConfigContext } from "./providers/ConfigProvider";
-import { PhoneContext } from "./providers/PhoneProvider";
+import ConfigProvider from "./providers/ConfigProvider";
+import PhoneProvider, { PhoneContext } from "./providers/PhoneProvider";
+import SocketProvider from "./providers/SocketProvider";
+import VoiceDeviceProvider from "./providers/VoiceDeviceProvider";
 
 const LOCAL_STORE_SELECTED_PHONE_ID_KEY = 'selectedPhoneId';
 
 function AppLayout() {
 
-  const { config } = useContext(ConfigContext);
   const { phoneList, setSelectedPhone } = useContext(PhoneContext);
 
   let params = useParams();
@@ -57,23 +58,21 @@ function AppLayout() {
 
   }, [params, setSelectedPhone, phoneList, navigate]);
 
-  if (config === null) {
-    return (
-      <Navigate to="/configuration" replace />
-    )
-  }
-
   return (
-
-    <>
-      <Header />
-      <Container className="mt-3" fluid>
-        <Outlet />
-      </Container>
-      <Footer />
-    </>
+    <ConfigProvider>
+      <PhoneProvider>
+        <VoiceDeviceProvider>
+          <SocketProvider>
+            <Header />
+            <Container className="mt-3" fluid>
+              <Outlet />
+            </Container>
+            <Footer />
+          </SocketProvider>
+        </VoiceDeviceProvider>
+      </PhoneProvider>
+    </ConfigProvider>
   )
-
 }
 
 export default AppLayout;
