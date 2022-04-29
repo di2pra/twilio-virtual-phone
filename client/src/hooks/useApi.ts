@@ -1,11 +1,6 @@
-import { AccessToken, AuthState } from '@okta/okta-auth-js';
 import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
 import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
-
-const API_HOSTNAME = process.env.REACT_APP_API_HOSTNAME || '';
-const API_KEY_HEADER = 'X-API-KEY';
-
 
 function useApi() {
 
@@ -32,7 +27,7 @@ function useApi() {
 
     return fetch(input, newInit);
 
-  }, []);
+  }, [authState]);
 
   const postWithAuth = useCallback(async (input: RequestInfo, body: object) => {
 
@@ -51,7 +46,7 @@ function useApi() {
 
   const sendMessage = useCallback(async ({ from, to, body }) => {
 
-    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/message`, {
+    const result = await postWithAuth(`/api/v1/message`, {
       from: from,
       to: to,
       body: body
@@ -72,7 +67,7 @@ function useApi() {
 
   const addPhone = useCallback(async (sid: string) => {
 
-    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/phone`, {
+    const result = await postWithAuth(`/api/v1/phone`, {
       sid: sid
     });
 
@@ -89,7 +84,7 @@ function useApi() {
 
   const updatePhone = useCallback(async ({ id, alias }) => {
 
-    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`, {
+    const result = await postWithAuth(`/api/v1/phone/${id}`, {
       alias: alias
     });
 
@@ -105,7 +100,7 @@ function useApi() {
 
   const deletePhone = useCallback(async (id) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${id}`, {
+    const result = await fetchWithAuth(`/api/v1/phone/${id}`, {
       method: "DELETE"
     });
 
@@ -121,7 +116,7 @@ function useApi() {
 
   const deleteCall = useCallback(async (id) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call/${id}`, {
+    const result = await fetchWithAuth(`/api/v1/call/${id}`, {
       method: "DELETE"
     });
 
@@ -135,24 +130,11 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const checkApiKey = useCallback(async (apiKey) => {
-
-    const result = await fetch(`${API_HOSTNAME}/api/v1`, { headers: { [API_KEY_HEADER]: apiKey } });
-    const data = await result.json();
-
-    if (result.ok) {
-      return data;
-    } else {
-      throw new Error(data.message);
-    }
-
-  }, []);
-
 
 
   const getAllPhone = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone`);
+    const result = await fetchWithAuth(`/api/v1/phone`);
     const data = await result.json();
 
     if (result.ok) {
@@ -172,7 +154,7 @@ function useApi() {
 
   const getAllApplication = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`);
+    const result = await fetchWithAuth(`/api/v1/twilio/application`);
     const data = await result.json();
 
     if (result.ok) {
@@ -193,7 +175,7 @@ function useApi() {
 
   const getApplicationById = useCallback(async (sid: string) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/twilio/application/${sid}`);
+    const result = await fetchWithAuth(`/api/v1/twilio/application/${sid}`);
     const data = await result.json();
 
     if (result.ok) {
@@ -206,7 +188,7 @@ function useApi() {
 
   const getAllNumber = useCallback(async (numbers?: string[]) => {
 
-    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/twilio/number`, {
+    const result = await postWithAuth(`/api/v1/twilio/number`, {
       phoneNumbers: numbers
     });
 
@@ -230,7 +212,7 @@ function useApi() {
 
   const createApplication = useCallback(async ({ friendlyName }: { friendlyName: string }) => {
 
-    const result = await postWithAuth(`${API_HOSTNAME}/api/v1/twilio/application`, {
+    const result = await postWithAuth(`/api/v1/twilio/application`, {
       friendlyName: friendlyName
     });
     const data = await result.json();
@@ -245,7 +227,7 @@ function useApi() {
 
   const getPhoneById = useCallback(async (phone_id: number) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/phone/${phone_id}`);
+    const result = await fetchWithAuth(`/api/v1/phone/${phone_id}`);
     const data = await result.json();
 
     if (result.ok) {
@@ -260,7 +242,7 @@ function useApi() {
 
   const getConfiguration = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/configuration`);
+    const result = await fetchWithAuth(`/api/v1/configuration`);
     const data = await result.json();
 
     if (result.ok) {
@@ -275,7 +257,7 @@ function useApi() {
   const setConfiguration = useCallback(async (sid: string) => {
 
     const result = await postWithAuth(
-      `${API_HOSTNAME}/api/v1/configuration`, {
+      `/api/v1/configuration`, {
       sid: sid
     });
 
@@ -293,7 +275,7 @@ function useApi() {
 
   const getMessageByConversation = useCallback(async ({ phone_id, contact_number }) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation/${contact_number}`);
+    const result = await fetchWithAuth(`/api/v1/message/phone/${phone_id}/conversation/${contact_number}`);
     const data = await result.json();
 
     if (result.ok) {
@@ -312,7 +294,7 @@ function useApi() {
 
   const getConversationListByPhoneId = useCallback(async (phone_id: number) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/message/phone/${phone_id}/conversation`);
+    const result = await fetchWithAuth(`/api/v1/message/phone/${phone_id}/conversation`);
     const data = await result.json();
 
     if (result.ok) {
@@ -330,7 +312,7 @@ function useApi() {
 
   const getCallListByPhoneId = useCallback(async (phone_id: number) => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/call/phone/${phone_id}`);
+    const result = await fetchWithAuth(`/api/v1/call/phone/${phone_id}`);
     const data = await result.json();
 
     if (result.ok) {
@@ -348,7 +330,7 @@ function useApi() {
 
   const getVoiceAccessToken = useCallback(async () => {
 
-    const result = await fetchWithAuth(`${API_HOSTNAME}/api/v1/voice/generateToken`);
+    const result = await fetchWithAuth(`/api/v1/voice/generateToken`);
     const data = await result.json();
 
     if (result.ok) {
@@ -366,7 +348,6 @@ function useApi() {
     getAllPhone,
     getMessageByConversation,
     getConversationListByPhoneId,
-    checkApiKey,
     addPhone,
     updatePhone,
     deletePhone,

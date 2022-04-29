@@ -63,7 +63,7 @@ const routes = new Routes(pgClient, twilioRessource, socketIoServer);
 
 app.use('/api', routes.oktaController.authenticationRequired);
 
-app.get('/api/v1', (req, res) => {
+app.get('/api/v1', (_ : Request, res : Response) => {
   res.status(200).json({ message: `Twilio Virtual Phone API` });
 });
 app.post('/api/v1/message', routes.messageController.sendMessage);
@@ -88,14 +88,9 @@ app.get('/api/v1/twilio/application/:sid?', routes.twilioController.getApplicati
 app.post('/api/v1/twilio/application', routes.twilioController.createApplication);
 
 app.get('/api/v1/voice/generateToken', routes.webhookController.tokenGenerator);
-//app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
+app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
 app.post('/webhook/message', routes.webhookController.messageResponse);
 app.post('/webhook/voice', routes.webhookController.voiceResponse);
-
-/*
-app.use('/api/', middleware.validateApiKey);
-*/
-
 
 
 app.get('/index.html', (_, res) => {

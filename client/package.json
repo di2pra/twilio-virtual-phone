@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Twilio Virtual Phone Frontend",
   "private": true,
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@okta/okta-auth-js": "^6.2.0",
     "@okta/okta-react": "^6.4.3",

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node build/index.js",
-    "server": "nodemon --exec ts-node-esm -r dotenv/config index.ts",
+    "server": "nodemon --exec ts-node-esm -r dotenv/config index.ts --ignore client",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
