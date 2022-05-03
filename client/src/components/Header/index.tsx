@@ -1,4 +1,4 @@
-import { AuthState } from "@okta/okta-auth-js";
+import { AuthState, IDToken } from "@okta/okta-auth-js";
 import { useOktaAuth } from "@okta/okta-react";
 import { useCallback, useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
@@ -68,13 +68,14 @@ function Header() {
 
 type Props = {
   authState: AuthState;
-  loggedInUser: IUser;
+  loggedInUser: IDToken["claims"];
 }
 
 function LoggedInUserDropdown({ authState, loggedInUser }: Props) {
   return (
     <Nav>
       <NavDropdown title={loggedInUser.name} id="basic-nav-dropdown-user">
+      <NavDropdown.Item href="/account">Account</NavDropdown.Item>
         <NavDropdown.Item href="/logout">Log out</NavDropdown.Item>
       </NavDropdown>
     </Nav>

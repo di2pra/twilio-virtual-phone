@@ -7,9 +7,6 @@ import Message from "./routes/Message";
 import NewConversationForm from "./routes/Message/NewConversationForm";
 import Chat from "./routes/Message/Chat";
 import EditPhoneForm from "./routes/Settings/EditPhoneForm";
-import Configuration from "./routes/Configuration";
-import AddApplicationForm from "./routes/Configuration/AddApplicationForm";
-import ConfigLayout from "./routes/Configuration/ConfigLayout";
 import AddPhoneForm from "./routes/Settings/AddPhoneForm";
 import Voice from "./routes/Voice";
 import Login from "./routes/Login";
@@ -18,6 +15,7 @@ import { OktaAuth, toRelativeUrl } from "@okta/okta-auth-js";
 import oktaConfig from "./oktaConfig";
 import Logout from "./routes/Logout";
 import SecureLayout from "./SecureLayout";
+import Account from "./routes/Account";
 
 
 
@@ -47,19 +45,15 @@ function App() {
               <Route path="message/:contact_number" element={<Chat />} />
               <Route path="voice" element={<Voice />} />
             </Route>
-            <Route path="settings">
-              <Route index element={<Settings />} />
-              <Route path="phone">
-                <Route path="new" element={<AddPhoneForm />} />
-                <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
-              </Route>
+          </Route>
+          <Route path="settings">
+            <Route index element={<Settings />} />
+            <Route path="phone">
+              <Route path="new" element={<AddPhoneForm />} />
+              <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
             </Route>
           </Route>
-          <Route path="configuration" element={<ConfigLayout />}>
-            <Route index element={<Configuration />} />
-            <Route path="account" element={<Configuration />} />
-            <Route path="application/new" element={<AddApplicationForm />} />
-          </Route>
+          <Route path="init/account" element={<Account />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

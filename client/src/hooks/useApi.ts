@@ -1,6 +1,6 @@
 import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
-import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber } from '../Types';
+import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber, IAccount } from '../Types';
 
 function useApi() {
 
@@ -10,7 +10,7 @@ function useApi() {
 
     let newInit = {};
 
-    if(authState && authState.accessToken) {
+    if (authState && authState.accessToken) {
       newInit = { headers: { Authorization: 'Bearer ' + authState.accessToken.accessToken } };
 
       if (init) {
@@ -254,6 +254,36 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
+  const getAccount = useCallback(async () => {
+
+    const result = await fetchWithAuth(`/api/v1/account`);
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IAccount;
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+  const setAccount = useCallback(async ({ account_sid, api_key, api_secret }: { account_sid: string, api_key: string, api_secret: string }) => {
+
+    const result = await postWithAuth(
+      `/api/v1/account`, { account_sid, api_key, api_secret });
+
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IAccount;
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [postWithAuth]);
+
   const setConfiguration = useCallback(async (sid: string) => {
 
     const result = await postWithAuth(
@@ -359,7 +389,9 @@ function useApi() {
     getApplicationById,
     createApplication,
     getAllNumber,
-    deleteCall
+    deleteCall,
+    getAccount,
+    setAccount
   };
 }
 

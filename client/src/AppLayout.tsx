@@ -1,11 +1,9 @@
 import { useContext, useEffect } from "react";
-import Container from "react-bootstrap/Container";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import Footer from "./components/Footer";
-import Header from './components/Header';
-import ConfigProvider from "./providers/ConfigProvider";
+import AccountProvider from "./providers/AccountProvider";
 import PhoneProvider, { PhoneContext } from "./providers/PhoneProvider";
 import SocketProvider from "./providers/SocketProvider";
+import TwimlAppProvider from "./providers/TwimlAppProvider";
 import VoiceDeviceProvider from "./providers/VoiceDeviceProvider";
 
 const LOCAL_STORE_SELECTED_PHONE_ID_KEY = 'selectedPhoneId';
@@ -59,19 +57,17 @@ function AppLayout() {
   }, [params, setSelectedPhone, phoneList, navigate]);
 
   return (
-    <ConfigProvider>
-      <PhoneProvider>
-        <VoiceDeviceProvider>
-          <SocketProvider>
-            <Header />
-            <Container className="mt-3" fluid>
+    <AccountProvider>
+      <TwimlAppProvider>
+        <PhoneProvider>
+          <VoiceDeviceProvider>
+            <SocketProvider>
               <Outlet />
-            </Container>
-            <Footer />
-          </SocketProvider>
-        </VoiceDeviceProvider>
-      </PhoneProvider>
-    </ConfigProvider>
+            </SocketProvider>
+          </VoiceDeviceProvider>
+        </PhoneProvider>
+      </TwimlAppProvider>
+    </AccountProvider>
   )
 }
 

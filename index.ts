@@ -79,6 +79,8 @@ app.put('/api/v1/phone/:id', routes.phoneController.update);
 app.delete('/api/v1/phone/:id', routes.phoneController.delete);
 
 app.get('/api/v1/account', routes.accountController.get);
+app.post('/api/v1/account', routes.accountController.add);
+app.put('/api/v1/account', routes.accountController.update);
 app.get('/api/v1/configuration', routes.configurationController.get);
 app.post('/api/v1/configuration', routes.configurationController.set);
 
@@ -103,8 +105,10 @@ app.get('/*', (_, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
   handleError(err, res);
 });
 
-httpServer.listen(PORT);
+httpServer.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});

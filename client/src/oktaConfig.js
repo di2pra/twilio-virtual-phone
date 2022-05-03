@@ -17,11 +17,12 @@ const BASENAME = process.env.REACT_APP_PUBLIC_URL || '';
 const REDIRECT_URI = `${window.location.origin}${BASENAME}/login/callback`;
 
 const oktaConfig = {
+  devMode: process.env.NODE_ENV === 'development',
   oidc: {
     clientId: CLIENT_ID,
     issuer: ISSUER,
     redirectUri: REDIRECT_URI,
-    scopes: ['openid', 'profile', 'email'],
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
     pkce: true,
     disableHttpsCheck: OKTA_TESTING_DISABLEHTTPSCHECK
   },
@@ -31,6 +32,9 @@ const oktaConfig = {
   app: {
     basename: BASENAME
   },
+  tokenManager: {
+    autoRenew: true
+  }
 };
 
 export default oktaConfig;

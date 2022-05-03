@@ -68,3 +68,14 @@ export interface IUser {
   name: string;
   email: string;
 }
+
+export interface IAccount {
+  account_id: number;
+  username: string;
+  account_sid: string;
+  api_key: string;
+  api_secret: string;
+  twiml_app_sid: string;
+  created_on: Date;
+  updated_on: Date;
+}

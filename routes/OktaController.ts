@@ -35,19 +35,19 @@ export default class OktaController {
   
       response.locals.jwt = jwt;
   
-      let accountData = await this.account.getByUsername(jwt.claims.sub);
+      let accountData = await this.account.getRedactedByUsername(jwt.claims.sub);
 
-      if(accountData === null) {
+      /*if(accountData === null) {
         const newUserId = await this.account.create(jwt.claims.sub);
         accountData = await this.account.getById(newUserId);
-      }
+      }*/
 
       response.locals.accountData = accountData;
   
       next();
   
-    } catch (error : any) {
-      throw new ErrorHandler(500, error.message);
+    } catch (error) {
+      next(error)
     }
   }
 

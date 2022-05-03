@@ -1,21 +1,20 @@
-import { createContext, FC, useCallback, useEffect, useState } from "react";
+import { createContext, FC, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import useApi from "../hooks/useApi";
-import { IApplication, IConfig } from "../Types";
+import { IAccount } from "../Types";
 
-export const ConfigContext = createContext<{
-  config: IConfig | null;
-  updateConfig?: (application: IApplication) => void
+export const AccountContext = createContext<{
+  accountInfo: IAccount | null;
 }>({
-  config: null
+  accountInfo: null
 });
 
 const AccountProvider: FC = ({ children }) => {
 
-  const { getConfiguration, setConfiguration } = useApi();
+  const { getAccount } = useApi();
 
-  const [config, setConfig] = useState<IConfig | null>(null);
+  const [accountInfo, setAccountInfo] = useState<IAccount | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
 
@@ -23,9 +22,9 @@ const AccountProvider: FC = ({ children }) => {
 
     let isMounted = true;
 
-    getConfiguration().then((data) => {
+    getAccount().then((data) => {
       if (isMounted) {
-        setConfig(data);
+        setAccountInfo(data);
         setIsLoading(false);
       }
     });
@@ -34,49 +33,29 @@ const AccountProvider: FC = ({ children }) => {
       isMounted = false;
     }
 
-  }, [getConfiguration]);
-
-  const updateConfig = useCallback((application: IApplication) => {
-
-    let isMounted = true;
-
-    setIsLoading(true);
-
-    setConfiguration(application.sid).then(data => {
-      if (isMounted) {
-        setConfig(data);
-        setIsLoading(false);
-      }
-    })
-
-    return () => {
-      isMounted = false;
-    }
-
-  }, [setConfiguration]);
+  }, [getAccount]);
 
   if (isLoading) {
     return (
       <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
         <Spinner className="mb-3" animation="border" variant="danger" />
-        <h3>Loading Configuration...</h3>
+        <h3>Loading Account Information...</h3>
       </div>
     )
   }
 
-  if (config === null) {
+  if (accountInfo === null) {
     return (
-      <Navigate to="/configuration" replace />
+      <Navigate to="/init/account" />
     )
   }
 
   return (
-    <ConfigContext.Provider value={{
-      config: config,
-      updateConfig: updateConfig
+    <AccountContext.Provider value={{
+      accountInfo: accountInfo
     }}>
       {children}
-    </ConfigContext.Provider>
+    </AccountContext.Provider>
   );
 
 }

@@ -1,30 +1,28 @@
 import { createContext, FC, useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
-import { Spinner } from "react-bootstrap";
-import { IUser } from "./Types";
+import { Container, Spinner } from "react-bootstrap";
+import { IDToken } from "@okta/okta-auth-js";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export const UserContext = createContext<{
-  loggedInUser?: IUser;
+  loggedInUser?: IDToken["claims"];
 }>({});
 
 const SecureLayout: FC = () => {
 
-  const { oktaAuth, authState } = useOktaAuth();
+  const { authState } = useOktaAuth();
 
-  const [loggedInUser, setLoggedInUser] = useState<IUser>();
+  const [loggedInUser, setLoggedInUser] = useState<IDToken["claims"]>();
 
   useEffect(() => {
 
     if (authState?.isAuthenticated) {
-      oktaAuth.getUser().then((data) => {
-        setLoggedInUser(data as IUser);
-      }).catch((error) => {
-        oktaAuth.signOut()
-      });
+      setLoggedInUser(authState.idToken?.claims);
     }
 
-  }, [authState?.isAuthenticated])
+  }, [authState?.isAuthenticated, authState?.idToken?.claims])
 
   if (!authState) {
     return (
@@ -52,7 +50,11 @@ const SecureLayout: FC = () => {
     <UserContext.Provider value={{
       loggedInUser: loggedInUser
     }}>
-      <Outlet />
+      <Header />
+      <Container className="mt-3" fluid>
+        <Outlet />
+      </Container>
+      <Footer />
     </UserContext.Provider>
   )
 
