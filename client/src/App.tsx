@@ -16,6 +16,7 @@ import oktaConfig from "./oktaConfig";
 import Logout from "./routes/Logout";
 import SecureLayout from "./SecureLayout";
 import Account from "./routes/Account";
+import Configuration from "./routes/Configuration";
 
 
 
@@ -54,6 +55,7 @@ function App() {
             </Route>
           </Route>
           <Route path="init/account" element={<Account />} />
+          <Route path="init/twiml" element={<Configuration />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

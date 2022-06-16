@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
 import { ErrorHandler } from '../helpers.js';
+import pgClient from '../providers/pgClient.js';
 
 export type IAccount = {
   account_id: number;
@@ -14,12 +14,6 @@ export type IAccount = {
 
 export default class Account {
 
-  pool: Pool
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   static redactData = (data: IAccount) => {
     return {
       ...data,
@@ -29,10 +23,10 @@ export default class Account {
     } as IAccount
   }
 
-  getRedactedById = async (account_id: number) => {
+  static getRedactedById = async (account_id: number) => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
+      const results = await pgClient.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
       if (results.rows[0]) {
         return Account.redactData(results.rows[0]);
       } else {
@@ -44,10 +38,10 @@ export default class Account {
 
   }
 
-  getById = async (account_id: number) => {
+  static getById = async (account_id: number) => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
+      const results = await pgClient.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
       if (results.rows[0]) {
         return results.rows[0];
       } else {
@@ -59,10 +53,10 @@ export default class Account {
 
   }
 
-  getRedactedByUsername = async (username: string) => {
+  static getRedactedByUsername = async (username: string) => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM account WHERE username = $1', [username]);
+      const results = await pgClient.query('SELECT * FROM account WHERE username = $1', [username]);
       if (results.rows[0]) {
         return Account.redactData(results.rows[0]) as IAccount;
       } else {
@@ -74,25 +68,28 @@ export default class Account {
 
   }
 
-  getByUsername = async (username: string) => {
+  static getByUsername = async (username: string) => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM account WHERE username = $1', [username]);
+
+      const results = await pgClient.query('SELECT * FROM account WHERE username = $1', [username]);
+      
       if (results.rows[0]) {
-        return results.rows[0];
-      } else {
-        return null;
+        return results.rows[0] as IAccount;
       }
+
+      throw new Error('Not Found');
+
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)
     }
 
   }
 
-  create = async ({ username, account_sid, api_key, api_secret }: { username: string, account_sid: string, api_key: string, api_secret: string }) => {
+  static create = async ({ username, account_sid, api_key, api_secret }: { username: string, account_sid: string, api_key: string, api_secret: string }) => {
 
     try {
-      const result = await this.pool.query('INSERT INTO account(username, account_sid, api_key, api_secret, created_on, updated_on) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING account_id', [username, account_sid, api_key, api_secret]);
+      const result = await pgClient.query('INSERT INTO account(username, account_sid, api_key, api_secret, created_on, updated_on) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING account_id', [username, account_sid, api_key, api_secret]);
       return result.rows[0].account_id;
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)
@@ -100,10 +97,10 @@ export default class Account {
 
   }
 
-  updateTwimlAppByUsername = async ({ username, twiml_app_sid }: { username: string, twiml_app_sid: string }) => {
+  static updateTwimlAppByUsername = async ({ username, twiml_app_sid }: { username: string, twiml_app_sid: string }) => {
 
     try {
-      const result = await this.pool.query('UPDATE account SET twiml_app_sid = $1, updated_on = NOW() WHERE user_id = $2 RETURNING account_id', [username, twiml_app_sid]);
+      const result = await pgClient.query('UPDATE account SET twiml_app_sid = $1, updated_on = NOW() WHERE user_id = $2 RETURNING account_id', [username, twiml_app_sid]);
       return result.rows[0].account_id;
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)

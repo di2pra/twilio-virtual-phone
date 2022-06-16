@@ -8,10 +8,8 @@ import oktaConfig from './../oktaConfig.js';
 export default class OktaController {
 
   private oktaJwtVerifier: OktaJwtVerifier
-  private account : Account
 
   constructor(pgClient: Pool) {
-    this.account = new Account(pgClient);
     this.oktaJwtVerifier = new OktaJwtVerifier({
       clientId: oktaConfig.resourceServer.oidc.clientId,
       issuer: oktaConfig.resourceServer.oidc.issuer,
@@ -35,12 +33,7 @@ export default class OktaController {
   
       response.locals.jwt = jwt;
   
-      let accountData = await this.account.getRedactedByUsername(jwt.claims.sub);
-
-      /*if(accountData === null) {
-        const newUserId = await this.account.create(jwt.claims.sub);
-        accountData = await this.account.getById(newUserId);
-      }*/
+      let accountData = await Account.getRedactedByUsername(jwt.claims.sub);
 
       response.locals.accountData = accountData;
   
