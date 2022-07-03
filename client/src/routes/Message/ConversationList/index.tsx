@@ -1,14 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import ListGroup from "react-bootstrap/ListGroup";
+import Row from "react-bootstrap/Row";
+import LoadingRow from "../../../components/LoadingRow";
 import useAlertCard, { AlertMessageType } from "../../../hooks/useAlertCard";
 import useApi from "../../../hooks/useApi";
 import { PhoneContext } from "../../../providers/PhoneProvider";
 import { SocketContext } from "../../../providers/SocketProvider";
-import ConversationItem from "./ConversationItem";
 import { IConversation } from "../../../Types";
-import LoadingRow from "../../../components/LoadingRow";
+import ConversationItem from "./ConversationItem";
 
 
 function ConversationList() {
@@ -16,7 +16,7 @@ function ConversationList() {
   const { selectedPhone } = useContext(PhoneContext);
   const { socket } = useContext(SocketContext);
 
-  const { getConversationListByPhoneId } = useApi();
+  const { getConversationListByPhoneSid } = useApi();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
@@ -29,7 +29,7 @@ function ConversationList() {
     if (selectedPhone) {
       setIsLoading(true);
 
-      getConversationListByPhoneId(selectedPhone.phone_id).then(
+      getConversationListByPhoneSid(selectedPhone.sid).then(
         (data) => {
           if (isComponentMounted) {
 
@@ -60,11 +60,11 @@ function ConversationList() {
       isComponentMounted = false;
     }
 
-  }, [selectedPhone, getConversationListByPhoneId, setAlertMessage]);
+  }, [selectedPhone, getConversationListByPhoneSid, setAlertMessage]);
 
   const refreshMessageListener = useCallback(() => {
     if (selectedPhone) {
-      getConversationListByPhoneId(selectedPhone.phone_id).then(
+      getConversationListByPhoneSid(selectedPhone.sid).then(
         (data) => {
           setConversationList(data);
           var audio = new Audio('/notification.mp3');
@@ -72,7 +72,7 @@ function ConversationList() {
         }
       )
     }
-  }, [selectedPhone, getConversationListByPhoneId])
+  }, [selectedPhone, getConversationListByPhoneSid])
 
   useEffect(() => {
     if (socket) {
@@ -84,7 +84,7 @@ function ConversationList() {
         socket.off('refreshMessage', refreshMessageListener);
       }
     }
-  }, [socket, getConversationListByPhoneId, selectedPhone, refreshMessageListener]);
+  }, [socket, getConversationListByPhoneSid, selectedPhone, refreshMessageListener]);
 
 
   if (!selectedPhone) {

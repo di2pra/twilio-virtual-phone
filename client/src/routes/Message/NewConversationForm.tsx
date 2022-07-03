@@ -1,13 +1,13 @@
 import { useCallback, useContext, useState } from 'react';
-import useApi from '../../hooks/useApi';
-import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
-import Form from 'react-bootstrap/Form';
+import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { PhoneContext } from '../../providers/PhoneProvider';
+import Form from 'react-bootstrap/Form';
 import { Link, useNavigate } from 'react-router-dom';
-import { Col, Row } from 'react-bootstrap';
+import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
+import useApi from '../../hooks/useApi';
 import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
+import { PhoneContext } from '../../providers/PhoneProvider';
 
 
 const stateSchema: FormSchema = {
@@ -40,7 +40,7 @@ function NewConversationForm() {
 
   const goToConversation = useCallback((number: string) => {
     if (selectedPhone) {
-      navigate(`/${selectedPhone.phone_id}/message/${number}`, { replace: false });
+      navigate(`/${selectedPhone.sid}/message/${number}`, { replace: false });
     }
   }, [navigate, selectedPhone]);
 
@@ -52,8 +52,8 @@ function NewConversationForm() {
       setIsSending(true);
 
       sendMessage({
-        from: selectedPhone.number,
-        to: state.to.value,
+        from_sid: selectedPhone.sid,
+        to_number: state.to.value,
         body: state.body.value
       })
         .then(
@@ -96,7 +96,7 @@ function NewConversationForm() {
             <Form onSubmit={(e) => { handleOnSubmit(e, processSendMessage) }}>
               <Form.Group className="mb-3" controlId="fromNumber">
                 <Form.Label>From :</Form.Label>
-                <Form.Control disabled value={selectedPhone.number} name='fromNumber' type="tel" />
+                <Form.Control disabled value={selectedPhone.phoneNumber} name='fromNumber' type="tel" />
               </Form.Group>
               <Form.Group className="mb-3" controlId="to">
                 <Form.Label>To :</Form.Label>
@@ -109,7 +109,7 @@ function NewConversationForm() {
                 <div className="invalid-feedback">{state.body.errorMessage}</div>
               </Form.Group>
               <Button variant="primary" type="submit" disabled={isSending}>{isSending ? 'Sending...' : 'Send'}</Button>{' '}
-              <Link to={`/${selectedPhone.phone_id}/message`} replace>
+              <Link to={`/${selectedPhone.sid}/message`} replace>
                 <Button variant="danger" type="button">Cancel</Button>
               </Link>
             </Form>

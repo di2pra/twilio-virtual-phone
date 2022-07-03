@@ -3,13 +3,13 @@ import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { IPhoneNumber, ITwilioPhoneNumber  } from "../Types";
+import { ITwilioPhoneNumber } from "../Types";
 
 export const PhoneContext = createContext<{
-  phoneList: IPhoneNumber[];
-  selectedPhone: IPhoneNumber | null;
-  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhoneNumber | null>> | null,
-  setPhoneList?: React.Dispatch<React.SetStateAction<IPhoneNumber[]>>
+  phoneList: ITwilioPhoneNumber[];
+  selectedPhone: ITwilioPhoneNumber | null;
+  setSelectedPhone: React.Dispatch<React.SetStateAction<ITwilioPhoneNumber | null>> | null,
+  setPhoneList?: React.Dispatch<React.SetStateAction<ITwilioPhoneNumber[]>>
 }>({
   phoneList: [],
   selectedPhone: null,
@@ -18,11 +18,11 @@ export const PhoneContext = createContext<{
 
 const PhoneProvider: FC = ({ children }) => {
 
-  const { getAllPhone, getAllNumber } = useApi();
+  const { getAllPhone } = useApi();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [phoneList, setPhoneList] = useState<IPhoneNumber[]>([]);
-  const [selectedPhone, setSelectedPhone] = useState<IPhoneNumber | null>(null);
+  const [phoneList, setPhoneList] = useState<ITwilioPhoneNumber[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState<ITwilioPhoneNumber | null>(null);
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
@@ -33,24 +33,8 @@ const PhoneProvider: FC = ({ children }) => {
     getAllPhone().then(
       (appPhoneData) => {
 
-        const numberList = appPhoneData.map(item => item.number);
-
-        if (numberList.length > 0) {
-
-          getAllNumber(numberList).then((twilioPhoneData) => {
-
-            const bothPhoneData = appPhoneData.map((item, index) => {
-              return { ...item, ...twilioPhoneData[index] as ITwilioPhoneNumber }
-            })
-
-            setPhoneList(bothPhoneData);
-            setIsLoading(false);
-
-          })
-
-        } else {
-          setIsLoading(false);
-        }
+        setPhoneList(appPhoneData);
+        setIsLoading(false);
 
       }).catch(
         (error) => {
@@ -63,7 +47,7 @@ const PhoneProvider: FC = ({ children }) => {
           setIsLoading(false);
         })
 
-  }, [getAllPhone, getAllNumber, setAlertMessage]);
+  }, [getAllPhone, setAlertMessage]);
 
   useEffect(() => {
     loadPhoneList();

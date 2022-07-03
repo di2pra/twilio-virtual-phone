@@ -9,29 +9,39 @@ export default class IncomingPhoneNumbers {
     this.twilioClient = twilioClient;
   }
 
-  getAll = async (phoneNumbers?: string[]) => {
+  getAll = async () => {
+
+    try {
+
+      return await this.twilioClient.incomingPhoneNumbers.list({ limit: 50 });
+
+    } catch (error) {
+      throw new ErrorHandler(500, 'Internal Error')
+    }
+
+  }
+
+  getBySid = async (phone_sid: string) => {
+
+    try {
+
+      return await this.twilioClient.incomingPhoneNumbers(phone_sid).fetch();
+
+    } catch (error) {
+      throw new ErrorHandler(500, 'Internal Error')
+    }
+
+  }
+
+  getByApplicationId = async (twiml_app_sid: string) => {
 
     try {
 
       let responseData = Array();
 
-      if (phoneNumbers) {
+      const fullList = await this.twilioClient.incomingPhoneNumbers.list({ limit: 50 });
 
-        for (const number of phoneNumbers) {
-          const data = await this.twilioClient.incomingPhoneNumbers.list({ phoneNumber: number });
-
-          if (data.length === 1) {
-            responseData.push(data[0]);
-          }
-        }
-
-      } else {
-
-        responseData = await this.twilioClient.incomingPhoneNumbers.list();
-
-      }
-
-      return responseData;
+      return fullList.filter((item) => { return item.smsApplicationSid === twiml_app_sid && item.voiceApplicationSid === twiml_app_sid });
 
     } catch (error) {
       throw new ErrorHandler(500, 'Internal Error')

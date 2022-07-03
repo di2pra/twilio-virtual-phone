@@ -1,17 +1,17 @@
-import './index.scss';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import CloseButton from 'react-bootstrap/CloseButton';
-import Card from 'react-bootstrap/Card';
-import useApi from '../../../hooks/useApi';
-import MessageItem from './MessageItem';
-import Form from 'react-bootstrap/Form';
-import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
-import Button from 'react-bootstrap/Button';
 import { Spinner } from 'react-bootstrap';
-import { SocketContext } from '../../../providers/SocketProvider';
-import useForm, { FormSchema } from '../../../hooks/useForm';
-import { IMessage, IPhoneNumber } from '../../../Types';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import CloseButton from 'react-bootstrap/CloseButton';
+import Form from 'react-bootstrap/Form';
 import { Link, useNavigate } from 'react-router-dom';
+import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
+import useApi from '../../../hooks/useApi';
+import useForm, { FormSchema } from '../../../hooks/useForm';
+import { SocketContext } from '../../../providers/SocketProvider';
+import { IMessage, ITwilioPhoneNumber } from '../../../Types';
+import './index.scss';
+import MessageItem from './MessageItem';
 
 const stateSchema: FormSchema = {
   body: { value: '', errorMessage: '', isInvalid: false }
@@ -24,7 +24,7 @@ const validationStateSchema = {
 };
 
 type Props = {
-  selectedPhone: IPhoneNumber,
+  selectedPhone: ITwilioPhoneNumber,
   contact_number: string
 }
 
@@ -62,12 +62,12 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
     setIsLoading(true);
     setConversationMessageList([]);
 
-    getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
+    getMessageByConversation({ phone_id: selectedPhone.sid, contact_number: contact_number }).then(
       (data) => {
         if (isComponentMounted) {
 
           if (data.length === 0) {
-            navigate(`/${selectedPhone.phone_id}/message`, { replace: true });
+            navigate(`/${selectedPhone.sid}/message`, { replace: true });
           } else {
             setConversationMessageList(data);
             setIsLoading(false);
@@ -87,18 +87,18 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
       isComponentMounted = false;
     }
 
-  }, [selectedPhone.phone_id, contact_number, getMessageByConversation, navigate]);
+  }, [selectedPhone.sid, contact_number, getMessageByConversation, navigate]);
 
   const refreshMessageListener = useCallback(() => {
 
-    getMessageByConversation({ phone_id: selectedPhone.phone_id, contact_number: contact_number }).then(
+    getMessageByConversation({ phone_id: selectedPhone.sid, contact_number: contact_number }).then(
       (data) => {
         setConversationMessageList(data);
         scrollToBottom('smooth');
       }
     )
 
-  }, [getMessageByConversation, selectedPhone.phone_id, contact_number]);
+  }, [getMessageByConversation, selectedPhone.sid, contact_number]);
 
   useEffect(() => {
 
@@ -122,8 +122,8 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
     setAlertMessage(null);
 
     sendMessage({
-      from: selectedPhone.number,
-      to: contact_number,
+      from_sid: selectedPhone.sid,
+      to_number: contact_number,
       body: state.body.value
     })
       .then(
@@ -172,7 +172,7 @@ function Chatbox({ selectedPhone, contact_number }: Props) {
     <Card>
       <Card.Header className="d-flex flex-row align-items-center p-3">
         <p className='flex-grow-1 m-0'>{contact_number}</p>
-        <Link to={`/${selectedPhone.phone_id}/message`} replace>
+        <Link to={`/${selectedPhone.sid}/message`} replace>
           <CloseButton />
         </Link>
       </Card.Header>

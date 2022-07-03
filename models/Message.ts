@@ -6,7 +6,7 @@ export default class Message {
   static getById = async (id: number) => {
 
     try {
-      const results = await pgClient.query('SELECT * FROM message_phone WHERE message_id = $1', [id]);
+      const results = await pgClient.query('SELECT * FROM message WHERE message_id = $1', [id]);
 
       if (results.rows[0]) {
         return results.rows[0];
@@ -14,7 +14,7 @@ export default class Message {
         return null;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
     }
 
@@ -33,11 +33,11 @@ export default class Message {
 
   }
 
-  static getMessageByConversation = async (phone_id: number, contact_number: string) => {
+  static getMessageByConversation = async (phone_sid: string, contact_number: string) => {
 
     try {
 
-      const results = await pgClient.query('SELECT * FROM message_phone WHERE (from_phone_id = $1 AND to_number = $2) OR (to_phone_id = $1 AND from_number = $2) ORDER BY created_on ASC', [phone_id, contact_number]);
+      const results = await pgClient.query('SELECT * FROM message WHERE (from_sid = $1 AND to_number = $2) OR (to_sid = $1 AND from_number = $2) ORDER BY created_on ASC', [phone_sid, contact_number]);
 
       return results.rows;
     } catch (error) {
@@ -57,23 +57,23 @@ export default class Message {
 
   }
 
-  static getConversationListByPhoneId = async (phone_id: number) => {
+  static getConversationListByPhoneSid = async (phone_sid: string) => {
 
     try {
-      const result = await pgClient.query('SELECT conversation.contact_number, conversation.body, conversation.created_on FROM (SELECT DISTINCT ON (data_table.contact_number) data_table.contact_number, data_table.body, data_table.created_on FROM (SELECT (CASE WHEN from_phone_id = $1 THEN to_number WHEN to_phone_id = $1 THEN from_number END) as contact_number, body, created_on FROM message_phone WHERE from_phone_id = $1 OR to_phone_id = $1) data_table ORDER BY data_table.contact_number, data_table.created_on DESC) conversation ORDER BY conversation.created_on DESC', [phone_id]);
+      const result = await pgClient.query('SELECT conversation.contact_number, conversation.body, conversation.created_on FROM ( SELECT DISTINCT ON (data_table.contact_number) data_table.contact_number, data_table.body, data_table.created_on FROM ( SELECT ( CASE WHEN from_sid = $1 THEN to_number WHEN to_sid = $1 THEN from_number END ) as contact_number, body, created_on FROM message WHERE from_sid = $1 OR to_sid = $1 ) data_table ORDER BY data_table.contact_number, data_table.created_on DESC ) conversation ORDER BY conversation.created_on DESC', [phone_sid]);
       return result.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
     }
 
   }
 
-  static create = async ({ from_number, to_number, body }: { from_number: string; to_number: string; body: string }) => {
+  static create = async ({ from_number, from_sid, to_number, to_sid, body }: { from_number: string; from_sid?: string; to_number: string; to_sid?: string; body: string }) => {
 
     try {
-      const result = await pgClient.query('INSERT INTO message(from_number, to_number, body, created_on) VALUES ($1, $2, $3, $4) RETURNING message_id', [from_number, to_number, body, new Date()]);
+      const result = await pgClient.query('INSERT INTO message(from_sid, from_number, to_sid, to_number, body, created_on) VALUES ($1, $2, $3, $4, $5, $6) RETURNING message_id', [from_sid || null, from_number, to_sid || null, to_number, body, new Date()]);
       return result.rows[0].message_id;
-    } catch (error) {
+    } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
     }
 

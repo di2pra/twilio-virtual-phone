@@ -1,14 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import useForm, { FormSchema } from '../../hooks/useForm';
-import useApi from '../../hooks/useApi';
-import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
-import Form from 'react-bootstrap/Form';
+import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { PhoneContext } from '../../providers/PhoneProvider';
+import Form from 'react-bootstrap/Form';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Col, Row } from 'react-bootstrap';
-import { IAppPhoneNumber } from '../../Types';
+import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
+import useApi from '../../hooks/useApi';
+import useForm, { FormSchema } from '../../hooks/useForm';
+import { PhoneContext } from '../../providers/PhoneProvider';
+import { ITwilioPhoneNumber } from '../../Types';
 
 
 const stateSchema: FormSchema = {
@@ -34,7 +34,7 @@ function EditPhoneForm() {
 
   const [initState, setInitState] = useState<FormSchema>(stateSchema);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
-  const [selectedPhone, setSelectedPhone] = useState<IAppPhoneNumber | null>(null);
+  const [selectedPhone, setSelectedPhone] = useState<ITwilioPhoneNumber | null>(null);
 
   const { state, handleOnChange, handleOnSubmit } = useForm(initState, validationStateSchema);
 
@@ -44,7 +44,7 @@ function EditPhoneForm() {
     let isMounted = true;
 
     const locationState = location.state as {
-      selectedPhone: IAppPhoneNumber
+      selectedPhone: ITwilioPhoneNumber
     } | null;
 
     if (locationState === null) {
@@ -80,9 +80,9 @@ function EditPhoneForm() {
         return {
           ...prevState,
           ...{
-            number: { ...prevState.number, ...{ value: selectedPhone.number } },
-            alias: { ...prevState.alias, ...{ value: selectedPhone.alias } },
-            id: { ...prevState.id, ...{ value: selectedPhone.phone_id.toString() } }
+            number: { ...prevState.number, ...{ value: selectedPhone.phoneNumber } },
+            alias: { ...prevState.alias, ...{ value: selectedPhone.friendlyName } },
+            id: { ...prevState.id, ...{ value: selectedPhone.sid } }
           }
         };
       })

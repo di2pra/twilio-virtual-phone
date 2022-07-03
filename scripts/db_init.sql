@@ -9,17 +9,12 @@ CREATE TABLE IF NOT EXISTS account (
 	updated_on TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS configuration (
-	configuration_id serial PRIMARY KEY,
-	version integer NOT NULL,
-	body TEXT,
-	created_on TIMESTAMP NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS message (
 	message_id serial PRIMARY KEY,
 	from_number VARCHAR ( 50 ) NOT NULL,
+	from_sid VARCHAR ( 50 ),
 	to_number VARCHAR ( 50 ) NOT NULL,
+	to_sid VARCHAR ( 50 ),
 	body TEXT,
 	created_on TIMESTAMP NOT NULL
 );

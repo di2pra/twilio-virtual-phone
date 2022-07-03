@@ -24,18 +24,16 @@ const routes = (app: Express) => {
     .put(AccountController.updateTwimlApp);
 
   app.post(`${API_BASE_PATH}/message`, MessageController.sendMessage);
-  app.get(`${API_BASE_PATH}/message/phone/:id/conversation`, MessageController.getConversationListByPhone);
-  app.get(`${API_BASE_PATH}/message/phone/:id/conversation/:number`, MessageController.getConversationMessageList);
+  app.get(`${API_BASE_PATH}/message/phone/:sid/conversation`, MessageController.getConversationListByPhone);
+  app.get(`${API_BASE_PATH}/message/phone/:sid/conversation/:number`, MessageController.getConversationMessageList);
 
 
   app.get(`${API_BASE_PATH}/call/phone/:id`, CallController.getByPhone);
   app.delete(`${API_BASE_PATH}/call/:id`, CallController.delete);
 
 
-  app.get(`${API_BASE_PATH}/phone/:id?`, PhoneController.get);
+  app.get(`${API_BASE_PATH}/phone/:sid?`, PhoneController.get);
   app.post(`${API_BASE_PATH}/phone`, PhoneController.add);
-  app.put(`${API_BASE_PATH}/phone/:id`, PhoneController.update);
-  app.delete(`${API_BASE_PATH}/phone/:id`, PhoneController.delete);
 
   app.get(`${API_BASE_PATH}/configuration`, ConfigurationController.get);
   app.post(`${API_BASE_PATH}/configuration`, ConfigurationController.set);

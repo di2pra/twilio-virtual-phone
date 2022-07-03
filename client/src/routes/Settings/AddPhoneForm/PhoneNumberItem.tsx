@@ -1,10 +1,10 @@
 import { Button, ListGroup } from "react-bootstrap";
-import { IAppPhoneNumber, ITwilioPhoneNumber } from "../../../Types";
+import { ITwilioPhoneNumber } from "../../../Types";
 
 type Props = {
   phoneNumber: ITwilioPhoneNumber;
   selectPhoneNumber: (phoneNumber: ITwilioPhoneNumber) => void
-  phoneList: IAppPhoneNumber[]
+  phoneList: ITwilioPhoneNumber[]
 }
 
 function PhoneNumberItem({ selectPhoneNumber, phoneNumber, phoneList }: Props) {
@@ -17,7 +17,7 @@ function PhoneNumberItem({ selectPhoneNumber, phoneNumber, phoneList }: Props) {
         <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>created on : {phoneNumber.dateCreated.toLocaleDateString()} at {phoneNumber.dateCreated.toLocaleTimeString()}</p>
         <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>updated on : {phoneNumber.dateUpdated.toLocaleDateString()} at {phoneNumber.dateUpdated.toLocaleTimeString()}</p>
       </div>
-      <Button className="mx-2" type='button' disabled={phoneList.map(item => item.number).includes(phoneNumber.phoneNumber)} variant='success' onClick={() => { selectPhoneNumber(phoneNumber) }}>Select</Button>
+      <Button className="mx-2" type='button' disabled={phoneList.map(item => item.phoneNumber).includes(phoneNumber.phoneNumber)} variant='success' onClick={() => { selectPhoneNumber(phoneNumber) }}>Select</Button>
     </ListGroup.Item>
   )
 }

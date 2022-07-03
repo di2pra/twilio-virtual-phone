@@ -10,7 +10,7 @@ export default class TwilioController {
 
       const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
 
-      const data = await twilioRessource.incomingPhoneNumbers.getAll(request.body.phoneNumbers);
+      const data = await twilioRessource.incomingPhoneNumbers.getAll();
 
       response.status(200).json(data);
 

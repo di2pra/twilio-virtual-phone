@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../helpers.js";
 import Message from "../models/Message.js";
+import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class MessageController {
 
@@ -9,11 +10,11 @@ export default class MessageController {
 
     try {
 
-      let data;
-
-      if (request.params.id) {
-        data = await Message.getConversationListByPhoneId(Number(request.params.id));
+      if (!request.params.sid) {
+        throw new ErrorHandler(400, 'Bad Request');
       }
+
+      const data = await Message.getConversationListByPhoneSid(request.params.sid);
 
       response.status(200).json(data);
 
@@ -27,14 +28,13 @@ export default class MessageController {
 
     try {
 
-      let data;
-
-      if (request.params.id && request.params.number) {
-        data = await Message.getMessageByConversation(Number(request.params.id), request.params.number);
-        response.status(200).json(data);
-      } else {
+      if (!request.params.sid && !request.params.number) {
         throw new ErrorHandler(400, 'Bad Request');
       }
+
+      const data = await Message.getMessageByConversation(request.params.sid, request.params.number);
+
+      response.status(200).json(data);
 
     } catch (error) {
       next(error)
@@ -49,12 +49,21 @@ export default class MessageController {
 
       const data = request.body;
 
-      if (!data.from || !data.to || !data.body) {
+      if (!data.from_sid || !data.to_number || !data.body) {
         throw new ErrorHandler(400, 'Bad Request')
       }
 
-      //await this.twilioRessource.messages.create(data);
-      const id = await Message.create({ from_number: data.from, to_number: data.to, body: data.body });
+      const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
+
+      const phone = await twilioRessource.incomingPhoneNumbers.getBySid(data.from_sid);
+
+      await twilioRessource.messages.create({
+        from_number: phone.phoneNumber,
+        to_number: data.to_number,
+        body: data.body
+      });
+
+      const id = await Message.create({ from_sid: data.from_sid, from_number: phone.phoneNumber, to_number: data.to_number, body: data.body });
       const message = await Message.getById(id);
       response.status(201).json(message);
 

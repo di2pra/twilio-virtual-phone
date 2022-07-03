@@ -1,6 +1,6 @@
 import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
-import { IAccount, IApplication, IAppPhoneNumber, ICall, IConfig, IConversation, IMessage, IPhoneNumber } from '../Types';
+import { IAccount, IApplication, ICall, IConfig, IConversation, IMessage, ITwilioPhoneNumber } from '../Types';
 
 function useApi() {
 
@@ -59,12 +59,12 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const sendMessage = useCallback(async ({ from, to, body }) => {
+  const sendMessage = useCallback(async ({ from_sid, to_number, body }) => {
 
     const result = await postWithAuth(`/api/v1/message`, {
-      from: from,
-      to: to,
-      body: body
+      from_sid,
+      to_number,
+      body
     });
 
     const data = await result.json();
@@ -154,12 +154,23 @@ function useApi() {
 
     if (result.ok) {
 
-      return data.map((item: any) => {
-        return {
-          ...item,
-          created_on: new Date(item.created_on)
-        }
-      }) as IAppPhoneNumber[];
+      return data as ITwilioPhoneNumber[];
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [fetchWithAuth]);
+
+
+  const getAllNumber = useCallback(async () => {
+
+    const result = await fetchWithAuth(`/api/v1/twilio/number`);
+    const data = await result.json();
+
+    if (result.ok) {
+
+      return data as ITwilioPhoneNumber[];
 
     } else {
       throw new Error(data.message);
@@ -201,30 +212,6 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const getAllNumber = useCallback(async (numbers?: string[]) => {
-
-    const result = await postWithAuth(`/api/v1/twilio/number`, {
-      phoneNumbers: numbers
-    });
-
-    const data = await result.json();
-
-    if (result.ok) {
-
-      return data.map((item: any) => {
-        return {
-          ...item,
-          dateUpdated: new Date(item.dateUpdated),
-          dateCreated: new Date(item.dateCreated)
-        }
-      }) as IPhoneNumber[];
-
-    } else {
-      throw new Error(data.message);
-    }
-
-  }, [postWithAuth]);
-
   const createApplication = useCallback(async ({ friendlyName }: { friendlyName: string }) => {
 
     const result = await postWithAuth(`/api/v1/twilio/application`, {
@@ -240,14 +227,14 @@ function useApi() {
 
   }, [postWithAuth]);
 
-  const getPhoneById = useCallback(async (phone_id: number) => {
+  const getPhoneById = useCallback(async (sid: number) => {
 
-    const result = await fetchWithAuth(`/api/v1/phone/${phone_id}`);
+    const result = await fetchWithAuth(`/api/v1/phone/${sid}`);
     const data = await result.json();
 
     if (result.ok) {
 
-      return data as IAppPhoneNumber;
+      return data as ITwilioPhoneNumber;
 
     } else {
       throw new Error(data.message);
@@ -353,9 +340,9 @@ function useApi() {
   }, [fetchWithAuth]);
 
 
-  const getConversationListByPhoneId = useCallback(async (phone_id: number) => {
+  const getConversationListByPhoneSid = useCallback(async (phone_sid: string) => {
 
-    const result = await fetchWithAuth(`/api/v1/message/phone/${phone_id}/conversation`);
+    const result = await fetchWithAuth(`/api/v1/message/phone/${phone_sid}/conversation`);
     const data = await result.json();
 
     if (result.ok) {
@@ -371,9 +358,9 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const getCallListByPhoneId = useCallback(async (phone_id: number) => {
+  const getCallListByPhoneSid = useCallback(async (phone_sid: string) => {
 
-    const result = await fetchWithAuth(`/api/v1/call/phone/${phone_id}`);
+    const result = await fetchWithAuth(`/api/v1/call/phone/${phone_sid}`);
     const data = await result.json();
 
     if (result.ok) {
@@ -408,21 +395,21 @@ function useApi() {
     sendMessage,
     getAllPhone,
     getMessageByConversation,
-    getConversationListByPhoneId,
+    getConversationListByPhoneSid,
     addPhone,
     updatePhone,
     deletePhone,
     getPhoneById,
-    getCallListByPhoneId,
+    getCallListByPhoneSid,
     getConfiguration,
     setConfiguration,
     getAllApplication,
     getApplicationById,
     createApplication,
-    getAllNumber,
     deleteCall,
     getAccount,
     setAccount,
+    getAllNumber,
     updateAccountTwimlApp
   };
 }

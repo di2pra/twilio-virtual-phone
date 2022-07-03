@@ -18,17 +18,17 @@ function CallHistory({ device, setCurrentCall, setCallData, refreshList }: Props
 
   const { selectedPhone } = useContext(PhoneContext);
 
-  const { getCallListByPhoneId, deleteCall } = useApi();
+  const { getCallListByPhoneSid, deleteCall } = useApi();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
   const [callHistoryList, setCallHistoryList] = useState<ICall[]>([]);
 
-  const updateCallList = useCallback((phone_id: number, isComponentMounted: boolean) => {
+  const updateCallList = useCallback((phone_sid: string, isComponentMounted: boolean) => {
 
     setIsLoading(true);
 
-    getCallListByPhoneId(phone_id).then(
+    getCallListByPhoneSid(phone_sid).then(
       (data) => {
         if (isComponentMounted) {
 
@@ -54,14 +54,14 @@ function CallHistory({ device, setCurrentCall, setCallData, refreshList }: Props
       }
     )
 
-  }, [getCallListByPhoneId, setAlertMessage])
+  }, [getCallListByPhoneSid, setAlertMessage])
 
   useEffect(() => {
 
     let isComponentMounted = true;
 
     if (selectedPhone) {
-      updateCallList(selectedPhone.phone_id, isComponentMounted)
+      updateCallList(selectedPhone.sid, isComponentMounted)
     }
 
     return () => {
@@ -77,7 +77,7 @@ function CallHistory({ device, setCurrentCall, setCallData, refreshList }: Props
       setIsLoading(true);
 
       deleteCall(id).then(() => {
-        updateCallList(selectedPhone.phone_id, true)
+        updateCallList(selectedPhone.sid, true)
       })
 
     }

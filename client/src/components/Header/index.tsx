@@ -5,7 +5,7 @@ import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { UserContext } from "../../SecureLayout";
-import { IPhoneNumber } from "../../Types";
+import { ITwilioPhoneNumber } from "../../Types";
 import { TwilioLogo } from "../Icons";
 import NavbarItem from "./NavbarItem";
 import PhoneDropdown from "./PhoneDropdown";
@@ -20,21 +20,19 @@ function Header() {
   let navigate = useNavigate();
   const { selectedPhone, phoneList, setSelectedPhone } = useContext(PhoneContext);
 
-  const updateSelectedPhone = useCallback((item: IPhoneNumber) => {
+  const updateSelectedPhone = useCallback((item: ITwilioPhoneNumber) => {
 
-    const currentNavLinkPhone = parseInt(params.phone_id || '');
+    const currentNavLinkPhone = params.phone_sid || '';
 
     if (setSelectedPhone) {
       setSelectedPhone(item);
 
-      if (currentNavLinkPhone !== item.phone_id) {
-        navigate(pathname.replace(`/${currentNavLinkPhone}/`, `/${item.phone_id}/`), { replace: false });
+      if (currentNavLinkPhone !== item.sid) {
+        navigate(pathname.replace(`/${currentNavLinkPhone}/`, `/${item.sid}/`), { replace: false });
       }
     }
 
-  }, [setSelectedPhone, pathname, navigate, params.phone_id]);
-
-
+  }, [setSelectedPhone, pathname, navigate, params.phone_sid]);
 
   return (
     <Navbar bg="white" expand="md">
@@ -53,8 +51,8 @@ function Header() {
             navbarScroll
           >
             <NavbarItem to="/" title="Home" />
-            {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/message`} title="Message" /> : null}
-            {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/voice`} title="Voice" /> : null}
+            {selectedPhone ? <NavbarItem to={`${selectedPhone.sid}/message`} title="Message" /> : null}
+            {selectedPhone ? <NavbarItem to={`${selectedPhone.sid}/voice`} title="Voice" /> : null}
             <NavbarItem to="settings" title="Settings" />
             <PhoneDropdown phoneList={phoneList} selectedPhone={selectedPhone} updateSelectedPhone={updateSelectedPhone} />
           </Nav>

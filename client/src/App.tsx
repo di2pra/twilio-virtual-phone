@@ -3,6 +3,7 @@ import { LoginCallback, Security } from '@okta/okta-react';
 import { Route, Routes, useNavigate } from "react-router-dom";
 import AppLayout from "./AppLayout";
 import oktaConfig from "./oktaConfig";
+import PhoneLayout from "./PhoneLayout";
 import Account from "./routes/Account";
 import Configuration from "./routes/Configuration";
 import Home from "./routes/Home";
@@ -39,12 +40,14 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/" element={<SecureLayout />}>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home />} />
-            <Route path=":phone_id">
-              <Route path="message" element={<Message />} />
-              <Route path="message/new" element={<NewConversationForm />} />
-              <Route path="message/:contact_number" element={<Chat />} />
-              <Route path="voice" element={<Voice />} />
+            <Route path="/" element={<PhoneLayout />}>
+              <Route index element={<Home />} />
+              <Route path=":phone_sid">
+                <Route path="message" element={<Message />} />
+                <Route path="message/new" element={<NewConversationForm />} />
+                <Route path="message/:contact_number" element={<Chat />} />
+                <Route path="voice" element={<Voice />} />
+              </Route>
             </Route>
           </Route>
           <Route path="settings">

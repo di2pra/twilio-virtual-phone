@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
-import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from 'react-icons/io';
-import { IConversation, IPhoneNumber } from "../../../Types";
+import { useNavigate } from "react-router-dom";
+import { IConversation, ITwilioPhoneNumber } from "../../../Types";
 
 type Props = {
   conversation: IConversation
-  selectedPhone: IPhoneNumber
+  selectedPhone: ITwilioPhoneNumber
 }
 
 function ConversationItem({ conversation, selectedPhone }: Props) {
@@ -14,8 +14,8 @@ function ConversationItem({ conversation, selectedPhone }: Props) {
   let navigate = useNavigate();
 
   const navigateToConversation = useCallback(() => {
-    navigate(`/${selectedPhone.phone_id}/message/${conversation.contact_number}`, { replace: false });
-  }, [navigate, selectedPhone.phone_id, conversation.contact_number]);
+    navigate(`/${selectedPhone.sid}/message/${conversation.contact_number}`, { replace: false });
+  }, [navigate, selectedPhone.sid, conversation.contact_number]);
 
   return (
     <ListGroup.Item
@@ -25,7 +25,7 @@ function ConversationItem({ conversation, selectedPhone }: Props) {
       <div className="ms-2 me-auto">
         <p className="fw-bold m-0">{conversation.contact_number}</p>
         <p className="my-1">{conversation.body}</p>
-        <p className="m-0 fw-light text-muted" style={{fontSize: '0.8rem'}}>{conversation.created_on.toLocaleDateString()} at {conversation.created_on.toLocaleTimeString()}</p>
+        <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>{conversation.created_on.toLocaleDateString()} at {conversation.created_on.toLocaleTimeString()}</p>
       </div>
       <IoIosArrowForward />
     </ListGroup.Item>

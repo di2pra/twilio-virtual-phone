@@ -50,6 +50,12 @@ const AccountProvider: FC = ({ children }) => {
     )
   }
 
+  if (accountInfo.twiml_app_sid === null) {
+    return (
+      <Navigate to="/init/twiml" />
+    )
+  }
+
   return (
     <AccountContext.Provider value={{
       accountInfo: accountInfo

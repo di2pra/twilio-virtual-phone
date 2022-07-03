@@ -1,16 +1,16 @@
 import { useCallback, useContext, useEffect, useState } from "react";
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
-import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
-import { PhoneContext } from "../../providers/PhoneProvider";
-import { ConfigContext } from "../../providers/ConfigProvider";
-import useApi from "../../hooks/useApi";
-import { IPhoneNumber } from "../../Types";
 import LoadingRow from "../../components/LoadingRow";
 import useAlertCard, { AlertMessageType } from "../../hooks/useAlertCard";
+import useApi from "../../hooks/useApi";
+import { ConfigContext } from "../../providers/ConfigProvider";
+import { PhoneContext } from "../../providers/PhoneProvider";
+import { ITwilioPhoneNumber } from "../../Types";
 
 export default function Settings() {
 
@@ -19,15 +19,15 @@ export default function Settings() {
   const { deletePhone } = useApi();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onDeletePhone = useCallback((phone_id: number) => {
+  const onDeletePhone = useCallback((phone_sid: string) => {
 
     setIsLoading(true);
-    deletePhone(phone_id).then(data => {
+    /*deletePhone(phone_id).then(data => {
       if (setPhoneList) {
         setPhoneList(data);
       }
       setIsLoading(false);
-    })
+    })*/
 
   }, [setPhoneList, deletePhone]);
 
@@ -41,7 +41,7 @@ export default function Settings() {
             </Link>
           </Col>
         </Row>
-        { isLoading ? <LoadingRow /> : <PhoneListTable phoneList={phoneList} onDeletePhone={onDeletePhone} />}
+        {isLoading ? <LoadingRow /> : <PhoneListTable phoneList={phoneList} onDeletePhone={onDeletePhone} />}
         <Row>
           <Col>
             <Alert variant="success">
@@ -62,17 +62,17 @@ export default function Settings() {
 }
 
 type PhoneListTableProps = {
-  phoneList: IPhoneNumber[];
-  onDeletePhone: (phone_id: number) => void
+  phoneList: ITwilioPhoneNumber[];
+  onDeletePhone: (phone_sid: string) => void
 }
 
-function PhoneListTable({phoneList, onDeletePhone} : PhoneListTableProps) {
+function PhoneListTable({ phoneList, onDeletePhone }: PhoneListTableProps) {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
   useEffect(() => {
 
-    if(phoneList.length === 0) {
+    if (phoneList.length === 0) {
       setAlertMessage({
         type: AlertMessageType.WARNING,
         message: 'No Phone Number Configured'
@@ -97,15 +97,15 @@ function PhoneListTable({phoneList, onDeletePhone} : PhoneListTableProps) {
               >
                 <div className="ms-2 me-auto">
                   <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>{item.sid}</p>
-                  <p className="fw-bold m-0">{item.alias}</p>
-                  <p className="my-1">{item.number}</p>
+                  <p className="fw-bold m-0">{item.friendlyName}</p>
+                  <p className="my-1">{item.phoneNumber}</p>
                   <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>SMS Application ID : {item.smsApplicationSid}</p>
                   <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>Voice Application ID : {item.voiceApplicationSid}</p>
                 </div>
-                <Link to={`/settings/phone/${item.phone_id}/edit`} state={{ selectedPhone: item }} replace>
+                <Link to={`/settings/phone/${item.sid}/edit`} state={{ selectedPhone: item }} replace>
                   <Button className="mx-2" type='button' variant='warning'>Edit</Button>
                 </Link>
-                <Button className="mx-2" type='button' variant='danger' onClick={() => { onDeletePhone(item.phone_id) }} >Remove</Button>
+                <Button className="mx-2" type='button' variant='danger' onClick={() => { onDeletePhone(item.sid) }} >Remove</Button>
               </ListGroup.Item>
             )
           })}

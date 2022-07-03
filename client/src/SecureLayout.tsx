@@ -1,10 +1,8 @@
-import { createContext, FC, useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { useOktaAuth } from '@okta/okta-react';
-import { Container, Spinner } from "react-bootstrap";
 import { IDToken } from "@okta/okta-auth-js";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import { useOktaAuth } from '@okta/okta-react';
+import { createContext, FC, useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
+import { Navigate, Outlet } from "react-router-dom";
 
 export const UserContext = createContext<{
   loggedInUser?: IDToken["claims"];
@@ -50,11 +48,7 @@ const SecureLayout: FC = () => {
     <UserContext.Provider value={{
       loggedInUser: loggedInUser
     }}>
-      <Header />
-      <Container className="mt-3" fluid>
-        <Outlet />
-      </Container>
-      <Footer />
+      <Outlet />
     </UserContext.Provider>
   )
 
