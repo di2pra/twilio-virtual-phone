@@ -5,7 +5,7 @@ import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { UserContext } from "../../SecureLayout";
-import { IPhoneNumber, IUser } from "../../Types";
+import { IPhoneNumber } from "../../Types";
 import { TwilioLogo } from "../Icons";
 import NavbarItem from "./NavbarItem";
 import PhoneDropdown from "./PhoneDropdown";
@@ -52,7 +52,7 @@ function Header() {
             className="me-auto my-2 my-lg-0"
             navbarScroll
           >
-            <NavbarItem to="/app" title="Home" />
+            <NavbarItem to="/" title="Home" />
             {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/message`} title="Message" /> : null}
             {selectedPhone ? <NavbarItem to={`${selectedPhone.phone_id}/voice`} title="Voice" /> : null}
             <NavbarItem to="settings" title="Settings" />
@@ -75,7 +75,7 @@ function LoggedInUserDropdown({ authState, loggedInUser }: Props) {
   return (
     <Nav>
       <NavDropdown title={loggedInUser.name} id="basic-nav-dropdown-user">
-      <NavDropdown.Item href="/account">Account</NavDropdown.Item>
+        <NavDropdown.Item href="/account">Account</NavDropdown.Item>
         <NavDropdown.Item href="/logout">Log out</NavDropdown.Item>
       </NavDropdown>
     </Nav>

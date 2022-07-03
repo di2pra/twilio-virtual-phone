@@ -14,16 +14,21 @@ const TwimlAppProvider: FC = ({ children }) => {
   const { accountInfo } = useContext(AccountContext);
 
   const [twimlApp, setTwimlApp] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
 
   useEffect(() => {
 
-    if(accountInfo?.twiml_app_sid) {
-      setTwimlApp(accountInfo?.twiml_app_sid)
+    if (accountInfo != null) {
+
+      if (accountInfo.twiml_app_sid) {
+        setTwimlApp(accountInfo?.twiml_app_sid)
+      }
+
+      setIsLoading(false);
     }
 
-  }, [accountInfo?.twiml_app_sid]);
+  }, [accountInfo]);
 
   if (isLoading) {
     return (
@@ -34,7 +39,7 @@ const TwimlAppProvider: FC = ({ children }) => {
     )
   }
 
-  if (twimlApp === null) {
+  if (twimlApp === null && accountInfo != null) {
     return (
       <Navigate to="/init/twiml" />
     )

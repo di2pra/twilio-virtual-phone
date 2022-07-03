@@ -1,18 +1,12 @@
-import { Pool } from 'pg';
 import { ErrorHandler } from '../helpers.js';
+import pgClient from '../providers/pgClient.js';
 
 export default class Call {
 
-  pool: Pool
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
-  getById = async (id: number) => {
+  static getById = async (id: number) => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM call_phone WHERE call_id = $1', [id]);
+      const results = await pgClient.query('SELECT * FROM call_phone WHERE call_id = $1', [id]);
 
       if (results.rows[0]) {
         return results.rows[0];
@@ -27,11 +21,11 @@ export default class Call {
   }
 
 
-  getByPhoneId = async (phone_id: number) => {
+  static getByPhoneId = async (phone_id: number) => {
 
     try {
 
-      const results = await this.pool.query('SELECT * FROM call_phone WHERE from_phone_id = $1 OR to_phone_id = $1 ORDER BY created_on DESC', [phone_id]);
+      const results = await pgClient.query('SELECT * FROM call_phone WHERE from_phone_id = $1 OR to_phone_id = $1 ORDER BY created_on DESC', [phone_id]);
 
       return results.rows;
     } catch (error) {
@@ -40,10 +34,10 @@ export default class Call {
 
   }
 
-  getAll = async () => {
+  static getAll = async () => {
 
     try {
-      const results = await this.pool.query('SELECT * FROM call');
+      const results = await pgClient.query('SELECT * FROM call');
       return results.rows;
     } catch (error) {
       throw new ErrorHandler(500, 'Internal DB Error')
@@ -51,10 +45,10 @@ export default class Call {
 
   }
 
-  create = async ({ from_number, to_number }: { from_number: string; to_number: string }) => {
+  static create = async ({ from_number, to_number }: { from_number: string; to_number: string }) => {
 
     try {
-      const result = await this.pool.query('INSERT INTO call(from_number, to_number, created_on) VALUES ($1, $2, $3) RETURNING call_id', [from_number, to_number, new Date()]);
+      const result = await pgClient.query('INSERT INTO call(from_number, to_number, created_on) VALUES ($1, $2, $3) RETURNING call_id', [from_number, to_number, new Date()]);
       return result.rows[0].call_id;
     } catch (error) {
       throw new ErrorHandler(500, 'Internal DB Error')
@@ -62,10 +56,10 @@ export default class Call {
 
   }
 
-  delete = async (id: number) => {
+  static delete = async (id: number) => {
 
     try {
-      const result = await this.pool.query('DELETE FROM call WHERE call_id = $1', [id]);
+      const result = await pgClient.query('DELETE FROM call WHERE call_id = $1', [id]);
       return id;
     } catch (error) {
       throw new ErrorHandler(500, 'Internal DB Error')

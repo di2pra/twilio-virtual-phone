@@ -1,28 +1,34 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Button, Col, ListGroup, Row, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useApi from "../../hooks/useApi";
 import useModalBox from "../../hooks/useModalBox";
-import { ConfigContext } from "../../providers/ConfigProvider";
 import { IApplication } from "../../Types";
 import ApplicationItem from "./ApplicationItem";
 
 const Configuration: FC = () => {
 
-  const { updateConfig } = useContext(ConfigContext);
+  const { updateAccountTwimlApp } = useApi();
+  let navigate = useNavigate();
 
   const { getAllApplication } = useApi();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [applicationList, setApplicationList] = useState<IApplication[]>([]);
 
+  const handleOnConfirmSelectApplication = useCallback((state: IApplication) => {
 
-  const handleOnConfirmSelectApplication = useCallback((context: IApplication | undefined) => {
+    setIsLoading(true);
 
-    if (context && updateConfig) {
-      updateConfig(context)
-    }
+    updateAccountTwimlApp({
+      twiml_app_sid: state.sid,
+    }).then(() => {
+      navigate('/');
+    }).catch((error) => {
+    }).finally(() => {
+      setIsLoading(false);
+    })
 
-  }, [updateConfig]);
+  }, [updateAccountTwimlApp])
 
   const { modalDom, initModal } = useModalBox<IApplication>({
     title: `Confirmation`,

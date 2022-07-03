@@ -73,7 +73,7 @@ export default class Account {
     try {
 
       const results = await pgClient.query('SELECT * FROM account WHERE username = $1', [username]);
-      
+
       if (results.rows[0]) {
         return results.rows[0] as IAccount;
       }
@@ -100,7 +100,7 @@ export default class Account {
   static updateTwimlAppByUsername = async ({ username, twiml_app_sid }: { username: string, twiml_app_sid: string }) => {
 
     try {
-      const result = await pgClient.query('UPDATE account SET twiml_app_sid = $1, updated_on = NOW() WHERE user_id = $2 RETURNING account_id', [username, twiml_app_sid]);
+      const result = await pgClient.query('UPDATE account SET twiml_app_sid = $1, updated_on = NOW() WHERE username = $2 RETURNING account_id', [twiml_app_sid, username]);
       return result.rows[0].account_id;
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)

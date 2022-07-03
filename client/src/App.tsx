@@ -1,22 +1,22 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
-import Home from "./routes/Home";
-import Settings from "./routes/Settings";
-import AppLayout from "./AppLayout";
-import NotFound from "./routes/NotFound";
-import Message from "./routes/Message";
-import NewConversationForm from "./routes/Message/NewConversationForm";
-import Chat from "./routes/Message/Chat";
-import EditPhoneForm from "./routes/Settings/EditPhoneForm";
-import AddPhoneForm from "./routes/Settings/AddPhoneForm";
-import Voice from "./routes/Voice";
-import Login from "./routes/Login";
-import { Security, LoginCallback } from '@okta/okta-react';
 import { OktaAuth, toRelativeUrl } from "@okta/okta-auth-js";
+import { LoginCallback, Security } from '@okta/okta-react';
+import { Route, Routes, useNavigate } from "react-router-dom";
+import AppLayout from "./AppLayout";
 import oktaConfig from "./oktaConfig";
-import Logout from "./routes/Logout";
-import SecureLayout from "./SecureLayout";
 import Account from "./routes/Account";
 import Configuration from "./routes/Configuration";
+import Home from "./routes/Home";
+import Login from "./routes/Login";
+import Logout from "./routes/Logout";
+import Message from "./routes/Message";
+import Chat from "./routes/Message/Chat";
+import NewConversationForm from "./routes/Message/NewConversationForm";
+import NotFound from "./routes/NotFound";
+import Settings from "./routes/Settings";
+import AddPhoneForm from "./routes/Settings/AddPhoneForm";
+import EditPhoneForm from "./routes/Settings/EditPhoneForm";
+import Voice from "./routes/Voice";
+import SecureLayout from "./SecureLayout";
 
 
 

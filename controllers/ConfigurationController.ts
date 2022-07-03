@@ -1,29 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import { Pool } from "pg";
 import { ErrorHandler } from "../helpers.js";
 import Configuration from "../models/Configuration.js";
 import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class ConfigurationController {
 
-  private twilioRessource: TwilioRessource
-  private configuration: Configuration;
-
-  constructor(pgClient: Pool, twilioRessource : TwilioRessource) {
-    this.twilioRessource = twilioRessource;
-    this.configuration = new Configuration(pgClient)
-  }
-
-  get = async (_ : Request, response : Response, next : NextFunction) => {
+  static get = async (_: Request, response: Response, next: NextFunction) => {
 
     try {
 
-      const config = await this.configuration.getLast();
+      const config = await Configuration.getLast();
 
       if (config) {
 
         const configData = JSON.parse(config.data);
-        
+
         response.status(200).json(configData);
 
       } else {
@@ -38,7 +29,7 @@ export default class ConfigurationController {
 
   }
 
-  set = async (request : Request, response : Response, next : NextFunction) => {
+  static set = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -52,13 +43,15 @@ export default class ConfigurationController {
         hostname = process.env.NGROK_HOSTNAME
       }
 
-      const data = await this.twilioRessource.applications.update({
+      const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
+
+      const data = await twilioRessource.applications.update({
         sid: String(request.body.sid),
         smsUrl: `https://${hostname}/webhook/message`,
         voiceUrl: `https://${hostname}/webhook/voice`
       });
 
-      const value = await this.configuration.create({
+      const value = await Configuration.create({
         version: 1,
         data: JSON.stringify({
           twimlApp: data
@@ -75,20 +68,5 @@ export default class ConfigurationController {
 
   }
 
-  /*deleteConfiguration = async (_ : Request, response : Response, next : NextFunction) => {
-
-    try {
-
-      response.status(200).json({});
-
-    } catch (error) {
-
-      next(error);
-
-    }
-
-  }*/
-
-  
 
 }

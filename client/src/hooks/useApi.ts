@@ -1,6 +1,6 @@
 import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
-import { IApplication, ICall, IConfig, IConversation, IMessage, IAppPhoneNumber, IPhoneNumber, IAccount } from '../Types';
+import { IAccount, IApplication, IAppPhoneNumber, ICall, IConfig, IConversation, IMessage, IPhoneNumber } from '../Types';
 
 function useApi() {
 
@@ -33,6 +33,21 @@ function useApi() {
 
     const init = {
       method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+
+    return fetchWithAuth(input, init)
+
+  }, [fetchWithAuth]);
+
+  const putWithAuth = useCallback(async (input: RequestInfo, body: object) => {
+
+    const init = {
+      method: "PUT",
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -284,6 +299,22 @@ function useApi() {
 
   }, [postWithAuth]);
 
+  const updateAccountTwimlApp = useCallback(async ({ twiml_app_sid }: { twiml_app_sid: string }) => {
+
+    const result = await putWithAuth(
+      `/api/v1/account`, { twiml_app_sid });
+
+    const data = await result.json();
+
+    if (result.ok) {
+      return data as IAccount;
+
+    } else {
+      throw new Error(data.message);
+    }
+
+  }, [putWithAuth]);
+
   const setConfiguration = useCallback(async (sid: string) => {
 
     const result = await postWithAuth(
@@ -360,7 +391,7 @@ function useApi() {
 
   const getVoiceAccessToken = useCallback(async () => {
 
-    const result = await fetchWithAuth(`/api/v1/voice/generateToken`);
+    const result = await fetchWithAuth(`/api/v1/twilioClient/generateToken`);
     const data = await result.json();
 
     if (result.ok) {
@@ -391,7 +422,8 @@ function useApi() {
     getAllNumber,
     deleteCall,
     getAccount,
-    setAccount
+    setAccount,
+    updateAccountTwimlApp
   };
 }
 

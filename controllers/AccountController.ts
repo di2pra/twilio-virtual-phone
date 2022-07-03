@@ -1,16 +1,10 @@
 import OktaJwtVerifier from "@okta/jwt-verifier";
-import { Express, NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import twilio from "twilio";
 import { ErrorHandler } from "../helpers.js";
 import Account from "../models/Account.js";
 
 export default class AccountController {
-
-  static route = (app: Express) => {
-    app.get('/api/v1/account', this.get);
-    app.post('/api/v1/account', this.add);
-    app.put('/api/v1/account', this.update);
-  }
 
   static get = async (_: Request, response: Response, next: NextFunction) => {
 
@@ -54,7 +48,7 @@ export default class AccountController {
 
   }
 
-  static update = async (request: Request, response: Response, next: NextFunction) => {
+  static updateTwimlApp = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
