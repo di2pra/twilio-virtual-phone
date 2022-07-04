@@ -1,3 +1,4 @@
+import { useOktaAuth } from '@okta/okta-react';
 import { createContext, FC, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -11,19 +12,32 @@ export const SocketContext = createContext<{
 
 const SocketProvider: FC = ({ children }) => {
 
+  const { authState } = useOktaAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
 
-    let newSocket = io(SOCKET_HOSTNAME);
+    let newSocket: Socket;
 
-    setSocket(newSocket);
+    if (authState) {
+
+      newSocket = io(SOCKET_HOSTNAME);
+
+      newSocket.on('connect', () => {
+        newSocket.emit('userToken', {
+          accessToken: authState.accessToken?.accessToken
+        })
+      })
+
+      setSocket(newSocket);
+
+    }
 
     return () => {
       newSocket.disconnect()
     }
 
-  }, []);
+  }, [authState]);
 
   return (
     <SocketContext.Provider value={{

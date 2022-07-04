@@ -39,7 +39,7 @@ function App() {
 
   }, [oktaAuth]);
 
-  const restoreOriginalUri = async (_oktaAuth: any, originalUri: string) => {
+  const restoreOriginalUri = async (_oktaAuth: OktaAuth, originalUri: string) => {
     navigate(toRelativeUrl(originalUri || '/', window.location.origin));
   };
 

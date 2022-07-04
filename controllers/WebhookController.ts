@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
+import { Server } from "socket.io";
 import twilio from 'twilio';
 import { ErrorHandler, isAValidPhoneNumber } from "../helpers.js";
 import Account from "../models/Account.js";
 import Call from "../models/Call.js";
 import Message from "../models/Message.js";
 import Phone from "../models/Phone.js";
+import Redis from "../providers/redisClient.js";
 
 const apiKey: string = process.env.TWILIO_API_KEY || '';
 const apiSecret: string = process.env.TWILIO_API_SECRET || '';
@@ -110,12 +112,21 @@ export default class WebhookController {
     const body = request.body.Body;
 
     const phoneInfo = await Phone.getByNumber(toNumber);
+    const accountInfo = await Account.getById(phoneInfo.fk_account_id);
 
-    const sockets = response.locals.sockets;
+    const socketServer: Server = response.locals.socketIoServer as Server;
 
-    const id = await Message.create({ from_number: fromNumber, to_number: toNumber, to_sid: phoneInfo.sid, body: body });
+    await Message.create({ from_number: fromNumber, to_number: toNumber, to_sid: phoneInfo.sid, body: body });
 
-    sockets.emit('refreshMessage');
+    const redisClient = await Redis.getClient();
+
+    const socketId = await redisClient.get(accountInfo.username);
+
+    if (socketId) {
+      const sockets = await socketServer.in(socketId).fetchSockets();
+      sockets[0].emit('refreshMessage');
+    }
+
 
     response.set("Content-Type", "text/xml").send();
 
