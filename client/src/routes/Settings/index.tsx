@@ -1,21 +1,17 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
-import LoadingRow from "../../components/LoadingRow";
 import useAlertCard, { AlertMessageType } from "../../hooks/useAlertCard";
 import useApi from "../../hooks/useApi";
-import { ConfigContext } from "../../providers/ConfigProvider";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import { ITwilioPhoneNumber } from "../../Types";
 
 export default function Settings() {
 
   const { phoneList, setPhoneList } = useContext(PhoneContext);
-  const { config } = useContext(ConfigContext);
   const { deletePhone } = useApi();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -31,7 +27,9 @@ export default function Settings() {
 
   }, [setPhoneList, deletePhone]);
 
-  return (
+  return null;
+
+  /*return (
     <Row className="justify-content-md-center">
       <Col md={10}>
         <Row>
@@ -58,7 +56,7 @@ export default function Settings() {
         </Row>
       </Col>
     </Row>
-  )
+  )*/
 }
 
 type PhoneListTableProps = {

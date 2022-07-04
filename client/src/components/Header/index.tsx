@@ -3,8 +3,8 @@ import { useOktaAuth } from "@okta/okta-react";
 import { useCallback, useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../providers/AuthProvider";
 import { PhoneContext } from "../../providers/PhoneProvider";
-import { UserContext } from "../../SecureLayout";
 import { ITwilioPhoneNumber } from "../../Types";
 import { TwilioLogo } from "../Icons";
 import NavbarItem from "./NavbarItem";
@@ -13,7 +13,7 @@ import PhoneDropdown from "./PhoneDropdown";
 function Header() {
 
   const { authState } = useOktaAuth();
-  const { loggedInUser } = useContext(UserContext);
+  const { loggedInUser } = useContext(AuthContext);
   const { pathname } = useLocation();
   let params = useParams();
 

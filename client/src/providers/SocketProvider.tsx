@@ -1,20 +1,33 @@
-import { createContext, FC } from "react";
-import { io, Socket} from "socket.io-client";
+import { createContext, FC, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 const SOCKET_HOSTNAME = process.env.REACT_APP_SOCKET_HOSTNAME || window.location.origin;
-const newSocket = io(SOCKET_HOSTNAME);
 
 export const SocketContext = createContext<{
-  socket: Socket;
+  socket: Socket | null;
 }>({
-  socket: newSocket
+  socket: null
 });
 
-const SocketProvider: FC = ({children}) => {
+const SocketProvider: FC = ({ children }) => {
+
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+
+    let newSocket = io(SOCKET_HOSTNAME);
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect()
+    }
+
+  }, []);
 
   return (
     <SocketContext.Provider value={{
-      socket: newSocket
+      socket: socket
     }}>
       {children}
     </SocketContext.Provider>

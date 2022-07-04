@@ -1,9 +1,12 @@
-import { createContext, FC, useCallback, useEffect, useState } from "react";
+import { createContext, FC, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
+import { useNavigate, useParams } from "react-router-dom";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
 import { ITwilioPhoneNumber } from "../Types";
+
+const LOCAL_STORE_SELECTED_PHONE_SID = 'selectedPhoneSid';
 
 export const PhoneContext = createContext<{
   phoneList: ITwilioPhoneNumber[];
@@ -20,38 +23,88 @@ const PhoneProvider: FC = ({ children }) => {
 
   const { getAllPhone } = useApi();
 
+  let params = useParams();
+  let navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [phoneList, setPhoneList] = useState<ITwilioPhoneNumber[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<ITwilioPhoneNumber | null>(null);
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
-  const loadPhoneList = useCallback(() => {
+  useEffect(() => {
+
+    let isMounted = true;
 
     setIsLoading(true);
 
-    getAllPhone().then(
-      (appPhoneData) => {
+    getAllPhone().then((appPhoneData) => {
 
+      if (isMounted) {
         setPhoneList(appPhoneData);
         setIsLoading(false);
+      }
 
-      }).catch(
-        (error) => {
-          setAlertMessage(
-            {
-              type: AlertMessageType.ERROR,
-              message: error.message
-            }
-          );
-          setIsLoading(false);
-        })
+
+    }).catch((error) => {
+      if (isMounted) {
+        setAlertMessage(
+          {
+            type: AlertMessageType.ERROR,
+            message: error.message
+          }
+        );
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    }
+
 
   }, [getAllPhone, setAlertMessage]);
 
   useEffect(() => {
-    loadPhoneList();
-  }, [loadPhoneList]);
+
+    if (setSelectedPhone && phoneList.length > 0) {
+
+      const localStoragePhoneId = localStorage.getItem(LOCAL_STORE_SELECTED_PHONE_SID) || '';
+      const localStoragePhone = phoneList.filter((item) => item.sid === localStoragePhoneId)[0];
+
+      const paramPhoneId = params.phone_id || '';
+      const paramPhone = phoneList.filter((item) => item.sid === paramPhoneId)[0];
+
+      if (!paramPhone && params.phone_id) {
+        navigate('/');
+      }
+
+      setSelectedPhone((prevState) => {
+
+        let newValue = paramPhone;
+
+        if (prevState === null) {
+          if (!paramPhone) {
+            if (localStoragePhone) {
+              newValue = localStoragePhone
+            } else {
+              newValue = phoneList[0]
+            }
+          }
+        } else {
+          if (!paramPhone) {
+            newValue = prevState;
+          }
+        }
+
+        localStorage.setItem(LOCAL_STORE_SELECTED_PHONE_SID, newValue.sid);
+
+
+        return newValue;
+      });
+    }
+
+  }, [params, setSelectedPhone, phoneList, navigate]);
 
   if (isLoading) {
     return (

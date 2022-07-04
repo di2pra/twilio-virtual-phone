@@ -1,9 +1,9 @@
+import { Call, Device } from '@twilio/voice-sdk';
 import { createContext, FC, useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { Device, Call } from '@twilio/voice-sdk';
 
 export const VoiceDeviceContext = createContext<{
   device: Device | null;
@@ -19,45 +19,51 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
-  const loadDevice = useCallback(() => {
+  useEffect(() => {
+
+    let isMounted = true;
+    let newDevice: Device;
 
     setIsLoading(true);
 
     getVoiceAccessToken().then((data) => {
 
-      const device = new Device(data.token, {
-        codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
-      });
+      if (isMounted) {
+        newDevice = new Device(data.token, {
+          codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+        });
 
-      setDevice(device);
+        setDevice(newDevice);
+        setIsLoading(false);
+      }
 
     }).catch((error) => {
 
-      setAlertMessage(
-        {
-          type: AlertMessageType.ERROR,
-          message: error.message
-        }
-      );
+      if (isMounted) {
+        setAlertMessage(
+          {
+            type: AlertMessageType.ERROR,
+            message: error.message
+          }
+        );
 
-      setIsLoading(false);
+        setIsLoading(false);
+      }
 
     });
 
+    return () => {
+      isMounted = false;
+      if (newDevice) {
+        newDevice.destroy();
+      }
+    }
 
   }, [getVoiceAccessToken, setAlertMessage]);
-
-  const handleRegistered = useCallback(() => {
-    setIsLoading(false);
-  }, []);
 
   const handleUnregistered = useCallback((device: Device) => {
     setDevice(null);
   }, []);
-
-  useEffect(() => {
-    loadDevice();
-  }, [loadDevice]);
 
   useEffect(() => {
 
@@ -80,20 +86,16 @@ const VoiceDeviceProvider: FC = ({ children }) => {
   useEffect(() => {
 
     if (device) {
-
-      device.on(Device.EventName.Registered, handleRegistered);
       device.on(Device.EventName.Unregistered, handleUnregistered);
-
     }
 
     return () => {
       if (device) {
-        device.off(Device.EventName.Registered, handleRegistered);
         device.off(Device.EventName.Unregistered, handleUnregistered);
       }
     }
 
-  }, [device, handleRegistered, handleUnregistered]);
+  }, [device, handleUnregistered]);
 
   if (isLoading) {
     return (

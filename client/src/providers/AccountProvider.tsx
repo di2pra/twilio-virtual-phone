@@ -1,6 +1,5 @@
 import { createContext, FC, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
 import useApi from "../hooks/useApi";
 import { IAccount } from "../Types";
 
@@ -41,18 +40,6 @@ const AccountProvider: FC = ({ children }) => {
         <Spinner className="mb-3" animation="border" variant="danger" />
         <h3>Loading Account Information...</h3>
       </div>
-    )
-  }
-
-  if (accountInfo === null) {
-    return (
-      <Navigate to="/init/account" />
-    )
-  }
-
-  if (accountInfo.twiml_app_sid === null) {
-    return (
-      <Navigate to="/init/twiml" />
     )
   }
 
