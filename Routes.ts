@@ -1,7 +1,6 @@
 import { Express, Request, Response } from 'express';
 import AccountController from './controllers/AccountController.js';
 import CallController from './controllers/CallController.js';
-import ConfigurationController from './controllers/ConfigurationController.js';
 import MessageController from './controllers/MessageController.js';
 import OktaController from './controllers/OktaController.js';
 import PhoneController from './controllers/PhoneController.js';
@@ -28,17 +27,16 @@ const routes = (app: Express) => {
   app.get(`${API_BASE_PATH}/message/phone/:sid/conversation/:number`, MessageController.getConversationMessageList);
 
 
-  app.get(`${API_BASE_PATH}/call/phone/:id`, CallController.getByPhone);
+  app.get(`${API_BASE_PATH}/call/phone/:sid`, CallController.getByPhone);
   app.delete(`${API_BASE_PATH}/call/:id`, CallController.delete);
 
 
   app.get(`${API_BASE_PATH}/phone/:sid?`, PhoneController.get);
   app.post(`${API_BASE_PATH}/phone`, PhoneController.add);
 
-  app.get(`${API_BASE_PATH}/configuration`, ConfigurationController.get);
-  app.post(`${API_BASE_PATH}/configuration`, ConfigurationController.set);
+  /*app.get(`${API_BASE_PATH}/configuration`, ConfigurationController.get);
+  app.post(`${API_BASE_PATH}/configuration`, ConfigurationController.set);*/
 
-  //app.get(`${API_BASE_PATH}/twilio/number`, TwilioController.getAllNumber);
   app.post(`${API_BASE_PATH}/twilio/number`, TwilioController.getAllNumber);
   app.get(`${API_BASE_PATH}/twilio/application/:sid?`, TwilioController.getApplication);
   app.post(`${API_BASE_PATH}/twilio/application`, TwilioController.createApplication);
@@ -46,9 +44,9 @@ const routes = (app: Express) => {
   app.get(`${API_BASE_PATH}/twilioClient/generateToken`, WebhookController.tokenGenerator);
 
 
-  /*app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
-  app.post('/webhook/message', routes.webhookController.messageResponse);
-  app.post('/webhook/voice', routes.webhookController.voiceResponse);*/
+  //app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
+  app.post('/webhook/message', WebhookController.messageResponse);
+  app.post('/webhook/voice', WebhookController.voiceResponse);
 
 };
 

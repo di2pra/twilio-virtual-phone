@@ -52,7 +52,7 @@ const Account: FC = () => {
       setIsLoading(false);
     })
 
-  }, [setAccount])
+  }, [setAccount, navigate])
 
 
   if (isLoading) {

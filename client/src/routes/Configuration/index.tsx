@@ -28,7 +28,7 @@ const Configuration: FC = () => {
       setIsLoading(false);
     })
 
-  }, [updateAccountTwimlApp])
+  }, [updateAccountTwimlApp, navigate])
 
   const { modalDom, initModal } = useModalBox<IApplication>({
     title: `Confirmation`,

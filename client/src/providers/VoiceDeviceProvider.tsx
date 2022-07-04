@@ -83,15 +83,25 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   }, [device]);
 
+  const refreshDeviceToken = useCallback((device: Device) => {
+
+    getVoiceAccessToken().then((data) => {
+      device.updateToken(data);
+    });
+
+  }, []);
+
   useEffect(() => {
 
     if (device) {
       device.on(Device.EventName.Unregistered, handleUnregistered);
+      device.on(Device.EventName.TokenWillExpire, refreshDeviceToken);
     }
 
     return () => {
       if (device) {
         device.off(Device.EventName.Unregistered, handleUnregistered);
+        device.off(Device.EventName.TokenWillExpire, refreshDeviceToken);
       }
     }
 

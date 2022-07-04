@@ -1,34 +1,28 @@
-import { useContext } from "react";
 import { Container } from "react-bootstrap";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import { AccountContext } from "./providers/AccountProvider";
+import AccountProvider from "./providers/AccountProvider";
+import AuthProvider from "./providers/AuthProvider";
+import PhoneProvider from "./providers/PhoneProvider";
+import SocketProvider from "./providers/SocketProvider";
 
 function AppLayout() {
 
-  const { accountInfo } = useContext(AccountContext);
-
-  if (accountInfo === null) {
-    return (
-      <Navigate to="/init/account" />
-    )
-  }
-
-  if (accountInfo.twiml_app_sid === null) {
-    return (
-      <Navigate to="/init/twiml" />
-    )
-  }
-
   return (
-    <>
-      <Header />
-      <Container className="mt-3" fluid>
-        <Outlet />
-      </Container>
-      <Footer />
-    </>
+    <AuthProvider>
+      <AccountProvider>
+        <PhoneProvider>
+          <SocketProvider>
+            <Header />
+            <Container className="mt-3" fluid>
+              <Outlet />
+            </Container>
+            <Footer />
+          </SocketProvider>
+        </PhoneProvider>
+      </AccountProvider>
+    </AuthProvider>
   )
 }
 

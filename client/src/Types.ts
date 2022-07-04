@@ -10,11 +10,9 @@ export type CallMetadata = {
 export interface IMessage {
   message_id: number;
   from_number: string;
-  from_phone_id: number | null;
-  from_phone_sid: string | null;
+  from_sid: string | null;
   to_number: string;
-  to_phone_id: number | null;
-  to_phone_sid: string | null;
+  to_sid: string | null;
   body: string;
   created_on: Date;
 }

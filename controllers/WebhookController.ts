@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import twilio from 'twilio';
-import { ErrorHandler } from "../helpers.js";
+import { ErrorHandler, isAValidPhoneNumber } from "../helpers.js";
 import Account from "../models/Account.js";
+import Call from "../models/Call.js";
 import Message from "../models/Message.js";
+import Phone from "../models/Phone.js";
 
 const apiKey: string = process.env.TWILIO_API_KEY || '';
 const apiSecret: string = process.env.TWILIO_API_SECRET || '';
@@ -50,44 +52,68 @@ export default class WebhookController {
   };
 
 
-  /*voiceResponse = async (request: Request, response: Response) => {
-    const toNumberOrClientName = request.body.To;
-    const fromNumberOrClientName = request.body.From;
-    let twiml = new VoiceResponse();
+  static voiceResponse = async (request: Request, response: Response) => {
 
-    await Call.create({ from_number: request.body.From, to_number: request.body.To });
+    try {
 
-    if (request.body.Caller === `client:${this.phoneIdentity}`) {
+      const toNumberOrClientName = request.body.To;
+      const fromNumberOrClientName = request.body.From;
+      const fromSid = request.body.from_sid;
 
-      let dial = twiml.dial({ callerId: fromNumberOrClientName });
+      let twiml = new VoiceResponse();
 
-      // Check if the 'To' parameter is a Phone Number or Client Name
-      // in order to use the appropriate TwiML noun 
-      const attr = isAValidPhoneNumber(toNumberOrClientName) ? "number" : "client";
-      dial[attr]({}, toNumberOrClientName);
+      if (request.body.Caller.includes('client:')) {
+
+        // outgoing call
+
+        let dial = twiml.dial({ callerId: fromNumberOrClientName });
+
+        // Check if the 'To' parameter is a Phone Number or Client Name
+        // in order to use the appropriate TwiML noun 
+        const attr = isAValidPhoneNumber(toNumberOrClientName) ? "number" : "client";
+        dial[attr]({}, toNumberOrClientName);
+
+        await Call.create({ from_sid: fromSid, from_number: request.body.From, to_number: request.body.To });
 
 
-    } else {
+      } else {
 
-      let dial = twiml.dial();
+        // incoming call
 
-      // This will connect the caller with your Twilio.Device/client 
-      dial.client(this.phoneIdentity);
+        const phoneInfo = await Phone.getByNumber(toNumberOrClientName);
+        const accountInfo = await Account.getById(phoneInfo.fk_account_id);
 
+        let dial = twiml.dial();
+        dial.client(accountInfo.username);
+
+        await Call.create({ from_number: request.body.From, to_number: request.body.To, to_sid: phoneInfo.sid });
+
+      }
+
+      response.set("Content-Type", "text/xml").send(twiml.toString());
+
+    } catch (error) {
+
+      let twiml = new VoiceResponse();
+
+      twiml.say('An application error has occured!');
+
+      response.set("Content-Type", "text/xml").send(twiml.toString());
     }
 
-    response.set("Content-Type", "text/xml").send(twiml.toString());
+  };
 
-  };*/
+  static messageResponse = async (request: Request, response: Response) => {
 
-  messageResponse = async (request: Request, response: Response) => {
     const toNumber = request.body.To;
     const fromNumber = request.body.From;
     const body = request.body.Body;
 
+    const phoneInfo = await Phone.getByNumber(toNumber);
+
     const sockets = response.locals.sockets;
 
-    const id = await Message.create({ from_number: fromNumber, to_number: toNumber, body: body });
+    const id = await Message.create({ from_number: fromNumber, to_number: toNumber, to_sid: phoneInfo.sid, body: body });
 
     sockets.emit('refreshMessage');
 

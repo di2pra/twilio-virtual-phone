@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../helpers.js";
 import Account from "../models/Account.js";
+import Phone from "../models/Phone.js";
 import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class PhoneController {
@@ -39,6 +40,12 @@ export default class PhoneController {
       });
 
       const data = await twilioRessource.incomingPhoneNumbers.getByApplicationId(accountInfo.twiml_app_sid);
+
+      await Phone.add({
+        fk_account_id: accountInfo.account_id,
+        sid: phoneNumber.sid,
+        number: phoneNumber.phoneNumber
+      });
 
       response.status(201).json(data);
 

@@ -29,15 +29,6 @@ const AuthProvider: FC = ({ children }) => {
     );
   }
 
-  /*if (!loggedInUser) {
-    return (
-      <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <Spinner className="mb-3" animation="border" variant="danger" />
-        <h3>Loading user information...</h3>
-      </div>
-    );
-  }*/
-
   return (
     <AuthContext.Provider value={{
       loggedInUser: loggedInUser

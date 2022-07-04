@@ -21,14 +21,14 @@ export default class Call {
   }
 
 
-  static getByPhoneId = async (phone_id: number) => {
+  static getByPhoneSid = async (phone_sid: string) => {
 
     try {
 
-      const results = await pgClient.query('SELECT * FROM call_phone WHERE from_phone_id = $1 OR to_phone_id = $1 ORDER BY created_on DESC', [phone_id]);
+      const results = await pgClient.query('SELECT * FROM call WHERE from_sid = $1 OR to_sid = $1 ORDER BY created_on DESC', [phone_sid]);
 
       return results.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
     }
 
@@ -45,10 +45,10 @@ export default class Call {
 
   }
 
-  static create = async ({ from_number, to_number }: { from_number: string; to_number: string }) => {
+  static create = async ({ from_number, to_number, from_sid, to_sid }: { from_number: string; to_number: string, from_sid?: string, to_sid?: string }) => {
 
     try {
-      const result = await pgClient.query('INSERT INTO call(from_number, to_number, created_on) VALUES ($1, $2, $3) RETURNING call_id', [from_number, to_number, new Date()]);
+      const result = await pgClient.query('INSERT INTO call(from_number, to_number, from_sid, to_sid, created_on) VALUES ($1, $2, $3, $4, $5) RETURNING call_id', [from_number, to_number, from_sid, to_sid, new Date()]);
       return result.rows[0].call_id;
     } catch (error) {
       throw new ErrorHandler(500, 'Internal DB Error')

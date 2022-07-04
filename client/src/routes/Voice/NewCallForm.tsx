@@ -38,6 +38,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
     if (selectedPhone) {
 
       var params = {
+        from_sid: selectedPhone.sid,
         From: selectedPhone.phoneNumber,
         To: state.to.value
       };

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ErrorHandler } from "../helpers.js";
 import Call from "../models/Call.js";
 
 export default class CallController {
@@ -7,17 +8,15 @@ export default class CallController {
 
     try {
 
-      let data;
-
-      if (request.params.id) {
-
-        data = await Call.getByPhoneId(Number(request.params.id));
-
+      if (!request.params.sid) {
+        throw new ErrorHandler(400, 'Bad Request')
       }
+
+      const data = await Call.getByPhoneSid(request.params.sid);
 
       response.status(200).json(data);
 
-    } catch (error) {
+    } catch (error: any) {
       next(error)
     }
 

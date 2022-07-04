@@ -31,4 +31,11 @@ export default class TwilioRessource {
 
   }
 
+  static async initClientWithUsername(username: string) {
+
+    const accountInfo = await Account.getByUsername(username);
+    return new TwilioRessource(accountInfo);
+
+  }
+
 }
