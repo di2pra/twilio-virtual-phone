@@ -34,9 +34,6 @@ const routes = (app: Express) => {
   app.get(`${API_BASE_PATH}/phone/:sid?`, PhoneController.get);
   app.post(`${API_BASE_PATH}/phone`, PhoneController.add);
 
-  /*app.get(`${API_BASE_PATH}/configuration`, ConfigurationController.get);
-  app.post(`${API_BASE_PATH}/configuration`, ConfigurationController.set);*/
-
   app.post(`${API_BASE_PATH}/twilio/number`, TwilioController.getAllNumber);
   app.get(`${API_BASE_PATH}/twilio/application/:sid?`, TwilioController.getApplication);
   app.post(`${API_BASE_PATH}/twilio/application`, TwilioController.createApplication);

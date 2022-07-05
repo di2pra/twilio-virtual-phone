@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import twilio from "twilio";
 import { ErrorHandler } from "../helpers.js";
 import Account from "../models/Account.js";
+import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class AccountController {
 
@@ -57,6 +58,20 @@ export default class AccountController {
       if (!request.body.twiml_app_sid || !jwt.claims.sub) {
         throw new ErrorHandler(400, 'Bad Request')
       }
+
+      const twilioRessource = await TwilioRessource.initClient(jwt);
+
+      let hostname = request.headers.host;
+
+      if (process.env.NODE_ENV === 'development') {
+        hostname = process.env.NGROK_HOSTNAME
+      }
+
+      await twilioRessource.applications.update({
+        sid: request.body.twiml_app_sid,
+        smsUrl: `https://${hostname}/webhook/message`,
+        voiceUrl: `https://${hostname}/webhook/voice`
+      })
 
       const updatedAccountId = await Account.updateTwimlAppByUsername({
         twiml_app_sid: request.body.twiml_app_sid,

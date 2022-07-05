@@ -6,7 +6,7 @@ type Props = {
   selectApplication: (application: IApplication) => void
 }
 
-function ApplicationItem({selectApplication, application }: Props) {
+function ApplicationItem({ selectApplication, application }: Props) {
   return (
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <div className="ms-2 me-auto">
@@ -17,7 +17,7 @@ function ApplicationItem({selectApplication, application }: Props) {
         <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>created on : {application.dateCreated.toLocaleDateString()} at {application.dateCreated.toLocaleTimeString()}</p>
         <p className="m-0 fw-light text-muted" style={{ fontSize: '0.8rem' }}>updated on : {application.dateUpdated.toLocaleDateString()} at {application.dateUpdated.toLocaleTimeString()}</p>
       </div>
-      <Button className="mx-2" type='button' variant='success' onClick={() => {selectApplication(application)}}>Select</Button>
+      <Button className="mx-2" type='button' variant='success' onClick={() => { selectApplication(application) }}>Select</Button>
     </ListGroup.Item>
   )
 }

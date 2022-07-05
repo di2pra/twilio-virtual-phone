@@ -4,7 +4,7 @@ import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class TwilioController {
 
-  static getAllNumber = async (request: Request, response: Response, next: NextFunction) => {
+  static getAllNumber = async (_: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -44,33 +44,21 @@ export default class TwilioController {
         throw new ErrorHandler(400, 'Bad Request');
       }
 
-      const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
+      let hostname = request.headers.host;
 
-      const data = await twilioRessource.applications.create({
-        friendlyName: request.body.friendlyName
-      });
-
-      response.status(201).json(data);
-
-    } catch (error) {
-      next(error);
-    }
-
-  }
-
-  static deleteApplication = async (request: Request, response: Response, next: NextFunction) => {
-
-    try {
-
-      if (!request.body.sid) {
-        throw new ErrorHandler(400, 'Bad Request');
+      if (process.env.NODE_ENV === 'development') {
+        hostname = process.env.NGROK_HOSTNAME
       }
 
       const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
 
-      await twilioRessource.applications.delete(request.body.sid);
+      const data = await twilioRessource.applications.create({
+        friendlyName: request.body.friendlyName,
+        smsUrl: `https://${hostname}/webhook/message`,
+        voiceUrl: `https://${hostname}/webhook/voice`
+      });
 
-      response.status(200).json({});
+      response.status(201).json(data);
 
     } catch (error) {
       next(error);

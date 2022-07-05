@@ -29,16 +29,18 @@ export default class Applications {
 
   }
 
-  create = async ({ friendlyName }: { friendlyName: string }) => {
+  create = async ({ friendlyName, smsUrl, voiceUrl }: { friendlyName: string, smsUrl: string; voiceUrl: string }) => {
 
     try {
 
-      if (!friendlyName) {
+      if (!friendlyName && !smsUrl && !voiceUrl) {
         throw new ErrorHandler(400, 'Bad Request');
       }
 
       return await this.twilioClient.applications.create({
-        friendlyName: friendlyName
+        friendlyName: friendlyName,
+        smsUrl: smsUrl,
+        voiceUrl: voiceUrl
       });
 
     } catch (error) {
@@ -51,7 +53,7 @@ export default class Applications {
 
     try {
 
-      if (!sid) {
+      if (!sid && !friendlyName && !smsUrl && !voiceUrl) {
         throw new ErrorHandler(400, 'Bad Request');
       }
 
@@ -61,22 +63,6 @@ export default class Applications {
           smsUrl: smsUrl,
           voiceUrl: voiceUrl
         });
-
-    } catch (error) {
-      throw new ErrorHandler(500, 'Internal Error');
-    }
-
-  }
-
-  delete = async (sid: string) => {
-
-    try {
-
-      if (!sid) {
-        throw new ErrorHandler(400, 'Bad Request');
-      }
-
-      await this.twilioClient.applications(sid).remove();
 
     } catch (error) {
       throw new ErrorHandler(500, 'Internal Error');

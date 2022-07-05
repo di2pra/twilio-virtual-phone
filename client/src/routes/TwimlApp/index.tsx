@@ -6,7 +6,7 @@ import useModalBox from "../../hooks/useModalBox";
 import { IApplication } from "../../Types";
 import ApplicationItem from "./ApplicationItem";
 
-const Configuration: FC = () => {
+const TwimlApp: FC = () => {
 
   const { updateAccountTwimlApp } = useApi();
   let navigate = useNavigate();
@@ -80,13 +80,13 @@ const Configuration: FC = () => {
         <Col md={10}>
           <Row className="mb-1">
             <Col>
-              <h3>Select the Twilio Application to use :</h3>
+              <h3>Select the Twiml Application to use :</h3>
             </Col>
           </Row>
           <Row className="mb-3">
             <Col>
-              <Link to="/configuration/application/new" replace>
-                <Button type="button">Add new application</Button>
+              <Link to="/init/twiml/add">
+                <Button type="button">Add new Twiml Application</Button>
               </Link>
             </Col>
           </Row>
@@ -108,4 +108,4 @@ const Configuration: FC = () => {
 
 }
 
-export default Configuration;
+export default TwimlApp;

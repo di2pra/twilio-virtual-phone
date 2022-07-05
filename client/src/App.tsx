@@ -2,11 +2,12 @@ import { OktaAuth, toRelativeUrl } from "@okta/okta-auth-js";
 import { LoginCallback, Security } from '@okta/okta-react';
 import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import AppLayout from "./AppLayout";
+import AppLayout from "./layouts/AppLayout";
+import PhoneLayout from "./layouts/PhoneLayout";
+import SecureLayout from "./layouts/SecureLayout";
 import oktaConfig from "./oktaConfig";
 import VoiceDeviceProvider from "./providers/VoiceDeviceProvider";
 import Account from "./routes/Account";
-import Configuration from "./routes/Configuration";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import Logout from "./routes/Logout";
@@ -17,8 +18,9 @@ import NotFound from "./routes/NotFound";
 import Settings from "./routes/Settings";
 import AddPhoneForm from "./routes/Settings/AddPhoneForm";
 import EditPhoneForm from "./routes/Settings/EditPhoneForm";
+import TwimlApp from "./routes/TwimlApp";
+import AddTwimlAppForm from "./routes/TwimlApp/AddTwimlAppForm";
 import Voice from "./routes/Voice";
-import SecureLayout from "./SecureLayout";
 
 
 function App() {
@@ -52,7 +54,7 @@ function App() {
         <Route path="/" element={<SecureLayout />}>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />
-            <Route path=":phone_sid">
+            <Route path=":phone_sid" element={<PhoneLayout />}>
               <Route path="message" element={<Message />} />
               <Route path="message/new" element={<NewConversationForm />} />
               <Route path="message/:contact_number" element={<Chat />} />
@@ -67,7 +69,10 @@ function App() {
             </Route>
           </Route>
           <Route path="init/account" element={<Account />} />
-          <Route path="init/twiml" element={<Configuration />} />
+          <Route path="init/twiml">
+            <Route index element={<TwimlApp />} />
+            <Route path="add" element={<AddTwimlAppForm />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

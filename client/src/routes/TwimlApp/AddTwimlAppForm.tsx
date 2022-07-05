@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
-import useApi from '../../hooks/useApi';
-import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
-import Form from 'react-bootstrap/Form';
+import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { Col, Row } from 'react-bootstrap';
-import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
+import Form from 'react-bootstrap/Form';
 import { Link, useNavigate } from 'react-router-dom';
-import { useOktaAuth } from '@okta/okta-react/bundles/types';
+import useAlertCard, { AlertMessageType } from '../../hooks/useAlertCard';
+import useApi from '../../hooks/useApi';
+import useForm, { FormSchema, ValidationSchema } from '../../hooks/useForm';
 
 
 const stateSchema: FormSchema = {
@@ -20,7 +19,7 @@ const validationStateSchema: ValidationSchema = {
   }
 };
 
-function AddApplicationForm() {
+function AddTwimlAppForm() {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: true });
 
@@ -83,7 +82,7 @@ function AddApplicationForm() {
                 <div className="invalid-feedback">{state.friendlyName.errorMessage}</div>
               </Form.Group>
               <Button variant="primary" type="submit" disabled={isAdding}>{isAdding ? 'Adding...' : 'Add'}</Button>{' '}
-              <Link to="/configuration" replace>
+              <Link to="/init/twiml">
                 <Button variant="danger" type="button" >Cancel</Button>
               </Link>
             </Form>
@@ -94,4 +93,4 @@ function AddApplicationForm() {
   )
 }
 
-export default AddApplicationForm;
+export default AddTwimlAppForm;

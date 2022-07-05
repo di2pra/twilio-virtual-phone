@@ -2,10 +2,9 @@ import express, { NextFunction, Request, Response } from 'express';
 import enforce from 'express-sslify';
 import { createServer } from 'http';
 import { Server } from "socket.io";
+import SocketController from './controllers/SocketController.js';
 import StaticController from './controllers/StaticController.js';
 import { handleError } from './helpers.js';
-import oktaConfig from './oktaConfig.js';
-import { oktaJwtVerifier } from './providers/oktaClient.js';
 import Redis from './providers/redisClient.js';
 import routes from './routes.js';
 
@@ -32,23 +31,10 @@ app.use(express.urlencoded({
 
 socketIoServer.on('connection', async (client) => {
 
-
-
-  console.log('a user connected');
-
-  client.on('userToken', async function (data) {
-    const audience = oktaConfig.resourceServer.assertClaims.aud;
-    const result = await oktaJwtVerifier.verifyAccessToken(data.accessToken, audience);
-
-    const redisClient = await Redis.getClient();
-    await redisClient.set(result.claims.sub, client.id);
-    await redisClient.set(client.id, result.claims.sub);
-
-    const res = await redisClient.get("prajendirane@twilio.com");
-
-  });
+  client.on('userToken', SocketController.onUserToken);
 
   client.on('disconnect', async () => {
+
     const redisClient = await Redis.getClient();
     const username = await redisClient.get(client.id);
 
@@ -57,8 +43,10 @@ socketIoServer.on('connection', async (client) => {
     }
 
     await redisClient.del(client.id);
-    console.log('user disconnected');
+    console.log(`${username} successfully disconnected!`);
+
   });
+
 });
 
 app.use((_: Request, response: Response, next: NextFunction) => {

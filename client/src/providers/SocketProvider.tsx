@@ -24,7 +24,7 @@ const SocketProvider: FC = ({ children }) => {
       newSocket = io(SOCKET_HOSTNAME);
 
       newSocket.on('connect', () => {
-        newSocket.emit('userToken', {
+        newSocket.emit('userToken', newSocket.id, {
           accessToken: authState.accessToken?.accessToken
         })
       })
@@ -34,7 +34,7 @@ const SocketProvider: FC = ({ children }) => {
     }
 
     return () => {
-      newSocket.disconnect()
+      newSocket.disconnect();
     }
 
   }, [authState]);
