@@ -5,7 +5,7 @@ import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import { PhoneContext } from "../../providers/PhoneProvider";
-import { ITwilioPhoneNumber } from "../../Types";
+import { IPhone } from "../../Types";
 import { TwilioLogo } from "../Icons";
 import NavbarItem from "./NavbarItem";
 import PhoneDropdown from "./PhoneDropdown";
@@ -20,7 +20,7 @@ function Header() {
   let navigate = useNavigate();
   const { selectedPhone, phoneList, setSelectedPhone } = useContext(PhoneContext);
 
-  const updateSelectedPhone = useCallback((item: ITwilioPhoneNumber) => {
+  const updateSelectedPhone = useCallback((item: IPhone) => {
 
     const currentNavLinkPhone = params.phone_sid || '';
 

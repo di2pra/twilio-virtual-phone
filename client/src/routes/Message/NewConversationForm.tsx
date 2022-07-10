@@ -56,23 +56,21 @@ function NewConversationForm() {
         to_number: state.to.value,
         body: state.body.value
       })
-        .then(
-          () => {
-            if (isMounted) {
-              setIsSending(false);
-              goToConversation(state.to.value);
-            }
-          },
-          (error) => {
-            if (isMounted) {
-              setIsSending(false);
-              setAlertMessage({
-                type: AlertMessageType.ERROR,
-                message: error.message
-              });
-            }
+        .then(() => {
+          if (isMounted) {
+            setIsSending(false);
+            goToConversation(state.to.value);
           }
-        )
+        })
+        .catch((error) => {
+          if (isMounted) {
+            setIsSending(false);
+            setAlertMessage({
+              type: AlertMessageType.ERROR,
+              message: error.message
+            });
+          }
+        })
     }
 
     return () => {

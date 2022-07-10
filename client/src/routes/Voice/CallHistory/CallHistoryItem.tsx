@@ -2,11 +2,11 @@ import { Call, Device } from "@twilio/voice-sdk";
 import { useCallback } from "react";
 import { Button, ListGroup } from "react-bootstrap";
 import { VscCallIncoming, VscCallOutgoing } from "react-icons/vsc";
-import { CallMetadata, ICall, ITwilioPhoneNumber } from "../../../Types";
+import { CallMetadata, ICall, IPhone } from "../../../Types";
 
 type Props = {
   call: ICall;
-  selectedPhone: ITwilioPhoneNumber;
+  selectedPhone: IPhone;
   device: Device
   setCurrentCall: React.Dispatch<React.SetStateAction<Call | null>>
   setCallData: React.Dispatch<React.SetStateAction<CallMetadata | null>>

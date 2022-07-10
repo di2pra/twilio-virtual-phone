@@ -20,6 +20,33 @@ const VoiceGrant = AccessToken.VoiceGrant;
 
 export default class WebhookController {
 
+  /*static validateSignature = async (request: Request, response: Response, next: NextFunction) => {
+
+    try {
+
+      const username = request.params.username;
+
+      if (username) {
+
+        const accountInfo = await Account.getByUsername(username);
+        const result = twilio.validateExpressRequest(request, "1aef4316f257484772e093e7d57da47e", { protocol: 'https' });
+
+        if (result) {
+          next();
+        } else {
+          throw new ErrorHandler(403, 'Forbidden');
+        }
+
+      } else {
+        throw new ErrorHandler(403, 'Forbidden');
+      }
+
+    } catch (error) {
+      next(error)
+    }
+
+  };*/
+
   static tokenGenerator = async (_: Request, response: Response) => {
 
     if (!response.locals.jwt) {
@@ -27,6 +54,10 @@ export default class WebhookController {
     }
 
     const accountInfo = await Account.getByUsername(response.locals.jwt.claims.sub);
+
+    if (!accountInfo) {
+      throw new ErrorHandler(400, 'Account not found');
+    }
 
     const accessToken = new AccessToken(
       accountSid,
@@ -85,6 +116,11 @@ export default class WebhookController {
         const phoneInfo = await Phone.getByNumber(toNumberOrClientName);
         const accountInfo = await Account.getById(phoneInfo.fk_account_id);
 
+        if (!accountInfo) {
+          response.set("Content-Type", "text/xml").send();
+          return
+        }
+
         let dial = twiml.dial();
         dial.client(accountInfo.username);
 
@@ -114,9 +150,14 @@ export default class WebhookController {
     const phoneInfo = await Phone.getByNumber(toNumber);
     const accountInfo = await Account.getById(phoneInfo.fk_account_id);
 
+    if (!accountInfo) {
+      response.set("Content-Type", "text/xml").send();
+      return
+    }
+
     const socketServer: Server = response.locals.socketIoServer as Server;
 
-    await Message.create({ from_number: fromNumber, to_number: toNumber, to_sid: phoneInfo.sid, body: body });
+    const newMessage = await Message.create({ from_number: fromNumber, to_number: toNumber, to_sid: phoneInfo.sid, body: body });
 
     const redisClient = await Redis.getClient();
 
@@ -124,7 +165,7 @@ export default class WebhookController {
 
     if (socketId) {
       const sockets = await socketServer.in(socketId).fetchSockets();
-      sockets[0].emit('refreshMessage');
+      sockets[0].emit('refreshMessage', newMessage);
     }
 
 

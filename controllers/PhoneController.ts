@@ -6,15 +6,40 @@ import TwilioRessource from "../models/TwilioRessource.js";
 
 export default class PhoneController {
 
-  static get = async (_: Request, response: Response, next: NextFunction) => {
+  static getAll = async (_: Request, response: Response, next: NextFunction) => {
 
     try {
 
       const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
       const accountInfo = await Account.getByUsername(response.locals.jwt.claims.sub);
-      const data = await twilioRessource.incomingPhoneNumbers.getByApplicationId(accountInfo.twiml_app_sid);
 
-      response.status(200).json(data);
+      if (!accountInfo) {
+        throw new ErrorHandler(400, 'Account not found');
+      }
+
+      const phoneList = await Phone.getByAccount(accountInfo.account_id);
+      const numberList = await twilioRessource.incomingPhoneNumbers.getByApplicationId(accountInfo.twiml_app_sid);
+
+      const filteredPhoneList = phoneList.filter(item => {
+        return numberList.map(item => item.sid).includes(item.sid);
+      }).map(item => {
+        const number = numberList.find(number => number.sid === item.sid)
+        if (number) {
+          return {
+            ...item, ...{
+              friendlyName: number.friendlyName,
+              smsApplicationSid: number.smsApplicationSid,
+              voiceApplicationSid: number.voiceApplicationSid,
+              dateCreated: number.dateCreated,
+              dateUpdated: number.dateUpdated
+            }
+          }
+        } else {
+          return item;
+        }
+      });
+
+      response.status(200).json(filteredPhoneList);
 
     } catch (error) {
       next(error)
@@ -33,21 +58,47 @@ export default class PhoneController {
       const accountInfo = await Account.getByUsername(response.locals.jwt.claims.sub);
       const twilioRessource = await TwilioRessource.initClient(response.locals.jwt);
 
+      if (!accountInfo) {
+        throw new ErrorHandler(400, 'Account not found');
+      }
+
       const phoneNumber = await twilioRessource.incomingPhoneNumbers.update({
+        friendlyName: `Twilio Virtual Phone`,
         sid: request.body.sid,
         voiceApplicationSid: accountInfo.twiml_app_sid,
         smsApplicationSid: accountInfo.twiml_app_sid
       });
 
-      const data = await twilioRessource.incomingPhoneNumbers.getByApplicationId(accountInfo.twiml_app_sid);
-
       await Phone.add({
         fk_account_id: accountInfo.account_id,
         sid: phoneNumber.sid,
-        number: phoneNumber.phoneNumber
+        phoneNumber: phoneNumber.phoneNumber
       });
 
-      response.status(201).json(data);
+
+      const phoneList = await Phone.getByAccount(accountInfo.account_id);
+      const numberList = await twilioRessource.incomingPhoneNumbers.getByApplicationId(accountInfo.twiml_app_sid);
+
+      const filteredPhoneList = phoneList.filter(item => {
+        return numberList.map(item => item.sid).includes(item.sid);
+      }).map(item => {
+        const number = numberList.find(number => number.sid === item.sid)
+        if (number) {
+          return {
+            ...item, ...{
+              friendlyName: number.friendlyName,
+              smsApplicationSid: number.smsApplicationSid,
+              voiceApplicationSid: number.voiceApplicationSid,
+              dateCreated: number.dateCreated,
+              dateUpdated: number.dateUpdated
+            }
+          }
+        } else {
+          return item;
+        }
+      });
+
+      response.status(201).json(filteredPhoneList);
 
 
     } catch (error) {

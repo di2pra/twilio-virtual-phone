@@ -2,11 +2,11 @@ import { useCallback } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { IoIosArrowForward } from 'react-icons/io';
 import { useNavigate } from "react-router-dom";
-import { IConversation, ITwilioPhoneNumber } from "../../../Types";
+import { IConversation, IPhone } from "../../../Types";
 
 type Props = {
   conversation: IConversation
-  selectedPhone: ITwilioPhoneNumber
+  selectedPhone: IPhone
 }
 
 function ConversationItem({ conversation, selectedPhone }: Props) {

@@ -33,6 +33,6 @@ CREATE TABLE IF NOT EXISTS phone (
 	phone_id serial PRIMARY KEY,
 	fk_account_id INTEGER,
 	sid VARCHAR ( 50 ) NOT NULL,
-	number VARCHAR ( 50 ) NOT NULL UNIQUE,
+	phoneNumber VARCHAR ( 50 ) NOT NULL UNIQUE,
 	created_on TIMESTAMP NOT NULL
 );

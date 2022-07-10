@@ -70,3 +70,14 @@ export interface IAccount {
   created_on: Date;
   updated_on: Date;
 }
+
+export interface IPhone {
+  phone_id: number,
+  fk_account: number,
+  sid: string,
+  friendlyName: string,
+  phoneNumber: string,
+  dateAddedToApp: string,
+  dateCreated: Date,
+  dateUpdated: Date
+}

@@ -1,7 +1,7 @@
-import { IMessage, ITwilioPhoneNumber } from "../../../Types";
+import { IMessage, IPhone } from "../../../Types";
 
 type Props = {
-  selectedPhone: ITwilioPhoneNumber,
+  selectedPhone: IPhone,
   message: IMessage
 }
 

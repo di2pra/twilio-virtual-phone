@@ -61,16 +61,12 @@ export default class AccountController {
 
       const twilioRessource = await TwilioRessource.initClient(jwt);
 
-      let hostname = request.headers.host;
-
-      if (process.env.NODE_ENV === 'development') {
-        hostname = process.env.NGROK_HOSTNAME
-      }
+      let hostname = (process.env.NODE_ENV === 'development') ? process.env.NGROK_HOSTNAME : request.headers.host;
 
       await twilioRessource.applications.update({
         sid: request.body.twiml_app_sid,
-        smsUrl: `https://${hostname}/webhook/message`,
-        voiceUrl: `https://${hostname}/webhook/voice`
+        smsUrl: `https://${hostname}/webhook/${encodeURIComponent(jwt.claims.sub)}/message`,
+        voiceUrl: `https://${hostname}/webhook/${encodeURIComponent(jwt.claims.sub)}/voice`
       })
 
       const updatedAccountId = await Account.updateTwimlAppByUsername({

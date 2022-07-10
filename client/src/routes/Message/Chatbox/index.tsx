@@ -9,7 +9,7 @@ import useAlertCard, { AlertMessageType } from '../../../hooks/useAlertCard';
 import useApi from '../../../hooks/useApi';
 import useForm, { FormSchema } from '../../../hooks/useForm';
 import { SocketContext } from '../../../providers/SocketProvider';
-import { IMessage, ITwilioPhoneNumber } from '../../../Types';
+import { IMessage, IPhone } from '../../../Types';
 import './index.scss';
 import MessageItem from './MessageItem';
 
@@ -24,7 +24,7 @@ const validationStateSchema = {
 };
 
 type Props = {
-  selectedPhone: ITwilioPhoneNumber,
+  selectedPhone: IPhone,
   contact_number: string
 }
 

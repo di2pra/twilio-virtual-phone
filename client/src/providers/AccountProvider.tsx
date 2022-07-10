@@ -1,5 +1,5 @@
 import { createContext, FC, useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import { Alert, Container, Spinner } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import useApi from "../hooks/useApi";
 import { IAccount } from "../Types";
@@ -15,6 +15,7 @@ const AccountProvider: FC = ({ children }) => {
   const { getAccount } = useApi();
 
   const [accountInfo, setAccountInfo] = useState<IAccount | null>(null);
+  const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
 
@@ -22,12 +23,10 @@ const AccountProvider: FC = ({ children }) => {
 
     let isMounted = true;
 
-    getAccount().then((data) => {
-      if (isMounted) {
-        setAccountInfo(data);
-        setIsLoading(false);
-      }
-    });
+    getAccount()
+      .then(data => isMounted ? setAccountInfo(data) : null)
+      .catch(error => isMounted ? setError(error.message) : null)
+      .finally(() => setIsLoading(false));
 
     return () => {
       isMounted = false;
@@ -44,15 +43,23 @@ const AccountProvider: FC = ({ children }) => {
     )
   }
 
+  if (error) {
+    return (
+      <Container className="mt-3" fluid>
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    )
+  }
+
   if (accountInfo === null) {
     return (
-      <Navigate to="/init/account" />
+      <Navigate to="account/init" />
     )
   }
 
   if (accountInfo.twiml_app_sid === null) {
     return (
-      <Navigate to="/init/twiml" />
+      <Navigate to="twiml/init" />
     )
   }
 

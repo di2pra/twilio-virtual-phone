@@ -72,7 +72,11 @@ export default class Message {
 
     try {
       const result = await pgClient.query('INSERT INTO message(from_sid, from_number, to_sid, to_number, body, created_on) VALUES ($1, $2, $3, $4, $5, $6) RETURNING message_id', [from_sid || null, from_number, to_sid || null, to_number, body, new Date()]);
-      return result.rows[0].message_id;
+
+      const message = await this.getById(result.rows[0].message_id);
+
+      return message;
+
     } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
     }

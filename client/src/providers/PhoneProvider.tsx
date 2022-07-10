@@ -4,15 +4,15 @@ import Spinner from "react-bootstrap/Spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { ITwilioPhoneNumber } from "../Types";
+import { IPhone } from "../Types";
 
 const LOCAL_STORE_SELECTED_PHONE_SID = 'selectedPhoneSid';
 
 export const PhoneContext = createContext<{
-  phoneList: ITwilioPhoneNumber[];
-  selectedPhone: ITwilioPhoneNumber | null;
-  setSelectedPhone: React.Dispatch<React.SetStateAction<ITwilioPhoneNumber | null>> | null,
-  setPhoneList?: React.Dispatch<React.SetStateAction<ITwilioPhoneNumber[]>>
+  phoneList: IPhone[];
+  selectedPhone: IPhone | null;
+  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhone | null>> | null,
+  setPhoneList?: React.Dispatch<React.SetStateAction<IPhone[]>>
 }>({
   phoneList: [],
   selectedPhone: null,
@@ -27,8 +27,8 @@ const PhoneProvider: FC = ({ children }) => {
   let navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [phoneList, setPhoneList] = useState<ITwilioPhoneNumber[]>([]);
-  const [selectedPhone, setSelectedPhone] = useState<ITwilioPhoneNumber | null>(null);
+  const [phoneList, setPhoneList] = useState<IPhone[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState<IPhone | null>(null);
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
@@ -38,25 +38,10 @@ const PhoneProvider: FC = ({ children }) => {
 
     setIsLoading(true);
 
-    getAllPhone().then((appPhoneData) => {
-
-      if (isMounted) {
-        setPhoneList(appPhoneData);
-        setIsLoading(false);
-      }
-
-
-    }).catch((error) => {
-      if (isMounted) {
-        setAlertMessage(
-          {
-            type: AlertMessageType.ERROR,
-            message: error.message
-          }
-        );
-        setIsLoading(false);
-      }
-    });
+    getAllPhone()
+      .then((appPhoneData) => isMounted ? setPhoneList(appPhoneData) : null)
+      .catch((error) => isMounted ? setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }) : null)
+      .finally(() => isMounted ? setIsLoading(false) : null);
 
     return () => {
       isMounted = false;

@@ -24,6 +24,11 @@ export default class TwilioRessource {
 
     if (jwt.claims.sub) {
       const accountInfo = await Account.getByUsername(jwt.claims.sub);
+
+      if (!accountInfo) {
+        throw new ErrorHandler(400, 'Accout Not Found!');
+      }
+
       return new TwilioRessource(accountInfo);
     }
 
@@ -31,9 +36,26 @@ export default class TwilioRessource {
 
   }
 
+  static async initClientWithAccountId(account_id: number) {
+
+    const accountInfo = await Account.getById(account_id);
+
+    if (!accountInfo) {
+      throw new ErrorHandler(400, 'Accout Not Found!');
+    }
+
+    return new TwilioRessource(accountInfo);
+
+  }
+
   static async initClientWithUsername(username: string) {
 
     const accountInfo = await Account.getByUsername(username);
+
+    if (!accountInfo) {
+      throw new ErrorHandler(400, 'Accout Not Found!');
+    }
+
     return new TwilioRessource(accountInfo);
 
   }

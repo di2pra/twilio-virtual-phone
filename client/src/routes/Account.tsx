@@ -44,13 +44,10 @@ const Account: FC = () => {
       account_sid: state.account_sid.value,
       api_key: state.api_key.value,
       api_secret: state.api_secret.value
-    }).then(() => {
-      navigate('/');
-    }).catch((error) => {
-      setError(error.message);
-    }).finally(() => {
-      setIsLoading(false);
     })
+      .then(() => navigate('/'))
+      .catch((error) => setError(error.message))
+      .finally(() => setIsLoading(false))
 
   }, [setAccount, navigate])
 

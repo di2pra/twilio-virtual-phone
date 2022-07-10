@@ -16,8 +16,6 @@ import Chat from "./routes/Message/Chat";
 import NewConversationForm from "./routes/Message/NewConversationForm";
 import NotFound from "./routes/NotFound";
 import Settings from "./routes/Settings";
-import AddPhoneForm from "./routes/Settings/AddPhoneForm";
-import EditPhoneForm from "./routes/Settings/EditPhoneForm";
 import TwimlApp from "./routes/TwimlApp";
 import AddTwimlAppForm from "./routes/TwimlApp/AddTwimlAppForm";
 import Voice from "./routes/Voice";
@@ -60,16 +58,10 @@ function App() {
               <Route path="message/:contact_number" element={<Chat />} />
               <Route path="voice" element={<VoiceDeviceProvider><Voice /></VoiceDeviceProvider>} />
             </Route>
+            <Route path="settings" element={<Settings />} />
           </Route>
-          <Route path="settings">
-            <Route index element={<Settings />} />
-            <Route path="phone">
-              <Route path="new" element={<AddPhoneForm />} />
-              <Route path=":edit_phone_id/edit" element={<EditPhoneForm />} />
-            </Route>
-          </Route>
-          <Route path="init/account" element={<Account />} />
-          <Route path="init/twiml">
+          <Route path="account/init" element={<Account />} />
+          <Route path="twiml/init">
             <Route index element={<TwimlApp />} />
             <Route path="add" element={<AddTwimlAppForm />} />
           </Route>

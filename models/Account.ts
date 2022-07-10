@@ -23,52 +23,57 @@ export default class Account {
     } as IAccount
   }
 
-  static getRedactedById = async (account_id: number) => {
+  static getRedactedById: (account_id: number) => Promise<IAccount | null> = async (account_id: number) => {
 
     try {
       const results = await pgClient.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
+
       if (results.rows[0]) {
         return Account.redactData(results.rows[0]);
       } else {
-        return null;
+        return null
       }
+
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)
     }
 
   }
 
-  static getById = async (account_id: number) => {
+  static getById: (account_id: number) => Promise<IAccount | null> = async (account_id: number) => {
 
     try {
       const results = await pgClient.query('SELECT * FROM account WHERE account_id = $1', [account_id]);
       if (results.rows[0]) {
         return results.rows[0];
       } else {
-        return null;
+        return null
       }
+
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)
     }
 
   }
 
-  static getRedactedByUsername = async (username: string) => {
+  static getRedactedByUsername: (username: string) => Promise<IAccount | null> = async (username: string) => {
 
     try {
       const results = await pgClient.query('SELECT * FROM account WHERE username = $1', [username]);
+
       if (results.rows[0]) {
         return Account.redactData(results.rows[0]) as IAccount;
       } else {
-        return null;
+        return null
       }
+
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)
     }
 
   }
 
-  static getByUsername = async (username: string) => {
+  static getByUsername: (username: string) => Promise<IAccount | null> = async (username: string) => {
 
     try {
 
@@ -76,9 +81,9 @@ export default class Account {
 
       if (results.rows[0]) {
         return results.rows[0] as IAccount;
+      } else {
+        return null
       }
-
-      throw new Error('Not Found');
 
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)

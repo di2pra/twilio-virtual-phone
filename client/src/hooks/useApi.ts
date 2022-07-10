@@ -1,6 +1,6 @@
 import { useOktaAuth } from '@okta/okta-react';
 import { useCallback } from 'react';
-import { IAccount, IApplication, ICall, IConfig, IConversation, IMessage, ITwilioPhoneNumber } from '../Types';
+import { IAccount, IApplication, ICall, IConfig, IConversation, IMessage, IPhone, ITwilioPhoneNumber } from '../Types';
 
 function useApi() {
 
@@ -96,39 +96,6 @@ function useApi() {
 
   }, [postWithAuth]);
 
-
-  const updatePhone = useCallback(async ({ id, alias }) => {
-
-    const result = await postWithAuth(`/api/v1/phone/${id}`, {
-      alias: alias
-    });
-
-    const data = await result.json();
-
-    if (result.ok) {
-      return data;
-    } else {
-      throw new Error(data.message);
-    }
-
-  }, [postWithAuth]);
-
-  const deletePhone = useCallback(async (id) => {
-
-    const result = await fetchWithAuth(`/api/v1/phone/${id}`, {
-      method: "DELETE"
-    });
-
-    const data = await result.json();
-
-    if (result.ok) {
-      return data;
-    } else {
-      throw new Error(data.message);
-    }
-
-  }, [fetchWithAuth]);
-
   const deleteCall = useCallback(async (id) => {
 
     const result = await fetchWithAuth(`/api/v1/call/${id}`, {
@@ -154,7 +121,7 @@ function useApi() {
 
     if (result.ok) {
 
-      return data as ITwilioPhoneNumber[];
+      return data as IPhone[];
 
     } else {
       throw new Error(data.message);
@@ -397,8 +364,6 @@ function useApi() {
     getMessageByConversation,
     getConversationListByPhoneSid,
     addPhone,
-    updatePhone,
-    deletePhone,
     getPhoneById,
     getCallListByPhoneSid,
     getConfiguration,

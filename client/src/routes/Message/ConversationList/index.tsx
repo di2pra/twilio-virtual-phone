@@ -24,14 +24,14 @@ function ConversationList() {
 
   useEffect(() => {
 
-    let isComponentMounted = true;
+    let isMounted = true;
 
     if (selectedPhone) {
       setIsLoading(true);
 
-      getConversationListByPhoneSid(selectedPhone.sid).then(
-        (data) => {
-          if (isComponentMounted) {
+      getConversationListByPhoneSid(selectedPhone.sid)
+        .then((data) => {
+          if (isMounted) {
 
             setConversationList(data);
             setIsLoading(false);
@@ -43,27 +43,27 @@ function ConversationList() {
               });
             }
           }
-        },
-        (error) => {
-          if (isComponentMounted) {
+        })
+        .catch((error) => {
+          if (isMounted) {
             setAlertMessage({
               type: AlertMessageType.ERROR,
               message: error.message
             });
             setIsLoading(false);
           }
-        }
-      )
+        })
     }
 
     return () => {
-      isComponentMounted = false;
+      isMounted = false;
     }
 
   }, [selectedPhone, getConversationListByPhoneSid, setAlertMessage]);
 
-  const refreshMessageListener = useCallback(() => {
-    if (selectedPhone) {
+  const refreshMessageListener = useCallback((payload) => {
+
+    if (selectedPhone && payload.to_sid === selectedPhone.sid) {
       getConversationListByPhoneSid(selectedPhone.sid).then(
         (data) => {
           setConversationList(data);
@@ -72,9 +72,11 @@ function ConversationList() {
         }
       )
     }
+
   }, [selectedPhone, getConversationListByPhoneSid])
 
   useEffect(() => {
+
     if (socket) {
       socket.on('refreshMessage', refreshMessageListener);
     }
@@ -84,7 +86,7 @@ function ConversationList() {
         socket.off('refreshMessage', refreshMessageListener);
       }
     }
-  }, [socket, getConversationListByPhoneSid, selectedPhone, refreshMessageListener]);
+  }, [socket, refreshMessageListener]);
 
 
   if (!selectedPhone) {

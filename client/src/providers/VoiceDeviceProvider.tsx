@@ -26,31 +26,20 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
     setIsLoading(true);
 
-    getVoiceAccessToken().then((data) => {
+    getVoiceAccessToken()
+      .then((data) => {
 
-      if (isMounted) {
-        newDevice = new Device(data.token, {
-          codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
-        });
+        if (isMounted) {
+          newDevice = new Device(data.token, {
+            codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+          });
 
-        setDevice(newDevice);
-        setIsLoading(false);
-      }
+          setDevice(newDevice);
+        }
 
-    }).catch((error) => {
-
-      if (isMounted) {
-        setAlertMessage(
-          {
-            type: AlertMessageType.ERROR,
-            message: error.message
-          }
-        );
-
-        setIsLoading(false);
-      }
-
-    });
+      })
+      .catch((error) => isMounted ? setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }) : null)
+      .finally(() => setIsLoading(false));
 
     return () => {
       isMounted = false;
@@ -60,6 +49,36 @@ const VoiceDeviceProvider: FC = ({ children }) => {
     }
 
   }, [getVoiceAccessToken, setAlertMessage]);
+
+  const visibilitychangeListener = useCallback(() => {
+    if (document.visibilityState === 'visible') {
+      if (!device) {
+
+        setIsLoading(true);
+
+        getVoiceAccessToken()
+          .then((data) => {
+
+            let newDevice = new Device(data.token, {
+              codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+            });
+
+            setDevice(newDevice);
+
+          })
+          .catch((error) => setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }))
+          .finally(() => setIsLoading(false));
+      }
+    }
+  }, [device, getVoiceAccessToken, setAlertMessage]);
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", visibilitychangeListener);
+
+    return () => {
+      document.removeEventListener("visibilitychange", visibilitychangeListener)
+    }
+  }, [visibilitychangeListener]);
 
   const handleUnregistered = useCallback((device: Device) => {
     setDevice(null);
@@ -89,7 +108,7 @@ const VoiceDeviceProvider: FC = ({ children }) => {
       device.updateToken(data);
     });
 
-  }, []);
+  }, [getVoiceAccessToken]);
 
   useEffect(() => {
 
@@ -105,7 +124,7 @@ const VoiceDeviceProvider: FC = ({ children }) => {
       }
     }
 
-  }, [device, handleUnregistered]);
+  }, [device, handleUnregistered, refreshDeviceToken]);
 
   if (isLoading) {
     return (

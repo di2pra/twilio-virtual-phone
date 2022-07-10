@@ -31,19 +31,19 @@ const routes = (app: Express) => {
   app.delete(`${API_BASE_PATH}/call/:id`, CallController.delete);
 
 
-  app.get(`${API_BASE_PATH}/phone/:sid?`, PhoneController.get);
+  app.get(`${API_BASE_PATH}/phone`, PhoneController.getAll);
   app.post(`${API_BASE_PATH}/phone`, PhoneController.add);
 
-  app.post(`${API_BASE_PATH}/twilio/number`, TwilioController.getAllNumber);
+  app.get(`${API_BASE_PATH}/twilio/number`, TwilioController.getAllNumber);
   app.get(`${API_BASE_PATH}/twilio/application/:sid?`, TwilioController.getApplication);
   app.post(`${API_BASE_PATH}/twilio/application`, TwilioController.createApplication);
 
   app.get(`${API_BASE_PATH}/twilioClient/generateToken`, WebhookController.tokenGenerator);
 
 
-  //app.use('/webhook/', twilio.webhook({ protocol: 'https' }));
-  app.post('/webhook/message', WebhookController.messageResponse);
-  app.post('/webhook/voice', WebhookController.voiceResponse);
+  //app.use('/webhook/:account_id', WebhookController.validateSignature);
+  app.post('/webhook/:username/message', WebhookController.messageResponse);
+  app.post('/webhook/:username/voice', WebhookController.voiceResponse);
 
 };
 
