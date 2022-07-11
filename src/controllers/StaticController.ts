@@ -6,7 +6,7 @@ export default class StaticController {
 
   static route = (app: Express) => {
 
-    const __dirname = process.env.NODE_ENV != 'development' ? '/' : path.dirname(fileURLToPath(import.meta.url));
+    const __dirname = process.env.NODE_ENV != 'development' ? './' : path.dirname(fileURLToPath(import.meta.url));
 
     app.get('/index.html', (_, res) => {
       res.redirect('/');
