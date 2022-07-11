@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../helpers.js";
 import Account from "../models/Account.js";
+import oktaConfig from '../oktaConfig.js';
 import { oktaJwtVerifier } from "../providers/oktaClient.js";
-import oktaConfig from './../oktaConfig.js';
 
 export default class OktaController {
 

@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "node build/index.js",
-    "server": "nodemon --exec ts-node-esm -r dotenv/config index.ts --ignore client",
+    "server": "nodemon --exec ts-node-esm -r dotenv/config src/index.ts --ignore client",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --project ./",
-    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && rm -rf client"
+    "build": "tsc",
+    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && rm -rf client && rm -rf src && mv build/ /"
   },
   "author": "",
   "license": "ISC",
