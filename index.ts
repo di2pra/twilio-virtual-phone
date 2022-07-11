@@ -6,7 +6,7 @@ import SocketController from './controllers/SocketController.js';
 import StaticController from './controllers/StaticController.js';
 import { handleError } from './helpers.js';
 import Redis from './providers/redisClient.js';
-import routes from './routees.js';
+import routes from './routes.js';
 
 const app = express();
 const httpServer = createServer(app);
