@@ -11,8 +11,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "heroku-postbuild-local": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && mv build/* .",
-    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && mv build/* . && rm -rf client && rm -rf src"
+    "heroku-postbuild-local": "tsc && cd client && npm install && npm run build && mv build/ ../public && cd ../ && mv build/* .",
+    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../public && cd ../ && mv build/* . && rm -rf client && rm -rf src && rm -rf build"
   },
   "author": "",
   "license": "ISC",
