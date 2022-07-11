@@ -2,16 +2,17 @@
   "name": "twilio-virtual-phone-backend",
   "version": "1.0.0",
   "description": "Twilio Virtual Phone Backend",
-  "main": "build/index.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node index.js",
     "server": "nodemon --exec ts-node-esm -r dotenv/config src/index.ts --ignore client",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && rm -rf client && rm -rf src && mv build/ /"
+    "heroku-postbuild-local": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && mv build/* .",
+    "heroku-postbuild": "tsc && cd client && npm install && npm run build && mv build/ ../build/public && cd ../ && mv build/* . && rm -rf client && rm -rf src"
   },
   "author": "",
   "license": "ISC",
