@@ -41,7 +41,7 @@ const routes = (app: Express) => {
   app.get(`${API_BASE_PATH}/twilioClient/generateToken`, WebhookController.tokenGenerator);
 
 
-  //app.use('/webhook/:account_id', WebhookController.validateSignature);
+  app.use('/webhook/:username', WebhookController.validateSignature);
   app.post('/webhook/:username/message', WebhookController.messageResponse);
   app.post('/webhook/:username/voice', WebhookController.voiceResponse);
 

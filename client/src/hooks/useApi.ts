@@ -237,10 +237,10 @@ function useApi() {
 
   }, [fetchWithAuth]);
 
-  const setAccount = useCallback(async ({ account_sid, api_key, api_secret }: { account_sid: string, api_key: string, api_secret: string }) => {
+  const setAccount = useCallback(async ({ account_sid, auth_token }: { account_sid: string, auth_token: string }) => {
 
     const result = await postWithAuth(
-      `/api/v1/account`, { account_sid, api_key, api_secret });
+      `/api/v1/account`, { account_sid, auth_token });
 
     const data = await result.json();
 

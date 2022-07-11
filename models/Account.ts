@@ -5,8 +5,7 @@ export type IAccount = {
   account_id: number;
   username: string;
   account_sid: string;
-  api_key: string;
-  api_secret: string;
+  auth_token: string;
   twiml_app_sid: string;
   created_on: Date;
   updated_on: Date;
@@ -91,10 +90,10 @@ export default class Account {
 
   }
 
-  static create = async ({ username, account_sid, api_key, api_secret }: { username: string, account_sid: string, api_key: string, api_secret: string }) => {
+  static create = async ({ username, account_sid, auth_token }: { username: string, account_sid: string, auth_token: string }) => {
 
     try {
-      const result = await pgClient.query('INSERT INTO account(username, account_sid, api_key, api_secret, created_on, updated_on) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING account_id', [username, account_sid, api_key, api_secret]);
+      const result = await pgClient.query('INSERT INTO account(username, account_sid, auth_token, created_on, updated_on) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING account_id', [username, account_sid, auth_token]);
       return result.rows[0].account_id;
     } catch (error: any) {
       throw new ErrorHandler(500, `Internal DB Error : ${error.message}`)

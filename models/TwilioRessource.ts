@@ -14,7 +14,7 @@ export default class TwilioRessource {
   messages: Messages;
 
   private constructor(accountInfo: IAccount) {
-    this.twilioClient = twilio(accountInfo.api_key, accountInfo.api_secret, { accountSid: accountInfo.account_sid });
+    this.twilioClient = twilio(accountInfo.account_sid, accountInfo.auth_token);
     this.applications = new Applications(this.twilioClient);
     this.incomingPhoneNumbers = new IncomingPhoneNumbers(this.twilioClient);
     this.messages = new Messages(this.twilioClient);

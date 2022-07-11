@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Server } from "socket.io";
 import twilio from 'twilio';
 import { ErrorHandler, isAValidPhoneNumber } from "../helpers.js";
@@ -20,7 +20,7 @@ const VoiceGrant = AccessToken.VoiceGrant;
 
 export default class WebhookController {
 
-  /*static validateSignature = async (request: Request, response: Response, next: NextFunction) => {
+  static validateSignature = async (request: Request, response: Response, next: NextFunction) => {
 
     try {
 
@@ -29,7 +29,12 @@ export default class WebhookController {
       if (username) {
 
         const accountInfo = await Account.getByUsername(username);
-        const result = twilio.validateExpressRequest(request, "1aef4316f257484772e093e7d57da47e", { protocol: 'https' });
+
+        if (!accountInfo) {
+          throw new ErrorHandler(403, 'Forbidden');
+        }
+
+        const result = twilio.validateExpressRequest(request, accountInfo.auth_token, { protocol: 'https' });
 
         if (result) {
           next();
@@ -45,7 +50,7 @@ export default class WebhookController {
       next(error)
     }
 
-  };*/
+  };
 
   static tokenGenerator = async (_: Request, response: Response) => {
 

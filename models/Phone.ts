@@ -40,7 +40,7 @@ export default class Phone {
   static add = async ({ fk_account_id, sid, phoneNumber }: { fk_account_id: number; sid: string, phoneNumber: string }) => {
 
     try {
-      const result = await pgClient.query('INSERT INTO phone (fk_account_id, sid, "phoneNumber", "dateAddedToApp") VALUES ($1, $2, $3, $4) RETURNING phone_id', [fk_account_id, sid, phoneNumber, new Date()]);
+      const result = await pgClient.query('INSERT INTO phone (fk_account_id, sid, "phoneNumber", "dateAddedToApp") VALUES ($1, $2, $3, NOW()) RETURNING phone_id', [fk_account_id, sid, phoneNumber]);
       return result.rows[0].phone_id;
     } catch (error: any) {
       throw new ErrorHandler(500, 'Internal DB Error')
