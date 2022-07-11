@@ -379,7 +379,4 @@ function useApi() {
   };
 }
 
-
-
-
 export default useApi;

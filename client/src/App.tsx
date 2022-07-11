@@ -26,7 +26,7 @@ function App() {
   let navigate = useNavigate();
 
   const oktaAuth = useMemo(() => {
-    return new OktaAuth(oktaConfig.oidc);
+    return new OktaAuth(oktaConfig);
   }, []);
 
   useEffect(() => {
