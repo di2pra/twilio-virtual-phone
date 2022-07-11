@@ -57,17 +57,17 @@ export default class MessageController {
 
       const phone = await twilioRessource.incomingPhoneNumbers.getBySid(data.from_sid);
 
+      const newMessage = await Message.create({ from_sid: data.from_sid, from_number: phone.phoneNumber, to_number: data.to_number, body: data.body });
+
       await twilioRessource.messages.create({
         from_number: phone.phoneNumber,
         to_number: data.to_number,
         body: data.body
       });
 
-      const id = await Message.create({ from_sid: data.from_sid, from_number: phone.phoneNumber, to_number: data.to_number, body: data.body });
-      const message = await Message.getById(id);
-      response.status(201).json(message);
+      response.status(201).json(newMessage);
 
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
 
