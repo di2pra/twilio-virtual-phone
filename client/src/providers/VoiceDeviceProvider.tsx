@@ -1,6 +1,6 @@
 import { Call, Device } from '@twilio/voice-sdk';
 import { createContext, FC, useCallback, useEffect, useState } from "react";
-import Container from "react-bootstrap/Container";
+import { Col, Row } from 'react-bootstrap';
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
@@ -137,9 +137,11 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   if (alertDom) {
     return (
-      <Container className="mt-3" fluid>
-        {alertDom}
-      </Container>
+      <Row className="justify-content-md-center">
+        <Col md={10}>
+          {alertDom}
+        </Col>
+      </Row>
     );
   }
 

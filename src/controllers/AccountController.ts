@@ -33,11 +33,14 @@ export default class AccountController {
 
       let jwt = response.locals.jwt as OktaJwtVerifier.Jwt;
 
-      if (!request.body.account_sid || !request.body.auth_token || !jwt.claims.sub) {
+      if (!request.body.account_sid || !request.body.auth_token || !request.body.key_sid || !request.body.key_secret || !jwt.claims.sub) {
         throw new ErrorHandler(400, 'Bad Request')
       }
 
       twilio(request.body.account_sid, request.body.auth_token);
+      twilio(request.body.key_sid, request.body.key_secret, {
+        accountSid: request.body.account_sid
+      });
 
       const createdAccountId = await Account.create({ ...request.body, ...{ username: jwt.claims.sub } });
       const accountData = await Account.getRedactedById(createdAccountId);

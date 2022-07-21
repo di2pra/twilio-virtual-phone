@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS account (
 	username VARCHAR (255) NOT NULL,
 	account_sid VARCHAR (255),
 	auth_token VARCHAR (255),
+	key_sid VARCHAR (255),
+	key_secret VARCHAR (255),
 	twiml_app_sid VARCHAR (255),
 	created_on TIMESTAMP NOT NULL,
 	updated_on TIMESTAMP NOT NULL

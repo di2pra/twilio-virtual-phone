@@ -8,15 +8,9 @@ import Message from "../models/Message.js";
 import Phone from "../models/Phone.js";
 import Redis from "../providers/redisClient.js";
 
-const apiKey: string = process.env.TWILIO_API_KEY || '';
-const apiSecret: string = process.env.TWILIO_API_SECRET || '';
-const accountSid: string = process.env.TWILIO_ACCOUNT_SID || '';
-
-
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
-
 
 export default class WebhookController {
 
@@ -52,41 +46,47 @@ export default class WebhookController {
 
   };
 
-  static tokenGenerator = async (_: Request, response: Response) => {
+  static tokenGenerator = async (_: Request, response: Response, next: NextFunction) => {
 
-    if (!response.locals.jwt) {
-      throw new ErrorHandler(400, 'Bad Request');
-    }
+    try {
 
-    const accountInfo = await Account.getByUsername(response.locals.jwt.claims.sub);
-
-    if (!accountInfo) {
-      throw new ErrorHandler(400, 'Account not found');
-    }
-
-    const accessToken = new AccessToken(
-      accountSid,
-      apiKey,
-      apiSecret,
-      {
-        identity: accountInfo.username,
-        ttl: 86400
+      if (!response.locals.jwt) {
+        throw new ErrorHandler(400, 'Bad Request');
       }
-    );
 
-    const grant = new VoiceGrant({
-      outgoingApplicationSid: accountInfo.twiml_app_sid,
-      incomingAllow: true
-    });
+      const accountInfo = await Account.getByUsername(response.locals.jwt.claims.sub);
 
-    accessToken.addGrant(grant);
+      if (!accountInfo) {
+        throw new ErrorHandler(400, 'Account not found');
+      }
 
-    // Include identity and token in a JSON response
-    response.status(201).json({
-      identity: accountInfo.username,
-      token: accessToken.toJwt(),
-    });
+      const accessToken = new AccessToken(
+        accountInfo.account_sid,
+        accountInfo.key_sid,
+        accountInfo.key_secret,
+        {
+          identity: accountInfo.username,
+          ttl: 86400
+        }
+      );
 
+      const grant = new VoiceGrant({
+        outgoingApplicationSid: accountInfo.twiml_app_sid,
+        incomingAllow: true
+      });
+
+      accessToken.addGrant(grant);
+
+      // Include identity and token in a JSON response
+      response.status(201).json({
+        identity: accountInfo.username,
+        token: accessToken.toJwt(),
+      });
+
+
+    } catch (error) {
+      next(error)
+    }
   };
 
 

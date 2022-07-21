@@ -7,7 +7,9 @@ import useForm, { FormSchema, ValidationSchema } from "../hooks/useForm";
 
 const stateSchema: FormSchema = {
   account_sid: { value: '', errorMessage: '', isInvalid: false },
-  auth_token: { value: '', errorMessage: '', isInvalid: false }
+  auth_token: { value: '', errorMessage: '', isInvalid: false },
+  key_sid: { value: '', errorMessage: '', isInvalid: false },
+  key_secret: { value: '', errorMessage: '', isInvalid: false }
 };
 
 const validationStateSchema: ValidationSchema = {
@@ -15,6 +17,12 @@ const validationStateSchema: ValidationSchema = {
     required: true
   },
   auth_token: {
+    required: true
+  },
+  key_sid: {
+    required: true
+  },
+  key_secret: {
     required: true
   }
 };
@@ -38,11 +46,15 @@ const Account: FC = () => {
 
     setAccount({
       account_sid: state.account_sid.value,
-      auth_token: state.auth_token.value
+      auth_token: state.auth_token.value,
+      key_sid: state.key_sid.value,
+      key_secret: state.key_secret.value
     })
       .then(() => navigate('/'))
-      .catch((error) => setError(error.message))
-      .finally(() => setIsLoading(false))
+      .catch((error) => {
+        setError(error.message);
+        setIsLoading(false);
+      })
 
   }, [setAccount, navigate])
 
@@ -85,6 +97,16 @@ const Account: FC = () => {
                 <Form.Label>Auth Token :</Form.Label>
                 <Form.Control value={state.auth_token.value} name='auth_token' isInvalid={state.auth_token.isInvalid} onChange={handleOnChange} placeholder="xxxxxxxxxxxxxxx" type="password" />
                 <div className="invalid-feedback">{state.auth_token.errorMessage}</div>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="key_sid">
+                <Form.Label>Key SID :</Form.Label>
+                <Form.Control value={state.key_sid.value} name='key_sid' isInvalid={state.key_sid.isInvalid} onChange={handleOnChange} placeholder="SKxxxxxxxxx" type="text" />
+                <div className="invalid-feedback">{state.key_sid.errorMessage}</div>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="key_secret">
+                <Form.Label>Key Secret :</Form.Label>
+                <Form.Control value={state.key_secret.value} name='key_secret' isInvalid={state.key_secret.isInvalid} onChange={handleOnChange} placeholder="xxxxxxxxxxxxxxx" type="password" />
+                <div className="invalid-feedback">{state.key_secret.errorMessage}</div>
               </Form.Group>
               <Button variant="primary" type="submit">Save</Button>
             </Form>

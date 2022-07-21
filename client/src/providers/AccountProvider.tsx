@@ -26,7 +26,7 @@ const AccountProvider: FC = ({ children }) => {
     getAccount()
       .then(data => isMounted ? setAccountInfo(data) : null)
       .catch(error => isMounted ? setError(error.message) : null)
-      .finally(() => setIsLoading(false));
+      .finally(() => isMounted ? setIsLoading(false) : null);
 
     return () => {
       isMounted = false;
