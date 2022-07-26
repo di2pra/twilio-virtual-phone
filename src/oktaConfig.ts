@@ -25,7 +25,7 @@ const oktaConfig = {
       }
     },
     assertClaims: {
-      aud: 'api://default',
+      aud: 'twilio-virtual-phone',
       cid: CLIENT_ID
     }
   }
