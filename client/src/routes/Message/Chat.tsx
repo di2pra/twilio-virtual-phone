@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import Chatbox from "./Chatbox";
 import { PhoneContext } from "../../providers/PhoneProvider";
+import Chatbox from "./Chatbox";
 
 function Chat() {
 
@@ -18,11 +18,7 @@ function Chat() {
     }
   }, [params.contact_number]);
 
-  if (!selectedPhone) {
-    return null;
-  }
-
-  if (!selectedContact) {
+  if (!selectedPhone || !selectedContact) {
     return null;
   }
 

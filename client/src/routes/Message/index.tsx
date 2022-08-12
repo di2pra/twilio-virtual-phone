@@ -1,10 +1,10 @@
 import { useContext } from "react";
+import { Button } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import { Link } from "react-router-dom";
 import { PhoneContext } from "../../providers/PhoneProvider";
 import ConversationList from "./ConversationList";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
 function Message() {
 
@@ -19,7 +19,7 @@ function Message() {
       <Col md={10}>
         <Row>
           <Col>
-            <Link to={`/${selectedPhone.phone_id}/message/new`} replace>
+            <Link to={`/${selectedPhone.sid}/message/new`} replace>
               <Button className="mb-3" type='button' variant='primary'>Start new conversation</Button>
             </Link>
           </Col>

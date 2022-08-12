@@ -38,7 +38,8 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
     if (selectedPhone) {
 
       var params = {
-        From: selectedPhone.number,
+        from_sid: selectedPhone.sid,
+        From: selectedPhone.phoneNumber,
         To: state.to.value
       };
 
@@ -48,7 +49,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
 
         setCallData({
           type: Call.CallDirection.Outgoing,
-          from: selectedPhone.number,
+          from: selectedPhone.phoneNumber,
           to: state.to.value,
           status: call.status()
         });
@@ -62,16 +63,16 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
 
   const onKeyPressed = useCallback((value: string) => {
 
-    if(refInput && refInput.current) {
+    if (refInput && refInput.current) {
 
       const lastValue = refInput.current.value;
 
-      if(value === 'Backspace') {
+      if (value === 'Backspace') {
         refInput.current.value = lastValue.slice(0, -1);
       } else {
         refInput.current.value = lastValue + value;
       }
-    
+
       const event = new Event("input", { bubbles: true });
 
       // @ts-ignore: Unreachable code error
@@ -80,19 +81,19 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
       if (tracker) {
         tracker.setValue(lastValue);
       }
-      
+
       refInput.current.dispatchEvent(event);
 
     }
-    
+
   }, [refInput]);
 
   useEffect(() => {
-    function handleKeyDown(e : KeyboardEvent) {
+    function handleKeyDown(e: KeyboardEvent) {
 
-      if(refInput.current && refInput.current === document.activeElement) {
+      if (refInput.current && refInput.current === document.activeElement) {
       } else {
-        if(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '*', '#', 'Backspace'].includes(e.key)) {
+        if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '*', '#', 'Backspace'].includes(e.key)) {
           e.preventDefault();
           onKeyPressed(e.key);
         }
@@ -103,7 +104,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
     document.addEventListener('keydown', handleKeyDown);
 
     // Don't forget to clean up
-    return function() {
+    return function () {
       document.removeEventListener('keydown', handleKeyDown);
     }
   }, [onKeyPressed]);
@@ -120,7 +121,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
             <Col>
               <Form.Group className="mb-3" controlId="from">
                 <Form.Label>From :</Form.Label>
-                <Form.Control disabled value={selectedPhone.number} name='from' type="tel" />
+                <Form.Control disabled value={selectedPhone.phoneNumber} name='from' type="tel" />
               </Form.Group>
               <Form.Group className="mb-3" controlId="to">
                 <Form.Label>To :</Form.Label>
@@ -129,7 +130,7 @@ function NewCallForm({ device, setCurrentCall, setCallData }: Props) {
               </Form.Group>
             </Col>
           </Row>
-         <KeyPad callback={onKeyPressed} />
+          <KeyPad callback={onKeyPressed} />
         </Card.Body>
         <Card.Footer>
           <Row className="justify-content-center">

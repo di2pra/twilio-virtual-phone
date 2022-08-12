@@ -1,9 +1,9 @@
+import { Call, Device } from '@twilio/voice-sdk';
 import { createContext, FC, useCallback, useEffect, useState } from "react";
-import Container from "react-bootstrap/Container";
+import { Col, Row } from 'react-bootstrap';
 import Spinner from "react-bootstrap/Spinner";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { Device, Call } from '@twilio/voice-sdk';
 
 export const VoiceDeviceContext = createContext<{
   device: Device | null;
@@ -19,45 +19,70 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
-  const loadDevice = useCallback(() => {
+  useEffect(() => {
+
+    let isMounted = true;
+    let newDevice: Device;
 
     setIsLoading(true);
 
-    getVoiceAccessToken().then((data) => {
+    getVoiceAccessToken()
+      .then((data) => {
 
-      const device = new Device(data.token, {
-        codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
-      });
+        if (isMounted) {
+          newDevice = new Device(data.token, {
+            codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+          });
 
-      setDevice(device);
-
-    }).catch((error) => {
-
-      setAlertMessage(
-        {
-          type: AlertMessageType.ERROR,
-          message: error.message
+          setDevice(newDevice);
         }
-      );
 
-      setIsLoading(false);
+      })
+      .catch((error) => isMounted ? setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }) : null)
+      .finally(() => setIsLoading(false));
 
-    });
-
+    return () => {
+      isMounted = false;
+      if (newDevice) {
+        newDevice.destroy();
+      }
+    }
 
   }, [getVoiceAccessToken, setAlertMessage]);
 
-  const handleRegistered = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+  const visibilitychangeListener = useCallback(() => {
+    if (document.visibilityState === 'visible') {
+      if (!device) {
+
+        setIsLoading(true);
+
+        getVoiceAccessToken()
+          .then((data) => {
+
+            let newDevice = new Device(data.token, {
+              codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU]
+            });
+
+            setDevice(newDevice);
+
+          })
+          .catch((error) => setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }))
+          .finally(() => setIsLoading(false));
+      }
+    }
+  }, [device, getVoiceAccessToken, setAlertMessage]);
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", visibilitychangeListener);
+
+    return () => {
+      document.removeEventListener("visibilitychange", visibilitychangeListener)
+    }
+  }, [visibilitychangeListener]);
 
   const handleUnregistered = useCallback((device: Device) => {
     setDevice(null);
   }, []);
-
-  useEffect(() => {
-    loadDevice();
-  }, [loadDevice]);
 
   useEffect(() => {
 
@@ -77,23 +102,29 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   }, [device]);
 
+  const refreshDeviceToken = useCallback((device: Device) => {
+
+    getVoiceAccessToken().then((data) => {
+      device.updateToken(data);
+    });
+
+  }, [getVoiceAccessToken]);
+
   useEffect(() => {
 
     if (device) {
-
-      device.on(Device.EventName.Registered, handleRegistered);
       device.on(Device.EventName.Unregistered, handleUnregistered);
-
+      device.on(Device.EventName.TokenWillExpire, refreshDeviceToken);
     }
 
     return () => {
       if (device) {
-        device.off(Device.EventName.Registered, handleRegistered);
         device.off(Device.EventName.Unregistered, handleUnregistered);
+        device.off(Device.EventName.TokenWillExpire, refreshDeviceToken);
       }
     }
 
-  }, [device, handleRegistered, handleUnregistered]);
+  }, [device, handleUnregistered, refreshDeviceToken]);
 
   if (isLoading) {
     return (
@@ -106,9 +137,11 @@ const VoiceDeviceProvider: FC = ({ children }) => {
 
   if (alertDom) {
     return (
-      <Container className="mt-3" fluid>
-        {alertDom}
-      </Container>
+      <Row className="justify-content-md-center">
+        <Col md={10}>
+          {alertDom}
+        </Col>
+      </Row>
     );
   }
 
