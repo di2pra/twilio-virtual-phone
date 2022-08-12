@@ -1,5 +1,5 @@
 import { Call } from "@twilio/voice-sdk"
-import { useCallback, useContext } from "react"
+import { useCallback } from "react"
 import { Button, Card, Col, Row } from "react-bootstrap"
 import { MdCallEnd } from "react-icons/md"
 import KeyPad from "../../components/Keypad"
@@ -19,7 +19,7 @@ export default function CallOpen({ currentCall, callData, cancelCall }: Props) {
       currentCall.sendDigits(value);
     }
 
-  }, [])
+  }, [currentCall])
 
   return (
     <Card>

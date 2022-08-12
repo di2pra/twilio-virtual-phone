@@ -1,26 +1,26 @@
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { IPhoneNumber } from "../../Types";
+import { IPhone } from "../../Types";
 
 type Props = {
-  phoneList: IPhoneNumber[],
-  selectedPhone: IPhoneNumber | null
-  updateSelectedPhone: (item: IPhoneNumber) => void
+  phoneList: IPhone[],
+  selectedPhone: IPhone | null
+  updateSelectedPhone: (item: IPhone) => void
 }
 
-function PhoneDropdown({ phoneList , selectedPhone, updateSelectedPhone } : Props) {
+function PhoneDropdown({ phoneList, selectedPhone, updateSelectedPhone }: Props) {
 
-  if(!selectedPhone) {
+  if (!selectedPhone) {
     return null
   }
 
   return (
-    <NavDropdown disabled={phoneList.length === 1} title={`${selectedPhone.alias} (${selectedPhone.number})`} id="basic-nav-dropdown">
+    <NavDropdown disabled={phoneList.length === 1} title={`${selectedPhone.friendlyName} (${selectedPhone.phoneNumber})`} id="basic-nav-dropdown">
       {
         phoneList.map((item, index) => {
-          if (item.phone_id === selectedPhone.phone_id) {
+          if (item.sid === selectedPhone.sid) {
             return null
           }
-          return <NavDropdown.Item onClick={() => { updateSelectedPhone(item) }} key={index}>{item.alias} ({item.number})</NavDropdown.Item>
+          return <NavDropdown.Item onClick={() => { updateSelectedPhone(item) }} key={index}>{item.friendlyName} ({item.phoneNumber})</NavDropdown.Item>
         })
       }
     </NavDropdown>

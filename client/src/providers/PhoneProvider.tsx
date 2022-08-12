@@ -1,15 +1,18 @@
-import { createContext, FC, useCallback, useEffect, useState } from "react";
+import { createContext, FC, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
+import { useNavigate, useParams } from "react-router-dom";
 import useAlertCard, { AlertMessageType } from "../hooks/useAlertCard";
 import useApi from "../hooks/useApi";
-import { IPhoneNumber, ITwilioPhoneNumber  } from "../Types";
+import { IPhone } from "../Types";
+
+const LOCAL_STORE_SELECTED_PHONE_SID = 'selectedPhoneSid';
 
 export const PhoneContext = createContext<{
-  phoneList: IPhoneNumber[];
-  selectedPhone: IPhoneNumber | null;
-  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhoneNumber | null>> | null,
-  setPhoneList?: React.Dispatch<React.SetStateAction<IPhoneNumber[]>>
+  phoneList: IPhone[];
+  selectedPhone: IPhone | null;
+  setSelectedPhone: React.Dispatch<React.SetStateAction<IPhone | null>> | null,
+  setPhoneList?: React.Dispatch<React.SetStateAction<IPhone[]>>
 }>({
   phoneList: [],
   selectedPhone: null,
@@ -18,56 +21,75 @@ export const PhoneContext = createContext<{
 
 const PhoneProvider: FC = ({ children }) => {
 
-  const { getAllPhone, getAllNumber } = useApi();
+  const { getAllPhone } = useApi();
+
+  let params = useParams();
+  let navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [phoneList, setPhoneList] = useState<IPhoneNumber[]>([]);
-  const [selectedPhone, setSelectedPhone] = useState<IPhoneNumber | null>(null);
+  const [phoneList, setPhoneList] = useState<IPhone[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState<IPhone | null>(null);
 
   const { setAlertMessage, alertDom } = useAlertCard({ dismissible: false });
 
-  const loadPhoneList = useCallback(() => {
+  useEffect(() => {
+
+    let isMounted = true;
 
     setIsLoading(true);
 
-    getAllPhone().then(
-      (appPhoneData) => {
+    getAllPhone()
+      .then((appPhoneData) => isMounted ? setPhoneList(appPhoneData) : null)
+      .catch((error) => isMounted ? setAlertMessage({ type: AlertMessageType.ERROR, message: error.message }) : null)
+      .finally(() => isMounted ? setIsLoading(false) : null);
 
-        const numberList = appPhoneData.map(item => item.number);
+    return () => {
+      isMounted = false;
+    }
 
-        if (numberList.length > 0) {
 
-          getAllNumber(numberList).then((twilioPhoneData) => {
-
-            const bothPhoneData = appPhoneData.map((item, index) => {
-              return { ...item, ...twilioPhoneData[index] as ITwilioPhoneNumber }
-            })
-
-            setPhoneList(bothPhoneData);
-            setIsLoading(false);
-
-          })
-
-        } else {
-          setIsLoading(false);
-        }
-
-      }).catch(
-        (error) => {
-          setAlertMessage(
-            {
-              type: AlertMessageType.ERROR,
-              message: error.message
-            }
-          );
-          setIsLoading(false);
-        })
-
-  }, [getAllPhone, getAllNumber, setAlertMessage]);
+  }, [getAllPhone, setAlertMessage]);
 
   useEffect(() => {
-    loadPhoneList();
-  }, [loadPhoneList]);
+
+    if (setSelectedPhone && phoneList.length > 0) {
+
+      const localStoragePhoneId = localStorage.getItem(LOCAL_STORE_SELECTED_PHONE_SID) || '';
+      const localStoragePhone = phoneList.filter((item) => item.sid === localStoragePhoneId)[0];
+
+      const paramPhoneId = params.phone_id || '';
+      const paramPhone = phoneList.filter((item) => item.sid === paramPhoneId)[0];
+
+      if (!paramPhone && params.phone_id) {
+        navigate('/');
+      }
+
+      setSelectedPhone((prevState) => {
+
+        let newValue = paramPhone;
+
+        if (prevState === null) {
+          if (!paramPhone) {
+            if (localStoragePhone) {
+              newValue = localStoragePhone
+            } else {
+              newValue = phoneList[0]
+            }
+          }
+        } else {
+          if (!paramPhone) {
+            newValue = prevState;
+          }
+        }
+
+        localStorage.setItem(LOCAL_STORE_SELECTED_PHONE_SID, newValue.sid);
+
+
+        return newValue;
+      });
+    }
+
+  }, [params, setSelectedPhone, phoneList, navigate]);
 
   if (isLoading) {
     return (

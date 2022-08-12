@@ -6,7 +6,7 @@ type Props<Type> = {
   body?: string;
   closeBtnLabel?: string;
   saveBtnLabel?: string;
-  handleOnConfirm?: (context: Type | undefined) => void;
+  handleOnConfirm?: (context: Type) => void;
   handleOnCancel?: () => void;
 }
 
@@ -25,8 +25,7 @@ function useModalBox<Type>({ title, body, closeBtnLabel, saveBtnLabel, handleOnC
 
   const clickOnConfirm = useCallback(() => {
 
-    if (options.handleOnConfirm) {
-      console.log(options.handleOnConfirm)
+    if (options.handleOnConfirm && context) {
       options.handleOnConfirm(context);
     }
 

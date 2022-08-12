@@ -7,19 +7,12 @@ export type CallMetadata = {
   status: string;
 }
 
-export interface IAppPhoneNumber {
-  phone_id: number;
-  alias: string;
-  number: string;
-  created_on: Date;
-}
-
 export interface IMessage {
   message_id: number;
   from_number: string;
-  from_phone_id: number | null;
+  from_sid: string | null;
   to_number: string;
-  to_phone_id: number | null;
+  to_sid: string | null;
   body: string;
   created_on: Date;
 }
@@ -62,4 +55,29 @@ export interface ITwilioPhoneNumber {
   sid: string;
 }
 
-export type IPhoneNumber = IAppPhoneNumber & ITwilioPhoneNumber;
+export interface IUser {
+  name: string;
+  email: string;
+}
+
+export interface IAccount {
+  account_id: number;
+  username: string;
+  account_sid: string;
+  api_key: string;
+  api_secret: string;
+  twiml_app_sid: string;
+  created_on: Date;
+  updated_on: Date;
+}
+
+export interface IPhone {
+  phone_id: number,
+  fk_account: number,
+  sid: string,
+  friendlyName: string,
+  phoneNumber: string,
+  dateAddedToApp: string,
+  dateCreated: Date,
+  dateUpdated: Date
+}
