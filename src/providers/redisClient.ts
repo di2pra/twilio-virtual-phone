@@ -3,9 +3,17 @@ import { createClient } from 'redis';
 
 class Redis {
   private static client: RedisClientType;
+  private static connectionTimeout: NodeJS.Timeout
+
+  static throwTimeoutError() {
+    this.connectionTimeout = setTimeout(() => {
+      throw new Error('Redis connection failed');
+    }, 10000);
+  }
 
   static async getClient() {
     if (Redis.client && Redis.client.isOpen) {
+      console.log(`returning opened client`);
       return Redis.client;
     }
 
@@ -17,8 +25,21 @@ class Redis {
       }
     });
 
-    Redis.client.on('error', err => {
-      console.log('Redis Error ' + err);
+    Redis.client.on('connect', () => {
+      console.log('Redis - Connection status: connected');
+      clearTimeout(this.connectionTimeout);
+    });
+    Redis.client.on('end', () => {
+      console.log('Redis - Connection status: disconnected');
+      this.throwTimeoutError();
+    });
+    Redis.client.on('reconnecting', () => {
+      console.log('Redis - Connection status: reconnecting');
+      clearTimeout(this.connectionTimeout);
+    });
+    Redis.client.on('error', (err) => {
+      //console.log('Redis - Connection status: error ', { err });
+      this.throwTimeoutError();
     });
 
     await Redis.client.connect();
